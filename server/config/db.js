@@ -3,30 +3,45 @@ const mongoose = require('mongoose');
 let mongodInstance = null;
 
 const connectDB = async () => {
-  try {
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/hrms_db';
-    
-    // Attempt connection with low timeout to detect if local mongo is up
-    console.log(`Attempting connection to MongoDB at: ${mongoUri}`);
-    
-    await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 3000,
-    });
-    
-    console.log(`MongoDB Connected: ${mongoose.connection.host}`);
-  } catch (err) {
-    console.warn(`Local MongoDB not detected (${err.message}). Starting embedded In-Memory MongoDB for seamless operation...`);
+  const mongoUri = process.env.MONGODB_URI;
+
+  if (mongoUri) {
     try {
-      const { MongoMemoryServer } = require('mongodb-memory-server');
-      mongodInstance = await MongoMemoryServer.create();
-      const uri = mongodInstance.getUri();
-      
-      await mongoose.connect(uri);
-      console.log(`In-Memory MongoDB Connected at: ${uri}`);
-    } catch (memErr) {
-      console.error('Critical Database connection error:', memErr.message);
-      process.exit(1);
+      console.log(`Connecting to configured MongoDB URI...`);
+      await mongoose.connect(mongoUri, {
+        serverSelectionTimeoutMS: 5000,
+      });
+      console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`);
+      return;
+    } catch (err) {
+      console.error(`❌ Failed connecting to MONGODB_URI: ${err.message}`);
     }
+  }
+
+  // Fallback to local MongoDB
+  try {
+    const localUri = 'mongodb://127.0.0.1:27017/hrms_db';
+    console.log(`Attempting connection to local MongoDB at: ${localUri}`);
+    await mongoose.connect(localUri, {
+      serverSelectionTimeoutMS: 2000,
+    });
+    console.log(`✅ Local MongoDB Connected`);
+    return;
+  } catch (localErr) {
+    console.warn(`Local MongoDB not running (${localErr.message}). Starting In-Memory Mongo instance...`);
+  }
+
+  // Fallback to in-memory mongodb
+  try {
+    const { MongoMemoryServer } = require('mongodb-memory-server');
+    mongodInstance = await MongoMemoryServer.create();
+    const memoryUri = mongodInstance.getUri();
+    
+    await mongoose.connect(memoryUri);
+    console.log(`✅ In-Memory MongoDB Connected at: ${memoryUri}`);
+  } catch (memErr) {
+    console.warn(`⚠️ In-Memory MongoDB could not start (${memErr.message}).`);
+    console.warn(`💡 TIP FOR RENDER/PRODUCTION: Provide MONGODB_URI in Render Environment variables from MongoDB Atlas (free tier).`);
   }
 };
 
