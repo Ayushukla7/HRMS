@@ -11,11 +11,14 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
+// Enable universal CORS for Vercel, Render, and Localhost
 app.use(cors({
-  origin: '*',
+  origin: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -25,7 +28,21 @@ if (process.env.NODE_ENV === 'development') {
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'HRMS API is operational', timestamp: new Date() });
+  res.status(200).json({
+    status: 'OK',
+    message: 'HRMS API is fully operational',
+    timestamp: new Date(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Root welcome endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    name: 'HR Pulse - Enterprise HRMS API',
+    status: 'Running',
+    documentation: '/api/health',
+  });
 });
 
 // Mount Routes
@@ -41,8 +58,8 @@ app.use('/api/performance', require('./routes/performanceRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 
-// Serve frontend build in production
-if (process.env.NODE_ENV === 'production') {
+// Serve frontend build if running as a monolithic single container
+if (process.env.NODE_ENV === 'production' && !process.env.API_ONLY) {
   app.use(express.static(path.join(__dirname, '../client/dist')));
 
   app.get('*', (req, res) => {
@@ -67,7 +84,7 @@ const startServer = async () => {
     console.warn('Auto-seed notice:', seedErr.message);
   }
 
-  app.listen(PORT, () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`=========================================`);
     console.log(`🚀 HRMS Server running on port ${PORT}`);
     console.log(`🌐 API Base URL: http://localhost:${PORT}/api`);

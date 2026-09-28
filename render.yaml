@@ -1,0 +1,40 @@
+services:
+  # Backend API Web Service on Render
+  - type: web
+    name: hrms-backend
+    env: node
+    region: oregon
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: MONGODB_URI
+        sync: false
+        # Note: If no external MongoDB Atlas URI is provided, 
+        # the server will automatically use its built-in in-memory database!
+
+  # Optional: Frontend Static Site on Render (if deploying both on Render)
+  - type: static
+    name: hrms-frontend
+    region: oregon
+    plan: free
+    rootDir: client
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: hrms-backend
+          property: host
