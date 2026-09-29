@@ -146,19 +146,19 @@ const RecruitmentPage = () => {
   const stageBadgeColor = (stage) => {
     switch (stage) {
       case 'Applied':
-        return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+        return 'bg-neutral-100 text-neutral-800 border-neutral-300 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20';
       case 'Screening':
-        return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+        return 'bg-neutral-100 text-neutral-800 border-neutral-300 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20';
       case 'Interview':
-        return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
+        return 'bg-neutral-200 text-black border-neutral-300 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20';
       case 'Offered':
-        return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+        return 'bg-black text-white border-black dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20';
       case 'Hired':
-        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+        return 'bg-black text-white border-black dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20';
       case 'Rejected':
-        return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+        return 'bg-neutral-100 text-neutral-500 border-neutral-300 line-through dark:no-underline dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20';
       default:
-        return 'bg-slate-500/10 text-slate-400 border-slate-500/20';
+        return 'bg-neutral-100 text-neutral-700 border-neutral-300 dark:bg-slate-500/10 dark:text-slate-400 dark:border-slate-500/20';
     }
   };
 
