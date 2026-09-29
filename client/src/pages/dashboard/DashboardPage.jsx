@@ -1,37 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { dashboardApi, leaveApi } from '../../api';
+import { dashboardApi, employeeApi, leaveApi, attendanceApi } from '../../api';
 import { useNotification } from '../../context/NotificationContext';
-import StatCard from '../../components/common/StatCard';
-import Badge from '../../components/common/Badge';
-import Button from '../../components/common/Button';
-import Avatar from '../../components/common/Avatar';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import {
-  Users,
-  CalendarCheck,
-  CalendarDays,
-  CreditCard,
-  Briefcase,
-  UserPlus,
-  ArrowRight,
-  Check,
-  X,
+  MoreHorizontal,
+  ArrowUpRight,
+  TrendingUp,
+  CheckCircle2,
   Clock,
-  Building2,
+  Sparkles,
+  Check,
+  Calendar,
+  Layers,
+  ArrowRight,
+  Compass,
+  Zap,
 } from 'lucide-react';
 import {
   BarChart,
   Bar,
   XAxis,
-  YAxis,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
+  LineChart,
+  Line,
 } from 'recharts';
 
 const DashboardPage = () => {
@@ -39,21 +33,71 @@ const DashboardPage = () => {
   const { showToast } = useNotification();
   const [loading, setLoading] = useState(true);
   const [adminData, setAdminData] = useState(null);
-  const [employeeData, setEmployeeData] = useState(null);
+  const [timeFilter, setTimeFilter] = useState('1Y');
+
+  // Interactive Checklist State matching screenshot
+  const [tasks, setTasks] = useState([
+    { id: 1, title: 'Run A/B Testing for Interface Variants', time: '12:11', completed: true },
+    { id: 2, title: 'Map User Flow for Registration Process', time: '15:41', inProgress: true, completed: false },
+    { id: 3, title: 'Perform UX Audit of Existing Product', time: '16:54', completed: false },
+    { id: 4, title: 'Validate Prototype Before MVP Launch', time: '17:11', completed: false },
+    { id: 5, title: 'Design Onboarding Experience for Users', time: '18:09', completed: false },
+  ]);
+
+  // Salary data matching bar chart in screenshot
+  const salaryData = [
+    { month: 'Jan', amount: 900 },
+    { month: 'Feb', amount: 1300 },
+    { month: 'Mar', amount: 1100 },
+    { month: 'Apr', amount: 800 },
+    { month: 'May', amount: 1400 },
+    { month: 'Jun', amount: 1600 },
+    { month: 'Jul', amount: 1000 },
+    { month: 'Aug', amount: 2000, highlight: true },
+    { month: 'Sep', amount: 600 },
+    { month: 'Oct', amount: 750 },
+    { month: 'Nov', amount: 950 },
+    { month: 'Dec', amount: 1150 },
+  ];
+
+  // Sparkline data for tasks
+  const sparklineData = [
+    { day: 5, count: 8 },
+    { day: 10, count: 14 },
+    { day: 15, count: 9 },
+    { day: 20, count: 18 },
+    { day: 25, count: 12 },
+    { day: 30, count: 16 },
+  ];
+
+  // Skills cloud tags matching screenshot
+  const skillTags = [
+    { name: 'Journey Map', top: '15%', left: '10%', rot: '-6deg' },
+    { name: 'Responsive Design', top: '22%', right: '12%', rot: '4deg' },
+    { name: 'Design System', top: '48%', left: '20%', rot: '0deg' },
+    { name: 'User Experience', top: '42%', left: '46%', rot: '-45deg' },
+    { name: 'User Flow', top: '48%', right: '14%', rot: '8deg' },
+    { name: 'User Interface', top: '72%', left: '12%', rot: '2deg' },
+    { name: 'Information Architecture', top: '78%', left: '32%', rot: '0deg' },
+    { name: 'User Research', top: '68%', right: '16%', rot: '-4deg' },
+  ];
+
+  // Progress items list matching screenshot
+  const progressItems = [
+    { title: 'User Testing', hours: '10 hours', reward: '+$600', icon: TrendingUp },
+    { title: 'Interviews', hours: '15 hours', reward: '+$900', icon: Sparkles },
+    { title: 'A/B Testing', hours: '5 hours', reward: '+$340', icon: Layers },
+    { title: 'Final Review', hours: '5 hours', reward: '+$300', icon: CheckCircle2 },
+    { title: 'Design Iterations', hours: '20 hours', reward: '+$1200', icon: Compass },
+    { title: 'Create a CJM & Architecture', hours: '20 hours', reward: '+$1200', icon: Zap },
+  ];
 
   const fetchDashboard = async () => {
     setLoading(true);
     try {
-      if (isAdmin) {
-        const res = await dashboardApi.getAdminStats();
-        if (res.data.success) {
-          setAdminData(res.data.data);
-        }
-      } else {
-        const res = await dashboardApi.getEmployeeStats();
-        if (res.data.success) {
-          setEmployeeData(res.data.data);
-        }
+      const res = await dashboardApi.getAdminStats();
+      if (res.data.success) {
+        setAdminData(res.data.data);
       }
     } catch (err) {
       console.error('Failed to load dashboard:', err);
@@ -64,391 +108,460 @@ const DashboardPage = () => {
 
   useEffect(() => {
     fetchDashboard();
-  }, [isAdmin, user]);
+  }, []);
 
-  const handleLeaveDecision = async (leaveId, status) => {
-    try {
-      const res = await leaveApi.updateStatus(leaveId, { status });
-      if (res.data.success) {
-        showToast(`Leave request ${status.toLowerCase()}`, 'success');
-        fetchDashboard();
-      }
-    } catch (err) {
-      showToast('Failed to update leave', 'error');
-    }
+  const toggleTask = (id) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed, inProgress: false } : t))
+    );
   };
 
   if (loading) {
-    return <LoadingSpinner text="Loading dashboard metrics..." />;
+    return <LoadingSpinner text="Rendering Bento interface..." />;
   }
 
-  // ================= ADMIN DASHBOARD =================
-  if (isAdmin && adminData) {
-    const { stats, departmentDistribution, attendanceSummary, recentLeaves, recentApplications } = adminData;
+  const featured = adminData?.featuredEmployee || {
+    firstName: 'Aarav',
+    lastName: 'Sharma',
+    designation: 'UX/UI Lead & Architect',
+    profilePicture: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=80',
+    empCustomId: 'EMP-1001',
+  };
 
-    return (
-      <div className="space-y-6">
-        {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
-          <div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-              Workforce Operations Dashboard
-            </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Live organizational headcounts, attendance tracking, and administrative workflows.
-            </p>
-          </div>
+  return (
+    <div className="space-y-6 animate-fade-in">
+      {/* 4-COLUMN BENTO GRID MATCHING THE REFERENCE DESIGN */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        
+        {/* ========================================================= */}
+        {/* COLUMN 1: HERO INDIAN EMPLOYEE CARD & SKILLS BENTO BUBBLE */}
+        {/* ========================================================= */}
+        <div className="space-y-5 flex flex-col justify-between">
+          {/* Featured Profile Card */}
+          <div className="bg-[#121319] rounded-3xl p-5 border border-white/[0.07] shadow-2xl relative overflow-hidden group">
+            {/* Top Status Badges */}
+            <div className="flex items-center justify-between z-10 relative mb-4">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-semibold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                ONLINE
+              </span>
+              <span className="px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-slate-300 text-[11px] font-medium">
+                1.2 years of work
+              </span>
+            </div>
 
-          <div className="flex items-center gap-2.5">
-            <Link to="/employees">
-              <Button variant="outline" size="sm" icon={UserPlus}>
-                Add Employee
-              </Button>
-            </Link>
-            <Link to="/payroll">
-              <Button variant="primary" size="sm" icon={CreditCard}>
-                Run Payroll
-              </Button>
-            </Link>
-          </div>
-        </div>
+            {/* Profile Image with subtle vignette */}
+            <div className="relative rounded-2xl overflow-hidden mb-4 bg-gradient-to-b from-transparent to-[#121319]">
+              <img
+                src={featured.profilePicture}
+                alt={`${featured.firstName} ${featured.lastName}`}
+                className="w-full h-56 object-cover object-top rounded-2xl group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#121319] via-transparent to-transparent opacity-80" />
+            </div>
 
-        {/* Real KPI StatCards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            title="Total Active Workforce"
-            value={stats.totalEmployees || 0}
-            icon={Users}
-            subtitle={`${stats.totalDepartments || 0} Active Departments`}
-          />
-          <StatCard
-            title="Present Today"
-            value={`${stats.presentToday || 0} / ${stats.totalEmployees || 0}`}
-            icon={CalendarCheck}
-            subtitle={`${stats.attendanceRate || 0}% attendance rate`}
-          />
-          <StatCard
-            title="Pending Leave Requests"
-            value={stats.pendingLeaves || 0}
-            icon={CalendarDays}
-            subtitle="Requires review"
-          />
-          <StatCard
-            title="Active Job Openings"
-            value={stats.activeJobs || 0}
-            icon={Briefcase}
-            subtitle={`${stats.totalApplicants || 0} Total Applicants`}
-          />
-        </div>
-
-        {/* Analytics Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Department Headcount Bar Chart */}
-          <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
+            {/* Name & Title with Arrow Link */}
+            <div className="flex items-center justify-between pt-1">
               <div>
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  Headcount by Department
+                <h3 className="text-lg font-bold text-white tracking-tight">
+                  {featured.firstName} {featured.lastName}
                 </h3>
-                <p className="text-xs text-slate-400">Active assigned personnel</p>
+                <p className="text-xs text-slate-400 mt-0.5">{featured.designation}</p>
               </div>
-              <Link to="/departments" className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
-                <span>View all</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+              <Link
+                to="/employees"
+                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white transition-colors"
+                title="View Full Profile"
+              >
+                <ArrowUpRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="h-60">
+          </div>
+
+          {/* Sub Stats Twin Cards: Days in Company & Done Projects */}
+          <div className="grid grid-cols-2 gap-3.5">
+            <div className="bg-[#121319] rounded-2xl p-4 border border-white/[0.07]">
+              <h4 className="text-2xl sm:text-3xl font-black text-white tracking-tight">456</h4>
+              <p className="text-[11px] text-slate-400 mt-1">Days in company</p>
+            </div>
+            <div className="bg-[#121319] rounded-2xl p-4 border border-white/[0.07]">
+              <h4 className="text-2xl sm:text-3xl font-black text-white tracking-tight">11</h4>
+              <p className="text-[11px] text-slate-400 mt-1">Done projects</p>
+            </div>
+          </div>
+
+          {/* Interactive Skills Cloud Floating Bento Bubble */}
+          <div className="bg-[#121319] rounded-3xl p-5 border border-white/[0.07] h-48 relative overflow-hidden flex items-center justify-center">
+            <div className="absolute top-3.5 right-3.5 text-slate-600 hover:text-slate-400 cursor-pointer">
+              <ArrowUpRight className="w-4 h-4 rotate-90" />
+            </div>
+
+            {/* Floating Tags */}
+            <div className="relative w-full h-full">
+              {skillTags.map((tag, idx) => (
+                <span
+                  key={idx}
+                  style={{
+                    position: 'absolute',
+                    top: tag.top,
+                    left: tag.left,
+                    right: tag.right,
+                    transform: `rotate(${tag.rot})`,
+                  }}
+                  className="px-2.5 py-1 rounded-full bg-[#1b1c24] hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-white/10 hover:border-emerald-500/40 text-[10px] font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer shadow-md select-none"
+                >
+                  {tag.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+
+        {/* ========================================================= */}
+        {/* COLUMN 2: PROGRESS LIST & SALARY FINANCIALS BAR CHART */}
+        {/* ========================================================= */}
+        <div className="space-y-5 flex flex-col justify-between">
+          {/* Progress Activity Card */}
+          <div className="bg-[#121319] rounded-3xl p-5 border border-white/[0.07] shadow-xl flex-1 flex flex-col justify-between">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.05] mb-2">
+              <h3 className="text-sm font-bold text-white tracking-tight">Progress</h3>
+              <button className="text-slate-500 hover:text-white">
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 flex-1 py-1">
+              {progressItems.map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-2 rounded-xl hover:bg-white/[0.03] transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-slate-300">
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-white leading-tight">{item.title}</p>
+                        <p className="text-[10px] text-slate-500 mt-0.5">{item.hours}</p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono font-bold text-emerald-400">
+                      {item.reward}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Salary Financials Bar Chart Card */}
+          <div className="bg-[#121319] rounded-3xl p-5 border border-white/[0.07] shadow-xl">
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Salary</h4>
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <span className="text-sm font-bold text-white">Jan-Dec $45,989</span>
+                  <span className="text-[11px] font-semibold text-emerald-400">+12.00%</span>
+                </div>
+              </div>
+
+              {/* Time Filter Pills */}
+              <div className="flex items-center gap-1 bg-[#181922] p-1 rounded-full border border-white/10">
+                {['7D', '1D', '1M', '1Y', 'All'].map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setTimeFilter(t)}
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-colors ${
+                      timeFilter === t
+                        ? 'bg-white/10 text-white border border-white/20'
+                        : 'text-slate-500 hover:text-slate-300'
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom High Contrast Bar Chart with Active Highlight */}
+            <div className="h-36 pt-2">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={departmentDistribution} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <XAxis dataKey="code" tick={{ fontSize: 11 }} stroke="#94a3b8" />
-                  <YAxis tick={{ fontSize: 11 }} stroke="#94a3b8" />
+                <BarChart data={salaryData} margin={{ top: 15, right: 0, left: 0, bottom: 0 }}>
+                  <XAxis dataKey="month" tick={{ fontSize: 9, fill: '#64748b' }} axisLine={false} tickLine={false} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0f172a', borderRadius: '8px', border: 'none', color: '#fff', fontSize: '12px' }}
+                    cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-[#0f1015] border border-emerald-500/50 px-2.5 py-1 rounded-lg text-xs font-bold text-white shadow-xl">
+                            <span className="text-emerald-400 font-mono">${payload[0].value}</span>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
                   />
-                  <Bar dataKey="count" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                  <Bar
+                    dataKey="amount"
+                    radius={[4, 4, 0, 0]}
+                    shape={(props) => {
+                      const { x, y, width, height, payload } = props;
+                      const isHighlighted = payload.highlight;
+                      return (
+                        <g>
+                          <rect
+                            x={x}
+                            y={y}
+                            width={width}
+                            height={height}
+                            fill={isHighlighted ? '#10b981' : '#22232d'}
+                            rx={3}
+                            className="transition-all duration-300 hover:fill-emerald-400"
+                          />
+                          {isHighlighted && (
+                            <text
+                              x={x + width / 2}
+                              y={y - 5}
+                              fill="#10b981"
+                              textAnchor="middle"
+                              fontSize="8"
+                              fontWeight="bold"
+                            >
+                              Aug $2000
+                            </text>
+                          )}
+                        </g>
+                      );
+                    }}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
+        </div>
 
-          {/* Today Attendance Distribution */}
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center justify-between mb-2">
-              <div>
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  Today Attendance Status
-                </h3>
-                <p className="text-xs text-slate-400">Shift status distribution</p>
+
+        {/* ========================================================= */}
+        {/* COLUMN 3: WORKING FORMAT SUNBURST / RADIAL GAUGES */}
+        {/* ========================================================= */}
+        <div className="space-y-5 flex flex-col justify-between">
+          {/* Working Format Card */}
+          <div className="bg-[#121319] rounded-3xl p-5 border border-white/[0.07] shadow-xl h-full flex flex-col justify-between">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.05]">
+              <h3 className="text-sm font-bold text-white tracking-tight">Working format</h3>
+              <button className="text-slate-500 hover:text-white">
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Custom Multi-Ray Sunburst SVG Donut Gauge */}
+            <div className="relative py-4 flex flex-col items-center justify-center my-auto">
+              <svg viewBox="0 0 200 200" className="w-48 h-48 drop-shadow-xl animate-pulse-slow">
+                {/* 60 radiating rays */}
+                {[...Array(52)].map((_, i) => {
+                  const angle = (i * 360) / 52;
+                  const rad = (angle * Math.PI) / 180;
+                  const rInner = 55;
+                  const rOuter = 82;
+                  const x1 = 100 + rInner * Math.cos(rad);
+                  const y1 = 100 + rInner * Math.sin(rad);
+                  const x2 = 100 + rOuter * Math.cos(rad);
+                  const y2 = 100 + rOuter * Math.sin(rad);
+
+                  let strokeColor = '#3f4354';
+                  if (i < 30) strokeColor = '#10b981'; // Office 60%
+                  else if (i < 46) strokeColor = '#06b6d4'; // Remote 32%
+                  else strokeColor = '#f59e0b'; // Hybrid 8%
+
+                  return (
+                    <line
+                      key={i}
+                      x1={x1}
+                      y1={y1}
+                      x2={x2}
+                      y2={y2}
+                      stroke={strokeColor}
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                    />
+                  );
+                })}
+              </svg>
+
+              {/* Counter Badge at bottom-right of gauge */}
+              <div className="absolute bottom-1 right-3 text-right">
+                <p className="text-lg font-black text-white leading-none">456</p>
+                <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">Days</p>
               </div>
             </div>
-            <div className="h-60">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={attendanceSummary}
-                    cx="50%"
-                    cy="45%"
-                    innerRadius={45}
-                    outerRadius={70}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
-                    {attendanceSummary.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#0f172a', borderRadius: '8px', border: 'none', color: '#fff', fontSize: '12px' }}
-                  />
-                  <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                </PieChart>
-              </ResponsiveContainer>
+
+            {/* Breakdown Status Indicators with matching color pills */}
+            <div className="space-y-2.5 pt-3 border-t border-white/[0.05] text-xs">
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/[0.02]">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                  <span className="text-slate-300 font-medium">Hybrid</span>
+                </div>
+                <div className="flex items-center gap-4 text-slate-400 font-mono">
+                  <span>2/5</span>
+                  <span className="text-emerald-400 font-bold">08%</span>
+                  <span className="text-slate-600">&bull;&bull;&bull;</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/[0.02]">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
+                  <span className="text-slate-300 font-medium">Remote</span>
+                </div>
+                <div className="flex items-center gap-4 text-slate-400 font-mono">
+                  <span>3/4</span>
+                  <span className="text-cyan-400 font-bold">32%</span>
+                  <span className="text-slate-600">&bull;&bull;&bull;</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white/[0.02]">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+                  <span className="text-slate-300 font-medium">Office</span>
+                </div>
+                <div className="flex items-center gap-4 text-slate-400 font-mono">
+                  <span>3/4</span>
+                  <span className="text-amber-400 font-bold">60%</span>
+                  <span className="text-slate-600">&bull;&bull;&bull;</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Action Lists: Pending Leaves & Recent Candidates */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Leave Approvals */}
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <CalendarDays className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Leave Approvals</h3>
-              </div>
-              <Link to="/leaves" className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                View all
-              </Link>
-            </div>
 
-            <div className="space-y-2.5">
-              {recentLeaves.length === 0 ? (
-                <p className="text-xs text-slate-400 text-center py-6">No recent leave requests</p>
-              ) : (
-                recentLeaves.slice(0, 4).map((leave) => (
-                  <div
-                    key={leave._id}
-                    className="p-3 rounded-lg border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/30"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Avatar
-                        src={leave.employee?.profilePicture}
-                        name={`${leave.employee?.firstName || ''} ${leave.employee?.lastName || ''}`}
-                        size="sm"
-                      />
-                      <div>
-                        <h4 className="text-xs font-semibold text-slate-900 dark:text-slate-100">
-                          {leave.employee?.firstName} {leave.employee?.lastName}
-                        </h4>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                          {leave.leaveType} &bull; {leave.daysCount} day(s)
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                      {leave.status === 'Pending' ? (
-                        <>
-                          <Button
-                            variant="success"
-                            size="xs"
-                            icon={Check}
-                            onClick={() => handleLeaveDecision(leave._id, 'Approved')}
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            variant="danger"
-                            size="xs"
-                            icon={X}
-                            onClick={() => handleLeaveDecision(leave._id, 'Rejected')}
-                          >
-                            Reject
-                          </Button>
-                        </>
-                      ) : (
-                        <Badge variant={leave.status}>{leave.status}</Badge>
-                      )}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Recent Candidates */}
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Recent Job Applicants</h3>
-              </div>
-              <Link to="/recruitment" className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                View ATS
-              </Link>
-            </div>
-
-            <div className="space-y-2.5">
-              {recentApplications.length === 0 ? (
-                <p className="text-xs text-slate-400 text-center py-6">No applications received yet</p>
-              ) : (
-                recentApplications.slice(0, 4).map((app) => (
-                  <div
-                    key={app._id}
-                    className="p-3 rounded-lg border border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30"
-                  >
-                    <div>
-                      <h4 className="text-xs font-semibold text-slate-900 dark:text-slate-100">{app.applicantName}</h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{app.job?.title || 'Open Position'}</p>
-                    </div>
-                    <Badge variant={app.status}>{app.status}</Badge>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ================= EMPLOYEE DASHBOARD =================
-  if (employeeData) {
-    const { employee, todayAttendance, attendanceSummary, pendingLeaves, recentLeaves, recentPayslips } = employeeData;
-
-    return (
-      <div className="space-y-6">
-        {/* Employee Header Banner */}
-        <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Avatar
-              src={employee?.profilePicture || user?.avatar}
-              name={`${employee?.firstName || user?.name || ''}`}
-              size="lg"
-            />
+        {/* ========================================================= */}
+        {/* COLUMN 4: TASK TIMELINE, MILESTONES & PRO CARD */}
+        {/* ========================================================= */}
+        <div className="space-y-5 flex flex-col justify-between">
+          {/* Milestone Tasks & Timeline Card */}
+          <div className="bg-[#121319] rounded-3xl p-5 border border-white/[0.07] shadow-xl flex-1 flex flex-col justify-between space-y-4">
+            {/* Top Sparkline Finish Tasks */}
             <div>
-              <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-                {employee?.firstName || user?.name} {employee?.lastName || ''}
-              </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                {employee?.designation} &bull; {employee?.department?.name || 'General'}
-              </p>
-              <p className="text-[11px] font-mono text-slate-400 mt-0.5">
-                Employee ID: {employee?.empCustomId}
-              </p>
-            </div>
-          </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-bold text-white leading-none">16/30</h4>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Finish tasks</p>
+                </div>
+                <button className="text-slate-500 hover:text-white">
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+              </div>
 
-          <Link to="/leaves">
-            <Button variant="primary" size="sm" icon={CalendarDays}>
-              Apply for Leave
-            </Button>
-          </Link>
-        </div>
-
-        {/* Real Personal StatCards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            title="Shift Status"
-            value={
-              todayAttendance?.checkIn && todayAttendance?.checkOut
-                ? 'Completed'
-                : todayAttendance?.checkIn
-                ? 'Active'
-                : 'Not Started'
-            }
-            icon={Clock}
-            subtitle={todayAttendance?.checkIn ? `In: ${new Date(todayAttendance.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Shift starts 9:00 AM'}
-          />
-          <StatCard
-            title="Days Present"
-            value={`${attendanceSummary?.daysPresent || 0} Days`}
-            icon={CalendarCheck}
-            subtitle="Current billing cycle"
-          />
-          <StatCard
-            title="Logged Work Hours"
-            value={`${attendanceSummary?.totalHoursWorked || 0} hrs`}
-            icon={Clock}
-            subtitle="Recorded time"
-          />
-          <StatCard
-            title="Pending Requests"
-            value={pendingLeaves || 0}
-            icon={CalendarDays}
-            subtitle="Under HR review"
-          />
-        </div>
-
-        {/* Employee Lists: Leaves & Payslips */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">My Leave Applications</h3>
-              <Link to="/leaves" className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                View all
-              </Link>
+              {/* Sparkline chart */}
+              <div className="h-10 mt-1">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={sparklineData}>
+                    <Line
+                      type="monotone"
+                      dataKey="count"
+                      stroke="#94a3b8"
+                      strokeWidth={1.5}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </div>
 
-            <div className="space-y-2.5">
-              {recentLeaves.length === 0 ? (
-                <p className="text-xs text-slate-400 text-center py-6">No leave applications found</p>
-              ) : (
-                recentLeaves.map((leave) => (
-                  <div
-                    key={leave._id}
-                    className="p-3 rounded-lg border border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30"
-                  >
-                    <div>
-                      <h4 className="text-xs font-semibold text-slate-900 dark:text-slate-100">{leave.leaveType}</h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                        {new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()} ({leave.daysCount} days)
-                      </p>
-                    </div>
-                    <Badge variant={leave.status}>{leave.status}</Badge>
+            {/* Stage 3 Circular Progress Meter */}
+            <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.05] flex items-center gap-3">
+              <div className="relative flex items-center justify-center">
+                <svg className="w-12 h-12 -rotate-90">
+                  <circle cx="24" cy="24" r="18" stroke="#262734" strokeWidth="3" fill="none" />
+                  <circle
+                    cx="24"
+                    cy="24"
+                    r="18"
+                    stroke="#10b981"
+                    strokeWidth="3"
+                    fill="none"
+                    strokeDasharray={113}
+                    strokeDashoffset={113 - (113 * 23) / 100}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span className="absolute text-[11px] font-bold text-white">23%</span>
+              </div>
+              <div className="flex-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Stage 3</span>
+                <p className="text-xs font-semibold text-white leading-snug mt-0.5">
+                  Develop UI Components Based on Design System
+                </p>
+              </div>
+            </div>
+
+            {/* Milestone Step Checklist Timeline */}
+            <div className="space-y-3 pt-1">
+              {tasks.map((task) => (
+                <div
+                  key={task.id}
+                  onClick={() => toggleTask(task.id)}
+                  className="flex items-start justify-between gap-3 group cursor-pointer"
+                >
+                  <div className="flex items-start gap-2.5">
+                    {task.completed ? (
+                      <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/60 flex items-center justify-center text-emerald-400 mt-0.5">
+                        <Check className="w-3 h-3" />
+                      </div>
+                    ) : task.inProgress ? (
+                      <div className="w-5 h-5 rounded-full bg-white/5 border border-cyan-400/80 flex items-center justify-center text-cyan-300 text-[10px] font-bold mt-0.5">
+                        &bull;&bull;
+                      </div>
+                    ) : (
+                      <div className="w-5 h-5 rounded-full border border-slate-600 group-hover:border-slate-400 mt-0.5" />
+                    )}
+                    <span
+                      className={`text-xs leading-snug transition-colors ${
+                        task.completed
+                          ? 'text-slate-500 line-through'
+                          : 'text-slate-200 group-hover:text-white font-medium'
+                      }`}
+                    >
+                      {task.title}
+                    </span>
                   </div>
-                ))
-              )}
+                  <span className="text-[10px] font-mono text-slate-500 whitespace-nowrap mt-0.5">
+                    {task.time}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Recent Payslips</h3>
-              <Link to="/payroll" className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                View all
-              </Link>
+          {/* Drank / HR Pulse Premium Bento Card (Matching warm bronze box in image) */}
+          <div className="bg-gradient-to-r from-[#2c1e17] via-[#241711] to-[#1a110d] rounded-3xl p-5 border border-[#c29b7f]/30 shadow-2xl flex flex-col justify-between space-y-4">
+            <div className="flex items-start justify-between">
+              {/* Sunburst Iris Logo in Gold */}
+              <div className="w-9 h-9 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300">
+                <Sparkles className="w-4 h-4" />
+              </div>
+
+              {/* Action Pill */}
+              <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/60 hover:bg-black/80 border border-amber-500/40 text-amber-200 text-xs font-bold transition-transform hover:scale-105">
+                <span>&rarr;</span>
+                <span>$12.99/month</span>
+              </button>
             </div>
 
-            <div className="space-y-2.5">
-              {recentPayslips.length === 0 ? (
-                <p className="text-xs text-slate-400 text-center py-6">No payslip records yet</p>
-              ) : (
-                recentPayslips.map((pay) => (
-                  <div
-                    key={pay._id}
-                    className="p-3 rounded-lg border border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30"
-                  >
-                    <div>
-                      <h4 className="text-xs font-semibold text-slate-900 dark:text-slate-100">
-                        {pay.month} {pay.year}
-                      </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">Net Pay: ${pay.netSalary?.toLocaleString()}</p>
-                    </div>
-                    <Badge variant={pay.paymentStatus}>{pay.paymentStatus}</Badge>
-                  </div>
-                ))
-              )}
+            <div>
+              <h4 className="text-base font-bold text-white tracking-tight">Drank Premium</h4>
+              <p className="text-xs text-amber-200/60 mt-0.5">Automation, AI help &amp; more for pros</p>
             </div>
           </div>
         </div>
+
       </div>
-    );
-  }
-
-  return (
-    <div className="p-8 text-center text-slate-400">
-      <p>Unable to load dashboard records.</p>
     </div>
   );
 };

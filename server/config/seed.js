@@ -11,422 +11,497 @@ const Application = require('../models/Application');
 const Performance = require('../models/Performance');
 const Notification = require('../models/Notification');
 
-const seedData = async () => {
+// High-definition professional Indian portrait images (curated Unsplash URLs)
+const INDIAN_AVATARS = {
+  admin: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80', // Ayush Shukla / HR Lead
+  aarav: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=80', // Aarav Sharma - UX/UI Lead (matches image style)
+  priya: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=80', // Priya Patel - Frontend Architect
+  rohan: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80', // Rohan Verma - Cloud DevOps
+  ananya: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&auto=format&fit=crop&q=80', // Ananya Iyer - Product Manager
+  vikram: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80', // Vikram Malhotra - Backend Lead
+  neha: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=300&auto=format&fit=crop&q=80', // Neha Gupta - Talent & Culture
+  rajesh: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&auto=format&fit=crop&q=80', // Rajesh Kumar - VP Engineering
+  kavya: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80', // Kavya Reddy - AI Engineer
+  aditya: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&auto=format&fit=crop&q=80', // Aditya Singh - Growth Lead
+  sneha: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&auto=format&fit=crop&q=80', // Sneha Joshi - UX Designer
+};
+
+const seedData = async (forceReset = false) => {
   const userCount = await User.countDocuments();
-  if (userCount > 0) {
-    console.log('Database already contains records. Skipping initial seeding.');
+  if (userCount > 0 && !forceReset) {
+    console.log('Database already contains records. Pass forceReset=true to clear & re-seed.');
     return;
   }
 
-  console.log('🌱 Seeding initial HRMS sample data...');
+  console.log('🧹 Purging all old records from MongoDB database...');
+  await Promise.all([
+    User.deleteMany({}),
+    Employee.deleteMany({}),
+    Department.deleteMany({}),
+    Attendance.deleteMany({}),
+    Leave.deleteMany({}),
+    Payroll.deleteMany({}),
+    Job.deleteMany({}),
+    Application.deleteMany({}),
+    Performance.deleteMany({}),
+    Notification.deleteMany({}),
+  ]);
 
-  // 1. Create Departments
+  console.log('🌱 Seeding fresh Indian HRMS organizational data...');
+
+  // 1. Create Indian Departments
   const departmentsData = [
-    { name: 'Engineering', code: 'ENG', description: 'Software engineering, architecture, QA, and platform infrastructure', budget: 750000, location: 'Building A - Floor 3' },
-    { name: 'Human Resources', code: 'HR', description: 'People operations, talent acquisition, culture, and benefits', budget: 200000, location: 'Building B - Floor 1' },
-    { name: 'Product & Design', code: 'PRD', description: 'Product management, UX/UI research, and creative direction', budget: 350000, location: 'Building A - Floor 2' },
-    { name: 'Marketing & Growth', code: 'MKT', description: 'Brand strategy, social media, performance marketing, and PR', budget: 400000, location: 'Building B - Floor 2' },
-    { name: 'Finance & Legal', code: 'FIN', description: 'Accounting, financial planning, compliance, and auditing', budget: 300000, location: 'Building B - Floor 3' },
-    { name: 'Sales & Customer Success', code: 'SLS', description: 'Enterprise sales, account management, and client support', budget: 500000, location: 'Building A - Floor 1' },
+    { name: 'Product & Design', code: 'PRD', description: 'UX/UI research, design systems, design sprints, and user journey flows', budget: 450000, location: 'Cyber City, Gurugram - Floor 4' },
+    { name: 'Engineering & Technology', code: 'ENG', description: 'Full stack development, cloud infrastructure, AI services, and DevOps', budget: 950000, location: 'Bengaluru Tech Park - Floor 6' },
+    { name: 'Human Resources & People Ops', code: 'HR', description: 'Talent acquisition, organizational culture, benefits, and employee appraisals', budget: 250000, location: 'BKC, Mumbai - Floor 2' },
+    { name: 'Marketing & Brand Strategy', code: 'MKT', description: 'Digital growth, performance marketing, social media, and communications', budget: 350000, location: 'Hitech City, Hyderabad - Floor 3' },
+    { name: 'Finance & Compliance', code: 'FIN', description: 'Financial auditing, payroll disbursement, corporate taxation, and legal', budget: 300000, location: 'BKC, Mumbai - Floor 3' },
   ];
 
   const createdDepts = await Department.insertMany(departmentsData);
+  const prdDept = createdDepts.find(d => d.code === 'PRD');
   const engDept = createdDepts.find(d => d.code === 'ENG');
   const hrDept = createdDepts.find(d => d.code === 'HR');
-  const prdDept = createdDepts.find(d => d.code === 'PRD');
   const mktDept = createdDepts.find(d => d.code === 'MKT');
   const finDept = createdDepts.find(d => d.code === 'FIN');
 
-  // 2. Create Admin User
+  // 2. Create Admin / HR Lead User
   const adminUser = await User.create({
-    name: 'Eleanor Vance (HR Admin)',
+    name: 'Ayush Shukla (HR Lead)',
     email: 'admin@hrms.com',
     password: 'admin123',
     role: 'admin',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+    avatar: INDIAN_AVATARS.admin,
   });
 
-  // 3. Create Sample Employees
-  const employeesData = [
+  // 3. Create Indian Employees
+  const employeesToCreate = [
     {
-      empCustomId: 'EMP-0001',
-      firstName: 'Sarah',
-      lastName: 'Jenkins',
-      email: 'sarah.jenkins@hrms.com',
-      phone: '+1 (555) 234-5678',
-      department: engDept._id,
-      designation: 'Senior Full Stack Engineer',
-      joiningDate: new Date('2022-03-15'),
-      salary: 8500,
-      address: { street: '742 Evergreen Terrace', city: 'San Francisco', state: 'CA', zipCode: '94107', country: 'USA' },
-      profilePicture: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
-      employmentType: 'Full-Time',
-      status: 'Active',
-      gender: 'Female',
-      dateOfBirth: new Date('1994-06-12'),
-      bankDetails: { bankName: 'Chase Bank', accountNumber: '9876543210', ifscCode: 'CHASUS33', panNumber: 'PAN987654' },
-    },
-    {
-      empCustomId: 'EMP-0002',
-      firstName: 'Alex',
-      lastName: 'Rivera',
-      email: 'alex.rivera@hrms.com',
-      phone: '+1 (555) 345-6789',
+      empCustomId: 'EMP-1001',
+      firstName: 'Aarav',
+      lastName: 'Sharma',
+      email: 'aarav.sharma@hrms.com',
+      phone: '+91 98765 43210',
       department: prdDept._id,
-      designation: 'Lead Product Designer',
-      joiningDate: new Date('2021-09-01'),
-      salary: 7800,
-      address: { street: '1200 Market Street', city: 'San Francisco', state: 'CA', zipCode: '94102', country: 'USA' },
-      profilePicture: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+      designation: 'UX/UI Lead & Architect',
+      joiningDate: new Date('2023-04-10'),
+      salary: 110000,
+      address: { street: 'DLF Phase 5, Golf Course Road', city: 'Gurugram', state: 'Haryana', zipCode: '122002', country: 'India' },
+      profilePicture: INDIAN_AVATARS.aarav,
       employmentType: 'Full-Time',
       status: 'Active',
       gender: 'Male',
-      dateOfBirth: new Date('1991-11-20'),
-      bankDetails: { bankName: 'Bank of America', accountNumber: '8765432109', ifscCode: 'BOFAUS3N', panNumber: 'PAN876543' },
+      dateOfBirth: new Date('1994-08-15'),
+      bankDetails: { bankName: 'HDFC Bank', accountNumber: '50100234567890', ifscCode: 'HDFC0001234', panNumber: 'ABCPS1234A' },
     },
     {
-      empCustomId: 'EMP-0003',
-      firstName: 'Emily',
-      lastName: 'Chen',
-      email: 'emily.chen@hrms.com',
-      phone: '+1 (555) 456-7890',
-      department: engDept._id,
-      designation: 'Backend & Cloud Architect',
-      joiningDate: new Date('2023-01-10'),
-      salary: 9200,
-      address: { street: '450 Sutter St', city: 'San Francisco', state: 'CA', zipCode: '94108', country: 'USA' },
-      profilePicture: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-      employmentType: 'Full-Time',
-      status: 'Active',
-      gender: 'Female',
-      dateOfBirth: new Date('1993-04-18'),
-      bankDetails: { bankName: 'Wells Fargo', accountNumber: '7654321098', ifscCode: 'WFBIUS6S', panNumber: 'PAN765432' },
-    },
-    {
-      empCustomId: 'EMP-0004',
-      firstName: 'Marcus',
-      lastName: 'Vance',
-      email: 'marcus.vance@hrms.com',
-      phone: '+1 (555) 567-8901',
-      department: engDept._id,
-      designation: 'DevOps & Site Reliability Engineer',
-      joiningDate: new Date('2023-05-20'),
-      salary: 8000,
-      address: { street: '88 Colin P Kelly Jr St', city: 'San Francisco', state: 'CA', zipCode: '94107', country: 'USA' },
-      profilePicture: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-      employmentType: 'Full-Time',
-      status: 'Active',
-      gender: 'Male',
-      dateOfBirth: new Date('1990-08-14'),
-      bankDetails: { bankName: 'Citibank', accountNumber: '6543210987', ifscCode: 'CITIUS33', panNumber: 'PAN654321' },
-    },
-    {
-      empCustomId: 'EMP-0005',
+      empCustomId: 'EMP-1002',
       firstName: 'Priya',
       lastName: 'Patel',
       email: 'priya.patel@hrms.com',
-      phone: '+1 (555) 678-9012',
-      department: hrDept._id,
-      designation: 'Senior HR Specialist',
-      joiningDate: new Date('2022-11-01'),
-      salary: 6500,
-      address: { street: '300 Post St', city: 'San Francisco', state: 'CA', zipCode: '94108', country: 'USA' },
-      profilePicture: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80',
+      phone: '+91 98112 34567',
+      department: engDept._id,
+      designation: 'Principal Frontend Engineer',
+      joiningDate: new Date('2022-06-15'),
+      salary: 125000,
+      address: { street: 'Koramangala 4th Block', city: 'Bengaluru', state: 'Karnataka', zipCode: '560034', country: 'India' },
+      profilePicture: INDIAN_AVATARS.priya,
       employmentType: 'Full-Time',
       status: 'Active',
       gender: 'Female',
-      dateOfBirth: new Date('1995-02-28'),
-      bankDetails: { bankName: 'Silicon Valley Bank', accountNumber: '5432109876', ifscCode: 'SVBKUS6S', panNumber: 'PAN543210' },
+      dateOfBirth: new Date('1993-11-20'),
+      bankDetails: { bankName: 'ICICI Bank', accountNumber: '001105001234', ifscCode: 'ICIC0000011', panNumber: 'BPPPT5678B' },
     },
     {
-      empCustomId: 'EMP-0006',
-      firstName: 'David',
-      lastName: 'Kim',
-      email: 'david.kim@hrms.com',
-      phone: '+1 (555) 789-0123',
-      department: mktDept._id,
-      designation: 'Growth Marketing Manager',
-      joiningDate: new Date('2023-08-15'),
-      salary: 7200,
-      address: { street: '550 Howard St', city: 'San Francisco', state: 'CA', zipCode: '94105', country: 'USA' },
-      profilePicture: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80',
+      empCustomId: 'EMP-1003',
+      firstName: 'Rohan',
+      lastName: 'Verma',
+      email: 'rohan.verma@hrms.com',
+      phone: '+91 99887 76655',
+      department: engDept._id,
+      designation: 'Cloud & DevOps Architect',
+      joiningDate: new Date('2022-09-01'),
+      salary: 118000,
+      address: { street: 'Bandra West, Hill Road', city: 'Mumbai', state: 'Maharashtra', zipCode: '400050', country: 'India' },
+      profilePicture: INDIAN_AVATARS.rohan,
       employmentType: 'Full-Time',
       status: 'Active',
       gender: 'Male',
-      dateOfBirth: new Date('1992-12-05'),
-      bankDetails: { bankName: 'Chase Bank', accountNumber: '4321098765', ifscCode: 'CHASUS33', panNumber: 'PAN432109' },
-    }
-  ];
-
-  const createdEmployees = await Employee.insertMany(employeesData);
-
-  // Link Department Heads
-  await Department.findByIdAndUpdate(engDept._id, { headOfDepartment: createdEmployees[2]._id });
-  await Department.findByIdAndUpdate(hrDept._id, { headOfDepartment: createdEmployees[4]._id });
-  await Department.findByIdAndUpdate(prdDept._id, { headOfDepartment: createdEmployees[1]._id });
-
-  // 4. Create User Accounts for Employees
-  for (const emp of createdEmployees) {
-    const user = await User.create({
-      name: `${emp.firstName} ${emp.lastName}`,
-      email: emp.email,
-      password: 'employee123',
-      role: 'employee',
-      employeeId: emp._id,
-      avatar: emp.profilePicture,
-    });
-    emp.userAccount = user._id;
-    await emp.save();
-  }
-
-  // 5. Create Sample Attendance records for current month
-  const today = new Date();
-  const currentMonthStr = today.toISOString().split('T')[0];
-
-  for (let i = 0; i < 7; i++) {
-    const d = new Date();
-    d.setDate(today.getDate() - i);
-    const dateStr = d.toISOString().split('T')[0];
-
-    // Skip weekend
-    if (d.getDay() === 0 || d.getDay() === 6) continue;
-
-    for (let j = 0; j < createdEmployees.length; j++) {
-      const emp = createdEmployees[j];
-      const isLate = (i + j) % 5 === 0;
-      const checkInHour = isLate ? 9 : 8;
-      const checkInMin = isLate ? 45 : 55;
-
-      const checkInDate = new Date(d);
-      checkInDate.setHours(checkInHour, checkInMin, 0);
-
-      const checkOutDate = new Date(d);
-      checkOutDate.setHours(17, 30, 0);
-
-      await Attendance.create({
-        employee: emp._id,
-        date: dateStr,
-        checkIn: checkInDate,
-        checkOut: i === 0 && j === 0 ? null : checkOutDate, // Today Sarah is checked in, not yet checked out
-        status: isLate ? 'Late' : 'Present',
-        workHours: i === 0 && j === 0 ? 4.5 : 8.5,
-        location: j % 2 === 0 ? 'Office' : 'Remote',
-      });
-    }
-  }
-
-  // 6. Create Sample Leaves
-  await Leave.create([
-    {
-      employee: createdEmployees[0]._id, // Sarah
-      leaveType: 'Casual Leave',
-      startDate: new Date(Date.now() + 86400000 * 3),
-      endDate: new Date(Date.now() + 86400000 * 5),
-      daysCount: 3,
-      reason: 'Family wedding trip out of state',
-      status: 'Approved',
-      approvedBy: adminUser._id,
-      decisionDate: new Date(),
-      adminRemarks: 'Approved. Enjoy your time off!',
+      dateOfBirth: new Date('1991-03-12'),
+      bankDetails: { bankName: 'State Bank of India', accountNumber: '30456789012', ifscCode: 'SBIN0001234', panNumber: 'CRVVR9012C' },
     },
     {
-      employee: createdEmployees[1]._id, // Alex
-      leaveType: 'Sick Leave',
-      startDate: new Date(Date.now() + 86400000 * 1),
-      endDate: new Date(Date.now() + 86400000 * 2),
+      empCustomId: 'EMP-1004',
+      firstName: 'Ananya',
+      lastName: 'Iyer',
+      email: 'ananya.iyer@hrms.com',
+      phone: '+91 97654 32109',
+      department: prdDept._id,
+      designation: 'Senior Product Manager',
+      joiningDate: new Date('2023-01-15'),
+      salary: 105000,
+      address: { street: 'Indiranagar 100 Feet Road', city: 'Bengaluru', state: 'Karnataka', zipCode: '560038', country: 'India' },
+      profilePicture: INDIAN_AVATARS.ananya,
+      employmentType: 'Full-Time',
+      status: 'Active',
+      gender: 'Female',
+      dateOfBirth: new Date('1995-05-24'),
+      bankDetails: { bankName: 'Axis Bank', accountNumber: '915010012345678', ifscCode: 'UTIB0000123', panNumber: 'DAIIY3456D' },
+    },
+    {
+      empCustomId: 'EMP-1005',
+      firstName: 'Vikram',
+      lastName: 'Malhotra',
+      email: 'vikram.malhotra@hrms.com',
+      phone: '+91 98223 34455',
+      department: engDept._id,
+      designation: 'Staff Backend Engineer',
+      joiningDate: new Date('2021-11-10'),
+      salary: 120000,
+      address: { street: 'Jubilee Hills Road No. 36', city: 'Hyderabad', state: 'Telangana', zipCode: '500033', country: 'India' },
+      profilePicture: INDIAN_AVATARS.vikram,
+      employmentType: 'Full-Time',
+      status: 'Active',
+      gender: 'Male',
+      dateOfBirth: new Date('1990-12-05'),
+      bankDetails: { bankName: 'Kotak Mahindra Bank', accountNumber: '7812345678', ifscCode: 'KKBK0000123', panNumber: 'EVMML7890E' },
+    },
+    {
+      empCustomId: 'EMP-1006',
+      firstName: 'Neha',
+      lastName: 'Gupta',
+      email: 'neha.gupta@hrms.com',
+      phone: '+91 99112 23344',
+      department: hrDept._id,
+      designation: 'People Operations & Culture Lead',
+      joiningDate: new Date('2022-02-01'),
+      salary: 95000,
+      address: { street: 'Vasant Vihar', city: 'New Delhi', state: 'Delhi', zipCode: '110057', country: 'India' },
+      profilePicture: INDIAN_AVATARS.neha,
+      employmentType: 'Full-Time',
+      status: 'Active',
+      gender: 'Female',
+      dateOfBirth: new Date('1994-09-18'),
+      bankDetails: { bankName: 'HDFC Bank', accountNumber: '50100456789012', ifscCode: 'HDFC0000567', panNumber: 'FNGGP1234F' },
+    },
+    {
+      empCustomId: 'EMP-1007',
+      firstName: 'Rajesh',
+      lastName: 'Kumar',
+      email: 'rajesh.kumar@hrms.com',
+      phone: '+91 98450 12345',
+      department: engDept._id,
+      designation: 'VP of Engineering',
+      joiningDate: new Date('2020-07-01'),
+      salary: 180000,
+      address: { street: 'Whitefield Main Road', city: 'Bengaluru', state: 'Karnataka', zipCode: '560066', country: 'India' },
+      profilePicture: INDIAN_AVATARS.rajesh,
+      employmentType: 'Full-Time',
+      status: 'Active',
+      gender: 'Male',
+      dateOfBirth: new Date('1986-04-10'),
+      bankDetails: { bankName: 'HDFC Bank', accountNumber: '50100987654321', ifscCode: 'HDFC0000123', panNumber: 'GRKKM5678G' },
+    },
+    {
+      empCustomId: 'EMP-1008',
+      firstName: 'Kavya',
+      lastName: 'Reddy',
+      email: 'kavya.reddy@hrms.com',
+      phone: '+91 98334 45566',
+      department: engDept._id,
+      designation: 'Senior AI / Machine Learning Engineer',
+      joiningDate: new Date('2023-08-01'),
+      salary: 115000,
+      address: { street: 'Gachibowli Financial District', city: 'Hyderabad', state: 'Telangana', zipCode: '500032', country: 'India' },
+      profilePicture: INDIAN_AVATARS.kavya,
+      employmentType: 'Full-Time',
+      status: 'Active',
+      gender: 'Female',
+      dateOfBirth: new Date('1996-01-30'),
+      bankDetails: { bankName: 'ICICI Bank', accountNumber: '001106005678', ifscCode: 'ICIC0000011', panNumber: 'HKRRD9012H' },
+    },
+    {
+      empCustomId: 'EMP-1009',
+      firstName: 'Aditya',
+      lastName: 'Singh',
+      email: 'aditya.singh@hrms.com',
+      phone: '+91 99778 89900',
+      department: mktDept._id,
+      designation: 'Growth & Performance Marketing Lead',
+      joiningDate: new Date('2023-03-20'),
+      salary: 98000,
+      address: { street: 'Powai, Hiranandani Gardens', city: 'Mumbai', state: 'Maharashtra', zipCode: '400076', country: 'India' },
+      profilePicture: INDIAN_AVATARS.aditya,
+      employmentType: 'Full-Time',
+      status: 'Active',
+      gender: 'Male',
+      dateOfBirth: new Date('1992-07-14'),
+      bankDetails: { bankName: 'Axis Bank', accountNumber: '915010078901234', ifscCode: 'UTIB0000123', panNumber: 'IASNG3456I' },
+    },
+    {
+      empCustomId: 'EMP-1010',
+      firstName: 'Sneha',
+      lastName: 'Joshi',
+      email: 'sneha.joshi@hrms.com',
+      phone: '+91 98665 54433',
+      department: prdDept._id,
+      designation: 'Senior Product & Motion Designer',
+      joiningDate: new Date('2023-09-01'),
+      salary: 92000,
+      address: { street: 'Koregaon Park, Lane 7', city: 'Pune', state: 'Maharashtra', zipCode: '411001', country: 'India' },
+      profilePicture: INDIAN_AVATARS.sneha,
+      employmentType: 'Full-Time',
+      status: 'Active',
+      gender: 'Female',
+      dateOfBirth: new Date('1997-02-18'),
+      bankDetails: { bankName: 'Kotak Mahindra Bank', accountNumber: '7812349999', ifscCode: 'KKBK0000123', panNumber: 'JSJSH7890J' },
+    },
+  ];
+
+  const createdEmployees = [];
+  for (const empData of employeesToCreate) {
+    const employee = await Employee.create(empData);
+    createdEmployees.push(employee);
+
+    // Create user login account for employee
+    const userAcc = await User.create({
+      name: `${empData.firstName} ${empData.lastName}`,
+      email: empData.email,
+      password: 'employee123',
+      role: 'employee',
+      employeeId: employee._id,
+      avatar: empData.profilePicture,
+    });
+
+    employee.userAccount = userAcc._id;
+    await employee.save();
+  }
+
+  // Update Department Heads
+  await Department.findByIdAndUpdate(prdDept._id, { headOfDepartment: createdEmployees[0]._id });
+  await Department.findByIdAndUpdate(engDept._id, { headOfDepartment: createdEmployees[6]._id });
+  await Department.findByIdAndUpdate(hrDept._id, { headOfDepartment: createdEmployees[5]._id });
+  await Department.findByIdAndUpdate(mktDept._id, { headOfDepartment: createdEmployees[8]._id });
+  await Department.findByIdAndUpdate(finDept._id, { headOfDepartment: createdEmployees[1]._id });
+
+  // 4. Seed Attendance Records for Today
+  const todayDate = new Date().toISOString().split('T')[0];
+  const aarav = createdEmployees[0];
+  const priya = createdEmployees[1];
+  const rohan = createdEmployees[2];
+  const ananya = createdEmployees[3];
+  const vikram = createdEmployees[4];
+
+  await Attendance.create([
+    {
+      employee: aarav._id,
+      date: todayDate,
+      checkIn: new Date(new Date().setHours(9, 15, 0, 0)),
+      checkOut: null,
+      status: 'Present',
+      workHours: 7.5,
+      location: 'Hybrid / Gurugram Office',
+    },
+    {
+      employee: priya._id,
+      date: todayDate,
+      checkIn: new Date(new Date().setHours(9, 0, 0, 0)),
+      checkOut: new Date(new Date().setHours(17, 30, 0, 0)),
+      status: 'Present',
+      workHours: 8.5,
+      location: 'Bengaluru Tech Park',
+    },
+    {
+      employee: rohan._id,
+      date: todayDate,
+      checkIn: new Date(new Date().setHours(9, 45, 0, 0)),
+      checkOut: null,
+      status: 'Late',
+      workHours: 6.5,
+      location: 'Remote / Mumbai',
+    },
+    {
+      employee: ananya._id,
+      date: todayDate,
+      checkIn: new Date(new Date().setHours(9, 10, 0, 0)),
+      checkOut: null,
+      status: 'Present',
+      workHours: 7.0,
+      location: 'Bengaluru Tech Park',
+    },
+    {
+      employee: vikram._id,
+      date: todayDate,
+      checkIn: new Date(new Date().setHours(8, 55, 0, 0)),
+      checkOut: new Date(new Date().setHours(18, 0, 0, 0)),
+      status: 'Present',
+      workHours: 9.0,
+      location: 'Hyderabad Office',
+    },
+  ]);
+
+  // 5. Seed Leave Applications
+  await Leave.create([
+    {
+      employee: aarav._id,
+      leaveType: 'Casual Leave',
+      startDate: new Date('2026-10-05'),
+      endDate: new Date('2026-10-06'),
       daysCount: 2,
-      reason: 'Dental surgery and post-op recovery',
+      reason: 'Family festival celebration in Jaipur',
       status: 'Pending',
     },
     {
-      employee: createdEmployees[3]._id, // Marcus
+      employee: ananya._id,
+      leaveType: 'Sick Leave',
+      startDate: new Date('2026-09-20'),
+      endDate: new Date('2026-09-21'),
+      daysCount: 2,
+      reason: 'Viral fever recovery',
+      status: 'Approved',
+      approvedBy: adminUser._id,
+      adminRemarks: 'Approved by HR Lead. Get well soon.',
+    },
+    {
+      employee: rohan._id,
       leaveType: 'Earned Leave',
-      startDate: new Date(Date.now() + 86400000 * 10),
-      endDate: new Date(Date.now() + 86400000 * 15),
-      daysCount: 6,
-      reason: 'Annual European vacation',
+      startDate: new Date('2026-10-12'),
+      endDate: new Date('2026-10-16'),
+      daysCount: 5,
+      reason: 'Annual vacation trip to Ladakh',
       status: 'Pending',
     },
   ]);
 
-  // 7. Create Sample Payroll records
-  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September'];
-  const curMonthName = months[today.getMonth()] || 'September';
-  const curYear = today.getFullYear();
-
-  for (const emp of createdEmployees) {
-    const basic = emp.salary;
-    const hra = Math.round(basic * 0.20);
-    const conveyance = 200;
-    const medical = 150;
-    const special = 100;
-    const pf = Math.round(basic * 0.05);
-    const tax = Math.round(basic * 0.10);
-    const insurance = 120;
-
-    const allowances = { hra, da: 0, conveyance, medical, special };
-    const deductions = { providentFund: pf, tax, insurance, unpaidLeaveDeduction: 0 };
-    const grossSalary = basic + hra + conveyance + medical + special;
-    const totalDeductions = pf + tax + insurance;
-    const netSalary = grossSalary - totalDeductions;
-
-    await Payroll.create({
-      employee: emp._id,
-      month: curMonthName,
-      year: curYear,
-      basicSalary: basic,
-      allowances,
-      deductions,
-      bonus: emp.firstName === 'Sarah' ? 500 : 0,
-      grossSalary: grossSalary + (emp.firstName === 'Sarah' ? 500 : 0),
-      totalDeductions,
-      netSalary: netSalary + (emp.firstName === 'Sarah' ? 500 : 0),
-      payDate: new Date(),
+  // 6. Seed Payroll Records
+  await Payroll.create([
+    {
+      employee: aarav._id,
+      month: 'September',
+      year: 2026,
+      basicSalary: 88000,
+      allowances: { hra: 17600, conveyance: 2400, medical: 2000, special: 0 },
+      deductions: { providentFund: 4400, tax: 8800, insurance: 1500 },
+      bonus: 5000,
+      grossSalary: 115000,
+      totalDeductions: 14700,
+      netSalary: 100300,
       paymentStatus: 'Paid',
-      paymentMethod: 'Bank Transfer',
-      notes: 'Monthly salary disbursed on time',
-    });
-  }
+      paymentMethod: 'Direct Deposit',
+      paymentDate: new Date(),
+    },
+    {
+      employee: priya._id,
+      month: 'September',
+      year: 2026,
+      basicSalary: 100000,
+      allowances: { hra: 20000, conveyance: 2500, medical: 2500, special: 0 },
+      deductions: { providentFund: 5000, tax: 10000, insurance: 1500 },
+      bonus: 8000,
+      grossSalary: 133000,
+      totalDeductions: 16500,
+      netSalary: 116500,
+      paymentStatus: 'Paid',
+      paymentMethod: 'Direct Deposit',
+      paymentDate: new Date(),
+    },
+  ]);
 
-  // 8. Create Sample Job Postings & Applications
+  // 7. Seed Job Requisitions & Candidates
   const job1 = await Job.create({
-    title: 'Senior Frontend React Developer',
+    title: 'Senior React & Next.js Engineer',
     department: engDept._id,
-    location: 'Remote / San Francisco',
+    location: 'Bengaluru / Hybrid',
     employmentType: 'Full-Time',
     experience: '3-5 years',
-    salaryRange: { min: 110000, max: 145000, currency: 'USD' },
-    description: 'We are looking for an experienced React developer to build high-performance, elegant enterprise applications.',
-    requirements: ['3+ years in React.js, TypeScript, Tailwind', 'State management (Redux/Context/Zustand)', 'REST & GraphQL APIs', 'Clean modular architecture'],
-    responsibilities: ['Build modular React UI components', 'Optimize Web Vitals and load performance', 'Collaborate with Product & Design teams'],
+    salaryRange: { min: 90000, max: 140000, currency: 'USD' },
+    description: 'Lead high-performance design system implementations and scalable dashboard UI workflows.',
     openings: 2,
     status: 'Active',
-    postedBy: adminUser._id,
+    applicantCount: 3,
   });
 
   const job2 = await Job.create({
-    title: 'Product Growth Manager',
+    title: 'Lead Product Designer (Design Systems)',
     department: prdDept._id,
-    location: 'Hybrid - New York',
+    location: 'Gurugram / Remote',
     employmentType: 'Full-Time',
     experience: '4-7 years',
-    salaryRange: { min: 125000, max: 160000, currency: 'USD' },
-    description: 'Drive user onboarding, conversion funnels, and retention metrics across our core B2B platform.',
-    requirements: ['4+ years in product management or growth analytics', 'Deep understanding of SaaS metrics & retention loops', 'Experience with Mixpanel/Amplitude/A/B testing'],
-    responsibilities: ['Define conversion OKRs and experiment roadmaps', 'Run weekly growth sprints', 'Partner with sales and engineering'],
+    salaryRange: { min: 95000, max: 150000, currency: 'USD' },
+    description: 'Define micro-interactions, dark mode tokens, and design language for enterprise SaaS suites.',
     openings: 1,
     status: 'Active',
-    postedBy: adminUser._id,
+    applicantCount: 2,
   });
 
   await Application.create([
     {
       job: job1._id,
-      applicantName: 'Ethan Wright',
-      email: 'ethan.wright@gmail.com',
-      phone: '+1 (555) 991-8822',
+      applicantName: 'Devansh Verma',
+      email: 'devansh.v@gmail.com',
+      phone: '+91 98711 22334',
       experienceYears: 4,
-      coverLetter: 'I have 4 years of building React and Next.js applications in fast-paced SaaS startups.',
       status: 'Interview',
-      interviewDate: new Date(Date.now() + 86400000 * 2),
-      rating: 4.5,
-      notes: 'Strong technical screener, passed Take-home test with distinction.',
+      rating: 5,
+      notes: 'Exceptional portfolio, strong mastery of Framer Motion and TailwindCSS.',
     },
     {
       job: job1._id,
-      applicantName: 'Jessica Martinez',
-      email: 'jessica.m@outlook.com',
-      phone: '+1 (555) 882-7733',
-      experienceYears: 5,
-      coverLetter: 'Excited to apply for the Senior Frontend position. Expertise in micro-frontends and design systems.',
+      applicantName: 'Ishaan Trivedi',
+      email: 'ishaan.t@outlook.com',
+      phone: '+91 98122 33445',
+      experienceYears: 3,
       status: 'Screening',
-      rating: 4.0,
-      notes: 'Resume looks very solid. Scheduled for initial HR chat.',
+      rating: 4,
+      notes: 'Strong backend integration and Node.js REST API skills.',
     },
     {
       job: job2._id,
-      applicantName: 'Liam O’Connor',
-      email: 'liam.oc@gmail.com',
-      phone: '+1 (555) 773-6644',
-      experienceYears: 6,
-      coverLetter: 'Previous Growth Lead at FinTech scale-up where we doubled self-serve ARR in 14 months.',
+      applicantName: 'Meera Nambiar',
+      email: 'meera.nambiar@design.io',
+      phone: '+91 99455 66778',
+      experienceYears: 5,
       status: 'Offered',
-      rating: 5.0,
-      notes: 'Outstanding candidate. Offer letter sent on Friday.',
+      rating: 5,
+      notes: 'Top tier UI mockup quality and Bento box layout aesthetics.',
     },
   ]);
 
-  // 9. Create Sample Performance Appraisals
-  await Performance.create([
-    {
-      employee: createdEmployees[0]._id, // Sarah
-      reviewer: adminUser._id,
-      reviewPeriod: 'Q2 2026',
-      goals: [
-        { title: 'Revamp UI Component Library', description: 'Migrate legacy CSS to Tailwind and Shadcn-inspired tokens', weightage: 30, status: 'Completed', progressPercent: 100 },
-        { title: 'Core Web Vitals Optimization', description: 'Achieve LCP < 1.5s across all dashboard views', weightage: 30, status: 'Completed', progressPercent: 100 },
-        { title: 'Mentor Junior Engineers', description: 'Host bi-weekly code review workshops', weightage: 40, status: 'In Progress', progressPercent: 80 },
-      ],
-      rating: 4.8,
-      feedback: 'Sarah has shown stellar technical execution and leadership. Her UI re-architecture significantly improved front-end velocity across the entire engineering department.',
-      achievements: 'Shipped design system overhaul 2 weeks ahead of schedule with 0 critical bugs.',
-      areasOfImprovement: 'Continue expanding cross-functional mentorship.',
-      status: 'Submitted',
-    },
-    {
-      employee: createdEmployees[1]._id, // Alex
-      reviewer: adminUser._id,
-      reviewPeriod: 'Q2 2026',
-      goals: [
-        { title: 'Mobile Responsive Redesign', description: 'Design mobile views for HRMS portal', weightage: 50, status: 'Completed', progressPercent: 100 },
-        { title: 'Accessibility Compliance WCAG 2.1 AA', description: 'Audit and resolve contrast & keyboard navigation', weightage: 50, status: 'Completed', progressPercent: 95 },
-      ],
-      rating: 4.5,
-      feedback: 'Alex continues to produce world-class design prototypes that elevate user delight.',
-      achievements: 'User satisfaction scores jumped from 82% to 94% following new UX rollouts.',
-      areasOfImprovement: 'Document design tokens in Figma shared library.',
-      status: 'Submitted',
-    },
-  ]);
+  // 8. Seed Performance Appraisal
+  await Performance.create({
+    employee: aarav._id,
+    reviewer: adminUser._id,
+    reviewPeriod: 'Q2 2026',
+    rating: 5,
+    feedback: 'Aarav has transformed our enterprise interface with stunning minimalist aesthetics, Bento grids, and flawless micro-animations.',
+    achievements: 'Shipped dark mode theme engine, sunburst analytics visualizers, and interactive component libraries.',
+    areasOfImprovement: 'Expand design tokens to upcoming mobile React Native modules.',
+    goals: [
+      { title: 'Deliver Design System 2.0 Tokens', weightage: 50, progressPercent: 100 },
+      { title: 'Mentor Junior UX Researchers', weightage: 50, progressPercent: 95 },
+    ],
+    employeeComments: 'Grateful for the leadership support. Excited to roll out the new Bento dashboard experience.',
+  });
 
-  // 10. Sample Notifications
+  // 9. Seed Notifications
   await Notification.create([
     {
       recipient: adminUser._id,
-      title: 'Leave Request Received',
-      message: 'Alex Rivera submitted a 2-day Sick Leave request for review.',
+      title: 'New Leave Request from Aarav Sharma',
+      message: 'Aarav Sharma (EMP-1001) requested 2 day(s) Casual Leave from Oct 5 to Oct 6. Reason: "Family festival celebration in Jaipur"',
       type: 'leave',
       link: '/leaves',
-      isRead: false,
     },
     {
       recipient: adminUser._id,
-      title: 'New Job Candidate',
-      message: 'Ethan Wright applied for Senior Frontend React Developer position.',
-      type: 'recruitment',
-      link: '/recruitment',
-      isRead: false,
-    },
-    {
-      recipient: createdEmployees[0].userAccount,
-      title: 'Payslip Disbursed',
-      message: `Your payslip for ${curMonthName} ${curYear} is ready for download.`,
-      type: 'payroll',
-      link: '/payroll',
-      isRead: false,
+      title: 'Leave Request Pending Review',
+      message: 'Rohan Verma (EMP-1003) applied for 5 day(s) Earned Leave for upcoming vacation trip.',
+      type: 'leave',
+      link: '/leaves',
     },
   ]);
 
-  console.log('✅ HRMS Database seeded successfully!');
-  console.log('--------------------------------------------------');
-  console.log('🔑 Demo Admin Credentials:');
-  console.log('   Email:    admin@hrms.com');
-  console.log('   Password: admin123');
-  console.log('');
-  console.log('👤 Demo Employee Credentials:');
-  console.log('   Email:    sarah.jenkins@hrms.com');
-  console.log('   Password: employee123');
-  console.log('--------------------------------------------------');
+  console.log('✅ Successfully seeded fresh Indian HRMS database records!');
 };
 
 module.exports = seedData;

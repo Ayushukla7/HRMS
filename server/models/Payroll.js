@@ -7,7 +7,7 @@ const payrollSchema = new mongoose.Schema({
     required: true,
   },
   month: {
-    type: String, // e.g. "January" or "09"
+    type: String, // e.g. "January" or "September"
     required: true,
   },
   year: {
@@ -59,7 +59,7 @@ const payrollSchema = new mongoose.Schema({
   },
   paymentMethod: {
     type: String,
-    enum: ['Bank Transfer', 'Cheque', 'Cash'],
+    enum: ['Bank Transfer', 'Direct Deposit', 'Cheque', 'Cash', 'UPI / IMPS'],
     default: 'Bank Transfer',
   },
   transactionId: {

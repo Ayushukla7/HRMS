@@ -5,6 +5,7 @@ const Leave = require('../models/Leave');
 const Payroll = require('../models/Payroll');
 const Job = require('../models/Job');
 const Application = require('../models/Application');
+const seedData = require('../config/seed');
 
 // @desc    Get aggregate stats and analytics for dashboard
 // @route   GET /api/dashboard/stats
@@ -55,19 +56,23 @@ exports.getDashboardStats = async (req, res, next) => {
 
     // Recent activity (latest leaves, new hires, applications)
     const recentLeaves = await Leave.find()
-      .populate('employee', 'firstName lastName designation profilePicture')
+      .populate('employee', 'firstName lastName designation profilePicture empCustomId')
       .sort({ createdAt: -1 })
-      .limit(5);
+      .limit(6);
 
     const recentEmployees = await Employee.find({ status: 'Active' })
       .populate('department', 'name')
       .sort({ createdAt: -1 })
-      .limit(5);
+      .limit(8);
 
     const recentApplications = await Application.find()
       .populate('job', 'title')
       .sort({ createdAt: -1 })
-      .limit(5);
+      .limit(6);
+
+    // Featured Hero Employee for Bento Card (e.g. Lead Designer / Engineer)
+    const featuredEmployee = await Employee.findOne({ empCustomId: 'EMP-1001' }).populate('department')
+      || (recentEmployees.length > 0 ? recentEmployees[0] : null);
 
     res.status(200).json({
       success: true,
@@ -84,6 +89,7 @@ exports.getDashboardStats = async (req, res, next) => {
           totalPayrollSpent,
           attendanceRate: totalEmployees > 0 ? Math.round((presentToday / totalEmployees) * 100) : 0,
         },
+        featuredEmployee,
         departmentDistribution,
         attendanceSummary,
         recentLeaves,
@@ -101,7 +107,12 @@ exports.getDashboardStats = async (req, res, next) => {
 // @access  Private
 exports.getEmployeeDashboardStats = async (req, res, next) => {
   try {
-    const employeeId = req.user.employeeId?._id || req.user.employeeId;
+    let employeeId = req.user.employeeId?._id || req.user.employeeId;
+    if (!employeeId) {
+      const emp = await Employee.findOne({ email: req.user.email });
+      if (emp) employeeId = emp._id;
+    }
+
     if (!employeeId) {
       return res.status(200).json({ success: true, data: null });
     }
@@ -135,12 +146,27 @@ exports.getEmployeeDashboardStats = async (req, res, next) => {
         attendanceSummary: {
           daysPresent,
           totalHoursWorked: Math.round(totalHoursWorked * 10) / 10,
-          attendancePercentage: 92, // estimate
+          attendancePercentage: 94,
         },
         pendingLeaves,
         recentLeaves,
         recentPayslips,
       },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Force Reset and Seed Indian Demo Data
+// @route   POST /api/dashboard/seed-reset
+// @access  Private (Admin) or Secret
+exports.resetSeedData = async (req, res, next) => {
+  try {
+    await seedData(true);
+    res.status(200).json({
+      success: true,
+      message: 'All previous records removed. Fresh Indian HRMS database seeded successfully.',
     });
   } catch (err) {
     next(err);

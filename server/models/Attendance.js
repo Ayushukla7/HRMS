@@ -27,7 +27,6 @@ const attendanceSchema = new mongoose.Schema({
   },
   location: {
     type: String,
-    enum: ['Office', 'Remote', 'Client Site'],
     default: 'Office',
   },
   notes: {
