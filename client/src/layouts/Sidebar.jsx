@@ -10,12 +10,12 @@ import {
   CreditCard,
   Building2,
   LogOut,
-  Sparkles,
   BarChart3,
   ChevronRight,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Avatar from '../components/common/Avatar';
+import Logo from '../components/common/Logo';
 
 const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
   const { user, logout } = useAuth();
@@ -84,13 +84,11 @@ const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
           <Link
             to="/dashboard"
             onClick={closeMobileSidebar}
-            className="flex items-center gap-3"
+            className="flex items-center gap-3 group"
           >
-            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-black text-white shadow-xs">
-              <Sparkles className="w-5 h-5" />
-            </div>
+            <Logo size="sm" />
             <div>
-              <h2 className="text-base font-bold tracking-tight text-black font-sans">
+              <h2 className="text-base font-bold tracking-tight text-black font-sans group-hover:opacity-80 transition-opacity">
                 HR Pulse
               </h2>
               <p className="text-[10px] text-neutral-500 font-medium uppercase tracking-wider">

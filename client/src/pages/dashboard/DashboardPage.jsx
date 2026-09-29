@@ -23,6 +23,9 @@ import {
   X,
   ShieldCheck,
   Timer,
+  CheckCircle2,
+  AlertCircle,
+  Activity,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -47,13 +50,15 @@ const DashboardPage = () => {
 
   const [loading, setLoading] = useState(true);
   const [adminData, setAdminData] = useState(null);
+  const [allTodayAttendance, setAllTodayAttendance] = useState([]);
+  const [allEmployeesList, setAllEmployeesList] = useState([]);
 
   // Live Digital Clock (IST)
   const [currentTime, setCurrentTime] = useState(
     new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })
   );
 
-  // Attendance Punch state
+  // Attendance Punch state (for Staff Employees)
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [punchLoading, setPunchLoading] = useState(false);
 
@@ -82,10 +87,13 @@ const DashboardPage = () => {
 
   const fetchDashboardData = async () => {
     setLoading(true);
+    const today = new Date().toISOString().split('T')[0];
     try {
-      const [adminRes, todayAttRes] = await Promise.all([
+      const [adminRes, todayAttRes, allAttRes, empRes] = await Promise.all([
         dashboardApi.getAdminStats(),
         attendanceApi.getToday().catch(() => ({ data: { success: false } })),
+        attendanceApi.getAll({ date: today }).catch(() => ({ data: { success: false, data: [] } })),
+        employeeApi.getAll({ limit: 50 }).catch(() => ({ data: { success: false, data: [] } })),
       ]);
 
       if (adminRes.data.success) {
@@ -93,6 +101,12 @@ const DashboardPage = () => {
       }
       if (todayAttRes.data && todayAttRes.data.success) {
         setTodayAttendance(todayAttRes.data.data);
+      }
+      if (allAttRes.data && allAttRes.data.success) {
+        setAllTodayAttendance(allAttRes.data.data || []);
+      }
+      if (empRes.data && empRes.data.success) {
+        setAllEmployeesList(empRes.data.data || []);
       }
     } catch (err) {
       console.error('Failed to load dashboard metrics:', err);
@@ -105,7 +119,7 @@ const DashboardPage = () => {
     fetchDashboardData();
   }, [isAdmin]);
 
-  // Biometric Check In / Check Out Handler
+  // Biometric Check In / Check Out Handler (For Staff Employee)
   const handlePunchToggle = async () => {
     setPunchLoading(true);
     try {
@@ -126,6 +140,7 @@ const DashboardPage = () => {
         showToast('Shift already completed for today.', 'info');
       }
       fetchDashboardData();
+      if (fetchNotifications) fetchNotifications();
     } catch (err) {
       showToast(err.response?.data?.message || 'Attendance action failed', 'error');
     } finally {
@@ -188,23 +203,13 @@ const DashboardPage = () => {
 
   // Stats Calculations
   const stats = adminData?.stats || {};
-  const totalEmployees = stats.totalEmployees || 12;
-  const presentToday = stats.presentToday || 10;
+  const totalEmployees = stats.totalEmployees || (allEmployeesList.length > 0 ? allEmployeesList.length : 3);
+  const presentToday = stats.presentToday || allTodayAttendance.filter((a) => a.status === 'Present' || a.status === 'Late').length || 2;
   const onLeaveToday = stats.onLeaveToday || 1;
   const absentToday = stats.absentToday || 0;
   const pendingLeavesCount = stats.pendingLeaves || 0;
-  const totalPayroll = stats.totalPayrollSpent || 1250000;
-  const attendanceRate = stats.attendanceRate || (totalEmployees > 0 ? Math.round((presentToday / totalEmployees) * 100) : 92);
-
-  // Interactive Chart Data: Monthly Attendance Trends
-  const attendanceTrendData = [
-    { month: 'Apr', attendanceRate: 91 },
-    { month: 'May', attendanceRate: 93 },
-    { month: 'Jun', attendanceRate: 95 },
-    { month: 'Jul', attendanceRate: 94 },
-    { month: 'Aug', attendanceRate: 97 },
-    { month: 'Sep', attendanceRate: attendanceRate },
-  ];
+  const totalPayroll = stats.totalPayrollSpent || 353000;
+  const attendanceRate = stats.attendanceRate || (totalEmployees > 0 ? Math.round((presentToday / totalEmployees) * 100) : 100);
 
   // Pure Monochrome Colors for Charts
   const pieColors = ['#09090b', '#27272a', '#52525b', '#71717a', '#a1a1aa', '#d4d4d8'];
@@ -214,36 +219,35 @@ const DashboardPage = () => {
     adminData?.departmentDistribution && adminData.departmentDistribution.length > 0
       ? adminData.departmentDistribution.map((d, i) => ({
           name: d.name,
-          count: d.count || 2,
+          count: d.count || 1,
           color: pieColors[i % pieColors.length],
         }))
       : [
-          { name: 'Engineering', count: 5, color: pieColors[0] },
-          { name: 'Product & Design', count: 3, color: pieColors[1] },
-          { name: 'Human Resources', count: 2, color: pieColors[2] },
-          { name: 'Operations & QA', count: 2, color: pieColors[3] },
+          { name: 'Product & Design', count: 1, color: pieColors[0] },
+          { name: 'Engineering & Tech', count: 1, color: pieColors[1] },
+          { name: 'Human Resources', count: 1, color: pieColors[2] },
         ];
 
   // Interactive Chart Data: Monthly Payroll Velocity (₹ in Lakhs)
   const payrollTrendData = [
-    { month: 'Apr', amount: 8.5 },
-    { month: 'May', amount: 9.2 },
-    { month: 'Jun', amount: 9.8 },
-    { month: 'Jul', amount: 10.4 },
-    { month: 'Aug', amount: 11.2 },
-    { month: 'Sep', amount: Number(((totalPayroll) / 100000).toFixed(1)) || 12.5 },
+    { month: 'Apr', amount: 3.1 },
+    { month: 'May', amount: 3.2 },
+    { month: 'Jun', amount: 3.3 },
+    { month: 'Jul', amount: 3.4 },
+    { month: 'Aug', amount: 3.5 },
+    { month: 'Sep', amount: Number(((totalPayroll) / 100000).toFixed(1)) || 3.5 },
   ];
 
   const loggedInName = user?.name || 'Ayush Shukla';
   const loggedInAvatar = user?.avatar || user?.employee?.profilePicture || 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&auto=format&fit=crop&q=80';
-  const loggedInRole = user?.employee?.designation || (user?.role === 'admin' ? 'HR Administrator' : 'Staff Employee');
+  const loggedInRole = user?.employee?.designation || (user?.role === 'admin' ? 'HR Administrator & Founder' : 'Staff Employee');
 
   return (
     <div className="space-y-6 animate-fade-in pb-8">
       {/* ========================================================================= */}
-      {/* 1. TOP WELCOME CARD & QUICK ACTION BAR */}
+      {/* 1. TOP WELCOME CARD & ROLE-SPECIFIC ACTION BAR */}
       {/* ========================================================================= */}
-      <div className="bg-white border border-neutral-200 rounded-xl p-5 sm:p-6 shadow-xs">
+      <div className="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           {/* User Welcome Information */}
           <div className="flex items-center gap-4">
@@ -252,7 +256,7 @@ const DashboardPage = () => {
                 src={loggedInAvatar}
                 name={loggedInName}
                 size="lg"
-                className="ring-2 ring-neutral-200 rounded-xl"
+                className="ring-2 ring-neutral-200 rounded-2xl"
               />
               <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-black ring-2 ring-white" />
             </Link>
@@ -277,7 +281,7 @@ const DashboardPage = () => {
                 <span>{loggedInRole}</span>
                 <span>&bull;</span>
                 <span className="flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-neutral-400" /> Bengaluru R&D Hub
+                  <MapPin className="w-3.5 h-3.5 text-neutral-400" /> New Delhi HQ &bull; Bengaluru R&D
                 </span>
                 <span>&bull;</span>
                 <span className="font-semibold text-neutral-900">
@@ -289,23 +293,25 @@ const DashboardPage = () => {
 
           {/* Action Hub Buttons */}
           <div className="flex flex-wrap items-center gap-2.5">
-            {/* 1. Biometric Clock In / Clock Out */}
-            <Button
-              variant={!todayAttendance?.checkIn ? 'primary' : !todayAttendance?.checkOut ? 'primary' : 'secondary'}
-              size="sm"
-              icon={Timer}
-              onClick={handlePunchToggle}
-              loading={punchLoading}
-              disabled={todayAttendance?.checkIn && todayAttendance?.checkOut}
-            >
-              {!todayAttendance?.checkIn
-                ? 'Clock In'
-                : !todayAttendance?.checkOut
-                ? 'Clock Out'
-                : 'Shift Completed ✓'}
-            </Button>
+            {/* For Staff Employees ONLY: Biometric Clock In / Clock Out (Login / Logout Punch) */}
+            {!isAdmin && (
+              <Button
+                variant={!todayAttendance?.checkIn ? 'primary' : !todayAttendance?.checkOut ? 'primary' : 'secondary'}
+                size="sm"
+                icon={Timer}
+                onClick={handlePunchToggle}
+                loading={punchLoading}
+                disabled={todayAttendance?.checkIn && todayAttendance?.checkOut}
+              >
+                {!todayAttendance?.checkIn
+                  ? 'Punch Clock In (Login)'
+                  : !todayAttendance?.checkOut
+                  ? 'Punch Clock Out (Logout)'
+                  : 'Shift Completed ✓'}
+              </Button>
+            )}
 
-            {/* 2. Quick Apply Leave */}
+            {/* Quick Apply Leave */}
             <Button
               variant="outline"
               size="sm"
@@ -315,12 +321,18 @@ const DashboardPage = () => {
               Apply Leave
             </Button>
 
-            {/* 3. Admin Tools */}
+            {/* Admin Specific Action Tools */}
             {isAdmin && (
               <>
                 <Link to="/employees">
                   <Button variant="secondary" size="sm" icon={Plus}>
                     Add Employee
+                  </Button>
+                </Link>
+
+                <Link to="/attendance">
+                  <Button variant="secondary" size="sm" icon={Clock}>
+                    Attendance
                   </Button>
                 </Link>
 
@@ -336,172 +348,283 @@ const DashboardPage = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. TOP 4 CORE STAT CARDS */}
+      {/* 2. HR LIVE EMPLOYEE ATTENDANCE & PUNCH MONITOR (ADMIN VIEW) */}
+      {/* ========================================================================= */}
+      {isAdmin ? (
+        <div className="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-neutral-100">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center justify-center w-2 h-2 rounded-full bg-black animate-ping" />
+                <h3 className="text-base font-bold text-black">
+                  Live Employee Punch Status (Today's Shifts)
+                </h3>
+              </div>
+              <p className="text-xs text-neutral-500 mt-0.5">
+                Real-time tracking of employee check-ins, punch outs, and live work duration.
+              </p>
+            </div>
+            <Link
+              to="/attendance"
+              className="text-xs font-semibold text-black hover:underline inline-flex items-center gap-1"
+            >
+              <span>Full Attendance Records</span> &rarr;
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {allEmployeesList.length > 0 ? (
+              allEmployeesList.map((emp) => {
+                const att = allTodayAttendance.find(
+                  (a) => (a.employee?._id || a.employee) === emp._id
+                );
+
+                const isPunchedIn = !!att?.checkIn;
+                const isPunchedOut = !!att?.checkOut;
+                const status = att?.status || 'Not Marked';
+
+                return (
+                  <div
+                    key={emp._id}
+                    className="p-4 rounded-xl border border-neutral-200 bg-neutral-50 flex flex-col justify-between space-y-3"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2.5">
+                        <Avatar
+                          src={emp.profilePicture}
+                          name={`${emp.firstName} ${emp.lastName}`}
+                          size="md"
+                          className="ring-1 ring-neutral-300"
+                        />
+                        <div>
+                          <h4 className="text-xs font-bold text-black">
+                            {emp.firstName} {emp.lastName}
+                          </h4>
+                          <p className="text-[11px] text-neutral-500 font-mono">
+                            {emp.empCustomId} &bull; {emp.department?.code || 'PRD'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                          isPunchedIn && !isPunchedOut
+                            ? 'bg-black text-white border-black'
+                            : isPunchedOut
+                            ? 'bg-neutral-200 text-neutral-800 border-neutral-300'
+                            : 'bg-neutral-100 text-neutral-500 border-neutral-200'
+                        }`}
+                      >
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            isPunchedIn && !isPunchedOut
+                              ? 'bg-white animate-pulse'
+                              : isPunchedOut
+                              ? 'bg-neutral-700'
+                              : 'bg-neutral-400'
+                          }`}
+                        />
+                        {isPunchedIn && !isPunchedOut
+                          ? 'Clocked In'
+                          : isPunchedOut
+                          ? 'Shift Completed'
+                          : 'Not Punched'}
+                      </span>
+                    </div>
+
+                    <div className="pt-2 border-t border-neutral-200 grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <span className="text-[10px] uppercase font-semibold text-neutral-400 block">
+                          Punch In (Login)
+                        </span>
+                        <span className="font-mono font-bold text-neutral-900">
+                          {att?.checkIn
+                            ? new Date(att.checkIn).toLocaleTimeString('en-IN', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true,
+                              })
+                            : '--:--'}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] uppercase font-semibold text-neutral-400 block">
+                          Punch Out (Logout)
+                        </span>
+                        <span className="font-mono font-bold text-neutral-900">
+                          {att?.checkOut
+                            ? new Date(att.checkOut).toLocaleTimeString('en-IN', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true,
+                              })
+                            : isPunchedIn
+                            ? 'Shift Running...'
+                            : '--:--'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] text-neutral-500 pt-1">
+                      <span>Total Work Hours:</span>
+                      <span className="font-bold text-black font-mono">
+                        {att?.workHours ? `${att.workHours} hrs` : isPunchedIn ? 'Logging...' : '0 hrs'}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-xs text-neutral-400 py-4 col-span-3 text-center">Loading employee records...</p>
+            )}
+          </div>
+        </div>
+      ) : (
+        /* Staff Employee Personal Shift Terminal */
+        <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-neutral-100 border border-neutral-300 flex items-center justify-center text-neutral-900">
+              <Clock className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-neutral-900">
+                Your Shift Punch Status (Today)
+              </h3>
+              <p className="text-xs text-neutral-500">
+                {todayAttendance?.checkIn && todayAttendance?.checkOut
+                  ? `Shift Completed (${todayAttendance.workHours || 8} hrs logged)`
+                  : todayAttendance?.checkIn
+                  ? `Active Shift started at ${new Date(todayAttendance.checkIn).toLocaleTimeString('en-IN', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true,
+                    })}`
+                  : 'You have not punched in for today yet.'}
+              </p>
+            </div>
+          </div>
+
+          <Button
+            variant={!todayAttendance?.checkIn ? 'primary' : !todayAttendance?.checkOut ? 'primary' : 'secondary'}
+            size="sm"
+            icon={Timer}
+            onClick={handlePunchToggle}
+            loading={punchLoading}
+            disabled={todayAttendance?.checkIn && todayAttendance?.checkOut}
+          >
+            {!todayAttendance?.checkIn
+              ? 'Punch Clock In Now'
+              : !todayAttendance?.checkOut
+              ? 'Punch Clock Out'
+              : 'Shift Completed ✓'}
+          </Button>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 3. TOP 4 CORE STAT CARDS */}
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Total Employees */}
         <Link
           to="/employees"
-          className="bg-white border border-neutral-200 rounded-xl p-5 shadow-xs hover:border-black transition-colors"
+          className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-xs hover:border-black transition-colors"
         >
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
                 Total Employees
               </p>
-              <h3 className="text-2xl font-bold text-black mt-1">
+              <h3 className="text-2xl sm:text-3xl font-bold text-black mt-1 font-mono">
                 {totalEmployees}
               </h3>
+              <p className="text-xs text-neutral-500 mt-1 flex items-center gap-1">
+                <span>Active Indian Workforce</span>
+              </p>
             </div>
-            <div className="p-2.5 rounded-lg bg-neutral-100 text-black border border-neutral-200">
+            <div className="p-2.5 rounded-xl bg-neutral-100 text-black">
               <Users className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs text-neutral-500 mt-3 pt-3 border-t border-neutral-100 flex items-center justify-between">
-            <span>{adminData?.departmentDistribution?.length || 4} Departments</span>
-            <span className="text-black font-semibold">View all &rarr;</span>
-          </p>
         </Link>
 
-        {/* Card 2: Today's Attendance */}
+        {/* Card 2: Attendance Rate */}
         <Link
           to="/attendance"
-          className="bg-white border border-neutral-200 rounded-xl p-5 shadow-xs hover:border-black transition-colors"
+          className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-xs hover:border-black transition-colors"
         >
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                Today's Attendance
+                Attendance Today
               </p>
-              <h3 className="text-2xl font-bold text-black mt-1">
+              <h3 className="text-2xl sm:text-3xl font-bold text-black mt-1 font-mono">
                 {presentToday} / {totalEmployees}
               </h3>
+              <p className="text-xs text-neutral-500 mt-1 flex items-center gap-1">
+                <span className="font-semibold text-black">{attendanceRate}%</span>
+                <span>daily punctuality</span>
+              </p>
             </div>
-            <div className="p-2.5 rounded-lg bg-neutral-100 text-black border border-neutral-200">
+            <div className="p-2.5 rounded-xl bg-neutral-100 text-black">
               <UserCheck className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs text-neutral-500 mt-3 pt-3 border-t border-neutral-100 flex items-center justify-between">
-            <span>{attendanceRate}% Present today</span>
-            <span className="text-black font-semibold">Logs &rarr;</span>
-          </p>
         </Link>
 
         {/* Card 3: Pending Leaves */}
         <Link
           to="/leaves"
-          className="bg-white border border-neutral-200 rounded-xl p-5 shadow-xs hover:border-black transition-colors"
+          className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-xs hover:border-black transition-colors"
         >
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
-                Pending Leaves
+                Leave Approvals
               </p>
-              <h3 className="text-2xl font-bold text-black mt-1">
+              <h3 className="text-2xl sm:text-3xl font-bold text-black mt-1 font-mono">
                 {pendingLeavesCount}
               </h3>
+              <p className="text-xs text-neutral-500 mt-1">
+                <span>{onLeaveToday} on leave today</span>
+              </p>
             </div>
-            <div className="p-2.5 rounded-lg bg-neutral-100 text-black border border-neutral-200">
+            <div className="p-2.5 rounded-xl bg-neutral-100 text-black">
               <Calendar className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs text-neutral-500 mt-3 pt-3 border-t border-neutral-100 flex items-center justify-between">
-            <span>{pendingLeavesCount > 0 ? 'Requires action' : 'All cleared'}</span>
-            <span className="text-black font-semibold">Review &rarr;</span>
-          </p>
         </Link>
 
         {/* Card 4: Monthly Payroll */}
         <Link
           to="/payroll"
-          className="bg-white border border-neutral-200 rounded-xl p-5 shadow-xs hover:border-black transition-colors"
+          className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-xs hover:border-black transition-colors"
         >
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
                 Monthly Payroll
               </p>
-              <h3 className="text-2xl font-bold text-black mt-1">
-                ₹{((totalPayroll) / 100000).toFixed(2)}L
+              <h3 className="text-2xl sm:text-3xl font-bold text-black mt-1 font-mono">
+                ₹{(totalPayroll / 100000).toFixed(2)}L
               </h3>
+              <p className="text-xs text-neutral-500 mt-1">
+                <span>EPF, TDS & Tax calculated</span>
+              </p>
             </div>
-            <div className="p-2.5 rounded-lg bg-neutral-100 text-black border border-neutral-200">
+            <div className="p-2.5 rounded-xl bg-neutral-100 text-black">
               <IndianRupee className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs text-neutral-500 mt-3 pt-3 border-t border-neutral-100 flex items-center justify-between">
-            <span>EPF & TDS Deducted</span>
-            <span className="text-black font-semibold">Vouchers &rarr;</span>
-          </p>
         </Link>
       </div>
 
       {/* ========================================================================= */}
-      {/* 3. CHARTS SECTION */}
+      {/* 4. CHARTS: DEPARTMENT DISTRIBUTION & MONTHLY PAYROLL */}
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Attendance Trend Chart */}
-        <div className="lg:col-span-2 bg-white border border-neutral-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-base font-bold text-black">
-                  Monthly Attendance Trends
-                </h3>
-                <p className="text-xs text-neutral-500">
-                  Workforce punctuality rate (%) over the last 6 months
-                </p>
-              </div>
-              <span className="text-xs font-semibold text-black bg-neutral-100 px-2.5 py-1 rounded-full border border-neutral-300">
-                {attendanceRate}% Current Rate
-              </span>
-            </div>
-
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={attendanceTrendData}>
-                  <defs>
-                    <linearGradient id="attColor" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#000000" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="#000000" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" opacity={0.6} />
-                  <XAxis dataKey="month" stroke="#71717a" tick={{ fontSize: 12 }} />
-                  <YAxis stroke="#71717a" domain={[80, 100]} tick={{ fontSize: 12 }} tickFormatter={(v) => `${v}%`} />
-                  <Tooltip
-                    formatter={(val) => [`${val}%`, 'Attendance Rate']}
-                    contentStyle={{
-                      backgroundColor: '#000000',
-                      border: 'none',
-                      borderRadius: '8px',
-                      color: '#ffffff',
-                      fontSize: '12px',
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="attendanceRate"
-                    stroke="#000000"
-                    strokeWidth={2.5}
-                    fillOpacity={1}
-                    fill="url(#attColor)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-neutral-100 flex items-center justify-between text-xs text-neutral-500">
-            <span>Direct Biometric Machine Integration</span>
-            <Link to="/attendance" className="text-black font-semibold hover:underline">
-              View Attendance Logs &rarr;
-            </Link>
-          </div>
-        </div>
-
         {/* Department Breakdown Chart */}
-        <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
+        <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="mb-4">
               <h3 className="text-base font-bold text-black">
@@ -551,19 +674,66 @@ const DashboardPage = () => {
           </div>
 
           <div className="pt-3 border-t border-neutral-100 flex items-center justify-between text-xs text-neutral-500">
-            <span>{adminData?.departmentDistribution?.length || 4} Total Units</span>
+            <span>{deptBreakdown.length} Active Departments</span>
             <Link to="/departments" className="text-black font-semibold hover:underline">
               Manage Departments &rarr;
+            </Link>
+          </div>
+        </div>
+
+        {/* Monthly Payroll Bar Chart */}
+        <div className="lg:col-span-2 bg-white border border-neutral-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-base font-bold text-black">
+                  Monthly Payroll Velocity
+                </h3>
+                <p className="text-xs text-neutral-500">
+                  Disbursements in ₹ Lakhs (EPF, TDS Compliant)
+                </p>
+              </div>
+              <span className="text-xs font-bold text-black font-mono">
+                ₹{(totalPayroll / 100000).toFixed(2)}L /mo
+              </span>
+            </div>
+
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={payrollTrendData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" opacity={0.6} />
+                  <XAxis dataKey="month" stroke="#71717a" tick={{ fontSize: 11 }} />
+                  <YAxis stroke="#71717a" tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v}L`} />
+                  <Tooltip
+                    formatter={(val) => [`₹${val} Lakhs`, 'Disbursement']}
+                    contentStyle={{
+                      backgroundColor: '#000000',
+                      border: 'none',
+                      borderRadius: '8px',
+                      color: '#ffffff',
+                      fontSize: '12px',
+                    }}
+                  />
+                  <Bar dataKey="amount" fill="#000000" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="pt-3 border-t border-neutral-100 flex items-center justify-between text-xs text-neutral-500">
+            <span>100% Statutory Compliant</span>
+            <Link to="/payroll" className="text-black font-semibold hover:underline">
+              Generate Payroll Slips &rarr;
             </Link>
           </div>
         </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* 4. PENDING LEAVE APPROVALS QUEUE (DIRECT 1-CLICK ACTION) */}
+      {/* 5. PENDING LEAVE APPROVALS QUEUE (DIRECT 1-CLICK ACTION) */}
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="lg:col-span-2 bg-white border border-neutral-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-white border border-neutral-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-neutral-100 mb-4">
               <div>
@@ -591,7 +761,7 @@ const DashboardPage = () => {
                   return (
                     <div
                       key={leave._id}
-                      className="p-3.5 rounded-lg bg-neutral-50 border border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                      className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                     >
                       <div className="flex items-center gap-3">
                         <Avatar
@@ -672,170 +842,56 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* Monthly Payroll Bar Chart */}
-        <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-base font-bold text-black">
-                  Monthly Payroll
-                </h3>
-                <p className="text-xs text-neutral-500">
-                  Disbursements in ₹ Lakhs
-                </p>
-              </div>
-              <span className="text-xs font-bold text-black font-mono">
-                ₹12.5L /mo
-              </span>
-            </div>
-
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={payrollTrendData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" opacity={0.6} />
-                  <XAxis dataKey="month" stroke="#71717a" tick={{ fontSize: 11 }} />
-                  <YAxis stroke="#71717a" tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v}L`} />
-                  <Tooltip
-                    formatter={(val) => [`₹${val} Lakhs`, 'Disbursement']}
-                    contentStyle={{
-                      backgroundColor: '#000000',
-                      border: 'none',
-                      borderRadius: '8px',
-                      color: '#ffffff',
-                      fontSize: '12px',
-                    }}
-                  />
-                  <Bar dataKey="amount" fill="#000000" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-neutral-100 flex items-center justify-between text-xs text-neutral-500">
-            <span>EPF & TDS Compliant</span>
-            <Link to="/payroll" className="text-black font-semibold hover:underline">
-              Generate Payroll &rarr;
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* ========================================================================= */}
-      {/* 5. TEAM MEMBERS DIRECTORY & ATS PIPELINE */}
-      {/* ========================================================================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Active Personnel */}
-        <div className="lg:col-span-2 bg-white border border-neutral-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
+        {/* Active Personnel Summary */}
+        <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-neutral-100 mb-4">
               <div>
                 <h3 className="text-base font-bold text-black">
-                  Active Team Members
+                  Staff Directory
                 </h3>
                 <p className="text-xs text-neutral-500">
-                  Key personnel across Bengaluru, Gurugram, and Mumbai hubs
+                  {allEmployeesList.length} Active team members
                 </p>
               </div>
               <Link to="/employees" className="text-xs font-semibold text-black hover:underline">
-                View All ({totalEmployees}) &rarr;
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {adminData?.recentEmployees && adminData.recentEmployees.length > 0 ? (
-                adminData.recentEmployees.slice(0, 6).map((emp) => (
-                  <Link
-                    key={emp._id}
-                    to={`/employees/${emp._id}`}
-                    className="p-3 rounded-lg bg-neutral-50 border border-neutral-200 hover:border-black transition-colors flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Avatar
-                        src={emp.profilePicture}
-                        name={`${emp.firstName} ${emp.lastName}`}
-                        size="md"
-                      />
-                      <div>
-                        <h4 className="text-xs font-bold text-black">
-                          {emp.firstName} {emp.lastName}
-                        </h4>
-                        <p className="text-[11px] text-neutral-600 font-medium">
-                          {emp.designation}
-                        </p>
-                        <p className="text-[10px] text-neutral-400">{emp.department?.name || 'Technology'}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="font-mono text-xs font-bold text-black block">
-                        ₹{emp.salary ? (Number(emp.salary) / 1000).toFixed(0) : '85'}k
-                      </span>
-                      <span className="text-[10px] text-neutral-400">{emp.empCustomId}</span>
-                    </div>
-                  </Link>
-                ))
-              ) : (
-                <p className="text-xs text-neutral-400 py-4 text-center col-span-2">Loading employees...</p>
-              )}
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-neutral-100 mt-3 flex items-center justify-between text-xs text-neutral-500">
-            <span>Verified Personnel</span>
-            <Link to="/employees" className="text-black font-semibold hover:underline">
-              + Add New Staff
-            </Link>
-          </div>
-        </div>
-
-        {/* ATS Recruitment Summary */}
-        <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-neutral-100 mb-4">
-              <div>
-                <h3 className="text-base font-bold text-black">
-                  Recruitment Pipeline
-                </h3>
-                <p className="text-xs text-neutral-500">
-                  Open vacancies & applications
-                </p>
-              </div>
-              <Link to="/recruitment" className="text-xs font-semibold text-black hover:underline">
-                ATS Board &rarr;
+                View &rarr;
               </Link>
             </div>
 
             <div className="space-y-2.5">
-              <div className="p-3 rounded-lg bg-neutral-50 border border-neutral-200 flex items-center justify-between text-xs">
-                <span className="font-medium text-neutral-800">Open Job Positions</span>
-                <span className="font-bold text-black bg-neutral-200 px-2.5 py-0.5 rounded-full">
-                  {stats.activeJobs || 4} Active
-                </span>
-              </div>
-
-              <div className="p-3 rounded-lg bg-neutral-50 border border-neutral-200 flex items-center justify-between text-xs">
-                <span className="font-medium text-neutral-800">Candidate Applications</span>
-                <span className="font-bold text-black bg-neutral-200 px-2.5 py-0.5 rounded-full">
-                  {stats.totalApplicants || 18} Total
-                </span>
-              </div>
-
-              <div className="p-3 rounded-lg bg-neutral-50 border border-neutral-200 flex items-center justify-between text-xs">
-                <span className="font-medium text-neutral-800">Interviews Scheduled</span>
-                <span className="font-bold text-black bg-neutral-200 px-2.5 py-0.5 rounded-full">
-                  5 This Week
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-4 p-3 rounded-lg bg-neutral-50 border border-neutral-200 flex items-center gap-2 text-xs text-neutral-700">
-              <ShieldCheck className="w-4 h-4 text-black shrink-0" />
-              <span>100% EPFO, ESIC & TDS Statutory Compliant</span>
+              {allEmployeesList.slice(0, 3).map((emp) => (
+                <Link
+                  key={emp._id}
+                  to={`/employees/${emp._id}`}
+                  className="p-3 rounded-xl bg-neutral-50 border border-neutral-200 hover:border-black transition-colors flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Avatar
+                      src={emp.profilePicture}
+                      name={`${emp.firstName} ${emp.lastName}`}
+                      size="sm"
+                    />
+                    <div>
+                      <h4 className="text-xs font-bold text-black leading-tight">
+                        {emp.firstName} {emp.lastName}
+                      </h4>
+                      <p className="text-[10px] text-neutral-500">{emp.designation}</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-black">
+                    ₹{(Number(emp.salary || 100000) / 1000).toFixed(0)}k
+                  </span>
+                </Link>
+              ))}
             </div>
           </div>
 
           <div className="pt-3 border-t border-neutral-100 flex items-center justify-between text-xs text-neutral-500">
-            <span>Cloud Infrastructure</span>
-            <span className="text-black font-semibold">Online ✓</span>
+            <span>Verified Personnel</span>
+            <Link to="/employees" className="text-black font-semibold hover:underline">
+              Manage Staff &rarr;
+            </Link>
           </div>
         </div>
       </div>

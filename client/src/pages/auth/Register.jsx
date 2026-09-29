@@ -3,7 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
 import Button from '../../components/common/Button';
-import { User, Mail, Lock, Shield, Sparkles } from 'lucide-react';
+import Logo from '../../components/common/Logo';
+import { User, Mail, Lock, Shield } from 'lucide-react';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -39,8 +40,8 @@ const Register = () => {
     <div className="min-h-screen bg-neutral-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-neutral-900 font-sans">
       {/* Brand Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-black text-white mb-3 shadow-xs">
-          <Sparkles className="w-6 h-6" />
+        <div className="flex justify-center mb-3">
+          <Logo size="lg" />
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
           Create an Account

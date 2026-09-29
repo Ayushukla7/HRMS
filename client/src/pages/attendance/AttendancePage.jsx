@@ -17,7 +17,7 @@ import {
   UserCheck,
   AlertCircle,
   Timer,
-  Sparkles,
+  Activity,
 } from 'lucide-react';
 
 const AttendancePage = () => {
@@ -335,7 +335,9 @@ const AttendancePage = () => {
             <div className="flex items-center gap-3">
               <div
                 className={`w-3 h-3 rounded-full ${
-                  todayRecord?.checkIn && todayRecord?.checkOut
+                  isAdmin
+                    ? 'bg-neutral-900'
+                    : todayRecord?.checkIn && todayRecord?.checkOut
                     ? 'bg-neutral-900'
                     : todayRecord?.checkIn
                     ? 'bg-black animate-ping'
@@ -343,7 +345,9 @@ const AttendancePage = () => {
                 }`}
               />
               <span className="text-xs text-neutral-700">
-                {todayRecord?.checkIn && todayRecord?.checkOut
+                {isAdmin
+                  ? `HR Timekeeper Monitor: Tracking ${employees.length || 3} active team members`
+                  : todayRecord?.checkIn && todayRecord?.checkOut
                   ? `Today's Shift Logged: ${todayRecord.workHours || 8} Hours Completed`
                   : todayRecord?.checkIn
                   ? `Shift Active since ${new Date(todayRecord.checkIn).toLocaleTimeString('en-IN', {
@@ -356,7 +360,12 @@ const AttendancePage = () => {
             </div>
 
             <div>
-              {todayRecord?.checkIn && todayRecord?.checkOut ? (
+              {isAdmin ? (
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-100 border border-neutral-300 text-neutral-900 font-bold text-xs shadow-xs">
+                  <UserCheck className="w-4 h-4 text-black" />
+                  <span>HR Real-time Shift Monitor</span>
+                </div>
+              ) : todayRecord?.checkIn && todayRecord?.checkOut ? (
                 <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-neutral-100 border border-neutral-300 text-neutral-900 font-bold text-xs shadow-xs">
                   <CheckCircle2 className="w-4 h-4 text-black" />
                   <span>Shift Completed ({todayRecord.workHours || 8} hrs)</span>
@@ -391,7 +400,7 @@ const AttendancePage = () => {
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-bold text-neutral-900 uppercase tracking-wider">Attendance Insights</h3>
-              <Sparkles className="w-4 h-4 text-neutral-600" />
+              <Activity className="w-4 h-4 text-neutral-600" />
             </div>
 
             <div className="space-y-3">

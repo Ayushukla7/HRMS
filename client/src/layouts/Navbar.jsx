@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
 import Avatar from '../components/common/Avatar';
+import Logo from '../components/common/Logo';
 import {
   Search,
   Bell,
@@ -64,6 +65,11 @@ const Navbar = ({ toggleMobileSidebar }) => {
         >
           <Menu className="w-5 h-5" />
         </button>
+
+        <div className="lg:hidden flex items-center gap-2">
+          <Logo size="xs" />
+          <span className="font-bold text-sm text-black">HR Pulse</span>
+        </div>
 
         <div className="hidden sm:block">
           <div className="flex items-center gap-2 text-xs text-neutral-500">
