@@ -20,6 +20,7 @@ import {
   Calendar,
   CheckCircle2,
   XCircle,
+  Sparkles,
 } from 'lucide-react';
 
 const LeavePage = () => {
@@ -88,7 +89,7 @@ const LeavePage = () => {
         daysCount: days,
       });
 
-      showToast(res.data.message || 'Leave request submitted and sent to HR for approval', 'success');
+      showToast(res.data.message || 'Leave request submitted to HR for approval', 'success');
       setApplyModalOpen(false);
       setApplyForm({
         leaveType: 'Casual Leave',
@@ -108,22 +109,8 @@ const LeavePage = () => {
   const handleOpenReview = (leave, action) => {
     setSelectedLeave(leave);
     setActionType(action);
-    setAdminRemarks(action === 'Approved' ? 'Approved by HR.' : 'Cannot be approved at this time.');
+    setAdminRemarks(action === 'Approved' ? 'Approved by HR Lead.' : 'Cannot be approved at this time.');
     setApprovalModalOpen(true);
-  };
-
-  const handleQuickDecision = async (leaveId, status) => {
-    try {
-      await leaveApi.updateStatus(leaveId, {
-        status,
-        adminRemarks: status === 'Approved' ? 'Approved by HR' : 'Rejected by HR',
-      });
-      showToast(`Leave request ${status.toLowerCase()}`, 'success');
-      fetchData();
-      if (fetchNotifications) fetchNotifications();
-    } catch (err) {
-      showToast(err.response?.data?.message || 'Failed to update leave', 'error');
-    }
   };
 
   const handleReviewSubmit = async () => {
@@ -151,42 +138,42 @@ const LeavePage = () => {
     {
       header: 'Employee',
       render: (row) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3.5">
           <Avatar
             src={row.employee?.profilePicture}
             name={`${row.employee?.firstName || ''} ${row.employee?.lastName || ''}`}
-            size="sm"
+            size="md"
           />
           <div>
-            <span className="font-semibold text-slate-900 dark:text-slate-100">
+            <span className="font-bold text-white block text-sm">
               {row.employee?.firstName} {row.employee?.lastName}
             </span>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{row.employee?.empCustomId}</p>
+            <p className="text-[11px] text-slate-500 font-mono mt-0.5">{row.employee?.empCustomId}</p>
           </div>
         </div>
       ),
     },
     {
-      header: 'Leave Type',
-      render: (row) => <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs">{row.leaveType}</span>,
+      header: 'Leave Classification',
+      render: (row) => <span className="font-semibold text-slate-200 text-xs sm:text-sm">{row.leaveType}</span>,
     },
     {
-      header: 'Dates & Duration',
+      header: 'Period & Days',
       render: (row) => (
         <div className="text-xs space-y-0.5">
-          <p className="text-slate-700 dark:text-slate-300 font-medium">
+          <p className="text-slate-300 font-medium">
             {new Date(row.startDate).toLocaleDateString()} &ndash; {new Date(row.endDate).toLocaleDateString()}
           </p>
-          <span className="font-mono text-[11px] text-blue-600 dark:text-blue-400 font-semibold">
+          <span className="font-mono text-[11px] text-emerald-400 font-bold">
             {row.daysCount} Day(s)
           </span>
         </div>
       ),
     },
     {
-      header: 'Reason',
+      header: 'Reason / Purpose',
       render: (row) => (
-        <p className="text-xs text-slate-600 dark:text-slate-400 max-w-xs truncate" title={row.reason}>
+        <p className="text-xs text-slate-400 max-w-xs truncate" title={row.reason}>
           {row.reason}
         </p>
       ),
@@ -200,29 +187,27 @@ const LeavePage = () => {
       render: (row) => {
         if (isAdmin && row.status === 'Pending') {
           return (
-            <div className="flex items-center gap-1.5">
-              <Button
-                variant="success"
-                size="xs"
-                icon={Check}
+            <div className="flex items-center gap-2">
+              <button
                 onClick={() => handleOpenReview(row, 'Approved')}
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold transition-all"
               >
-                Approve
-              </Button>
-              <Button
-                variant="danger"
-                size="xs"
-                icon={X}
+                <Check className="w-3.5 h-3.5" />
+                <span>Approve</span>
+              </button>
+              <button
                 onClick={() => handleOpenReview(row, 'Rejected')}
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 text-xs font-bold transition-all"
               >
-                Reject
-              </Button>
+                <X className="w-3.5 h-3.5" />
+                <span>Reject</span>
+              </button>
             </div>
           );
         }
         return (
-          <span className="text-xs text-slate-500 dark:text-slate-400">
-            {row.adminRemarks || (row.status === 'Pending' ? 'Pending HR Review' : 'Processed')}
+          <span className="text-xs text-slate-400">
+            {row.adminRemarks || (row.status === 'Pending' ? 'Under HR Review' : 'Processed')}
           </span>
         );
       },
@@ -230,60 +215,61 @@ const LeavePage = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Leave Management</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+            Leave & Time-Off Desk
+          </h1>
+          <p className="text-xs text-slate-400 mt-1">
             Submit leave requests, review employee time-off applications, and monitor quota balances.
           </p>
         </div>
 
-        <Button
-          variant="primary"
-          icon={Plus}
-          size="sm"
+        <button
           onClick={() => setApplyModalOpen(true)}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold shadow-lg shadow-emerald-500/10 transition-all"
         >
-          Apply for Leave
-        </Button>
+          <Plus className="w-4 h-4 text-emerald-400" />
+          <span>Apply for Leave</span>
+        </button>
       </div>
 
-      {/* Quota Balances Grid */}
+      {/* Quota Balances Bento Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {balances.map((bal, idx) => {
           const percentUsed = Math.min(100, Math.round((bal.usedDays / bal.totalQuota) * 100));
           return (
             <div
               key={idx}
-              className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between"
+              className="bg-[#121319] rounded-3xl p-5 border border-white/[0.07] shadow-xl flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                     {bal.leaveType}
                   </span>
-                  <span className="text-[11px] font-mono text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                  <span className="text-[10px] font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
                     {bal.usedDays} Used
                   </span>
                 </div>
-                <div className="flex items-baseline gap-1.5 mt-2">
-                  <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{bal.remainingDays}</span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">/ {bal.totalQuota} days remaining</span>
+                <div className="flex items-baseline gap-2 mt-2.5">
+                  <span className="text-3xl font-black text-white tracking-tight">{bal.remainingDays}</span>
+                  <span className="text-xs text-slate-500">/ {bal.totalQuota} days left</span>
                 </div>
               </div>
 
               {/* Progress bar */}
-              <div className="mt-3">
-                <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+              <div className="mt-4">
+                <div className="w-full bg-[#181922] h-2 rounded-full overflow-hidden p-0.5 border border-white/5">
                   <div
-                    className={`h-full ${
+                    className={`h-full rounded-full transition-all duration-500 ${
                       percentUsed > 80
                         ? 'bg-rose-500'
                         : percentUsed > 50
-                        ? 'bg-amber-500'
-                        : 'bg-blue-600 dark:bg-blue-500'
+                        ? 'bg-amber-400'
+                        : 'bg-emerald-400'
                     }`}
                     style={{ width: `${percentUsed}%` }}
                   />
@@ -296,34 +282,34 @@ const LeavePage = () => {
 
       {/* HR Direct Approvals Panel (Shows when Admin has pending requests) */}
       {isAdmin && pendingLeavesList.length > 0 && (
-        <div className="bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-lg p-4 sm:p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-semibold text-xs uppercase tracking-wider">
-              <AlertCircle className="w-4 h-4" />
-              <span>Pending HR Approvals ({pendingLeavesList.length} Request{pendingLeavesList.length > 1 ? 's' : ''})</span>
+        <div className="bg-[#191512] border border-amber-500/30 rounded-3xl p-5 shadow-2xl space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-amber-300 font-bold text-xs uppercase tracking-wider">
+              <AlertCircle className="w-4 h-4 text-amber-400 animate-pulse" />
+              <span>Pending HR Approvals ({pendingLeavesList.length} Action{pendingLeavesList.length > 1 ? 's' : ''} Required)</span>
             </div>
-            <span className="text-[11px] text-amber-700 dark:text-amber-400 font-medium">Action required</span>
+            <span className="text-[11px] text-amber-400/80 font-medium">1-Click Fast Approvals</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {pendingLeavesList.map((req) => (
               <div
                 key={req._id}
-                className="bg-white dark:bg-slate-900 p-3.5 rounded-lg border border-amber-200/80 dark:border-amber-800/50 shadow-sm flex flex-col justify-between space-y-3"
+                className="bg-[#121319] p-4 rounded-2xl border border-amber-500/20 shadow-xl flex flex-col justify-between space-y-3"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-3">
                     <Avatar
                       src={req.employee?.profilePicture}
                       name={`${req.employee?.firstName || ''} ${req.employee?.lastName || ''}`}
-                      size="sm"
+                      size="md"
                     />
                     <div>
-                      <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                      <h4 className="text-sm font-bold text-white">
                         {req.employee?.firstName} {req.employee?.lastName}
                       </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                        {req.employee?.designation} &bull; <span className="font-mono">{req.employee?.empCustomId}</span>
+                      <p className="text-xs text-slate-400">
+                        {req.employee?.designation} &bull; <span className="font-mono text-slate-500">{req.employee?.empCustomId}</span>
                       </p>
                     </div>
                   </div>
@@ -331,32 +317,28 @@ const LeavePage = () => {
                   <Badge variant="pending">{req.leaveType}</Badge>
                 </div>
 
-                <div className="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded text-xs space-y-1">
-                  <p className="text-slate-700 dark:text-slate-300 font-medium">
+                <div className="bg-[#181922] p-3 rounded-xl text-xs space-y-1 border border-white/5">
+                  <p className="text-slate-200 font-semibold">
                     {new Date(req.startDate).toLocaleDateString()} &ndash; {new Date(req.endDate).toLocaleDateString()} ({req.daysCount} Day{req.daysCount > 1 ? 's' : ''})
                   </p>
-                  <p className="text-slate-600 dark:text-slate-400 italic text-[11px]">
+                  <p className="text-slate-400 italic text-[11px]">
                     &ldquo;{req.reason}&rdquo;
                   </p>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-1">
-                  <Button
-                    variant="danger"
-                    size="xs"
-                    icon={X}
+                <div className="flex items-center justify-end gap-2.5 pt-1">
+                  <button
                     onClick={() => handleOpenReview(req, 'Rejected')}
+                    className="px-3.5 py-1.5 rounded-full bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 text-xs font-bold transition-colors"
                   >
                     Reject
-                  </Button>
-                  <Button
-                    variant="success"
-                    size="xs"
-                    icon={Check}
+                  </button>
+                  <button
                     onClick={() => handleOpenReview(req, 'Approved')}
+                    className="px-4 py-1.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold transition-all shadow-md"
                   >
                     Approve Request
-                  </Button>
+                  </button>
                 </div>
               </div>
             ))}
@@ -364,16 +346,16 @@ const LeavePage = () => {
         </div>
       )}
 
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-1.5 border-b border-slate-200 dark:border-slate-800 pb-2">
+      {/* Filter Tabs Bento Pill */}
+      <div className="flex items-center gap-2 bg-[#121319] p-2 rounded-full border border-white/[0.07] w-fit">
         {['all', 'Pending', 'Approved', 'Rejected'].map((status) => (
           <button
             key={status}
             onClick={() => setStatusFilter(status)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-colors ${
+            className={`px-4 py-1.5 rounded-full text-xs font-bold capitalize transition-all ${
               statusFilter === status
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-md'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             {status === 'all' ? `All Requests (${leaves.length})` : `${status} (${leaves.filter(l => l.status === status).length})`}
@@ -381,13 +363,15 @@ const LeavePage = () => {
         ))}
       </div>
 
-      {/* Leave Table */}
-      <DataTable
-        columns={columns}
-        data={leaves}
-        loading={loading}
-        emptyMessage="No leave requests found"
-      />
+      {/* Leave Table Container */}
+      <div className="bg-[#121319] rounded-3xl border border-white/[0.07] shadow-xl overflow-hidden p-2">
+        <DataTable
+          columns={columns}
+          data={leaves}
+          loading={loading}
+          emptyMessage="No leave requests found"
+        />
+      </div>
 
       {/* Apply Leave Modal */}
       <Modal
@@ -398,13 +382,13 @@ const LeavePage = () => {
       >
         <form onSubmit={handleApplySubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
               Leave Classification
             </label>
             <select
               value={applyForm.leaveType}
               onChange={(e) => setApplyForm({ ...applyForm, leaveType: e.target.value })}
-              className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="block w-full rounded-xl border border-white/10 bg-[#181922] text-xs py-2.5 px-3 text-white focus:outline-none focus:border-emerald-500/50"
             >
               <option value="Casual Leave">Casual Leave</option>
               <option value="Sick Leave">Sick Leave</option>
@@ -433,20 +417,20 @@ const LeavePage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-              Reason for Request <span className="text-rose-500">*</span>
+            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+              Reason for Request <span className="text-rose-400">*</span>
             </label>
             <textarea
               rows={3}
               value={applyForm.reason}
               onChange={(e) => setApplyForm({ ...applyForm, reason: e.target.value })}
               required
-              className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs p-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              placeholder="State clear reason for absence (e.g. Medical recovery, Personal emergency, Family commitment)..."
+              className="block w-full rounded-xl border border-white/10 bg-[#181922] text-xs p-3 text-white focus:outline-none focus:border-emerald-500/50"
+              placeholder="State reason for absence (e.g. Family festival, medical recovery, personal emergency)..."
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/10">
             <Button variant="secondary" size="sm" onClick={() => setApplyModalOpen(false)}>
               Cancel
             </Button>
@@ -465,28 +449,28 @@ const LeavePage = () => {
         maxWidth="max-w-md"
       >
         <div className="space-y-4">
-          <p className="text-xs text-slate-600 dark:text-slate-300">
+          <p className="text-xs text-slate-300">
             Confirm decision for{' '}
-            <span className="font-bold text-slate-900 dark:text-slate-100">
+            <span className="font-bold text-white">
               {selectedLeave?.employee?.firstName} {selectedLeave?.employee?.lastName}
             </span>
             &rsquo;s {selectedLeave?.leaveType} ({selectedLeave?.daysCount} day{selectedLeave?.daysCount > 1 ? 's' : ''}):
           </p>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
               Administrative Remarks / Feedback
             </label>
             <textarea
               rows={3}
               value={adminRemarks}
               onChange={(e) => setAdminRemarks(e.target.value)}
-              className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs p-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              placeholder="Optional remarks that will be delivered directly to the employee..."
+              className="block w-full rounded-xl border border-white/10 bg-[#181922] text-xs p-3 text-white focus:outline-none focus:border-emerald-500/50"
+              placeholder="Optional remarks delivered directly to employee notification feed..."
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/10">
             <Button variant="secondary" size="sm" onClick={() => setApprovalModalOpen(false)}>
               Cancel
             </Button>

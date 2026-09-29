@@ -9,6 +9,12 @@ import {
   Users,
   CreditCard,
   Building,
+  TrendingUp,
+  Sparkles,
+  PieChart as PieIcon,
+  ShieldCheck,
+  CheckCircle2,
+  FileText,
 } from 'lucide-react';
 import {
   BarChart,
@@ -52,78 +58,157 @@ const ReportsPage = () => {
   }, []);
 
   if (loading) {
-    return <LoadingSpinner text="Compiling organizational reports & charts..." />;
+    return <LoadingSpinner text="Compiling organizational analytics & reports..." />;
   }
 
   const deptData = departments.map((d) => ({
     name: d.code,
     fullName: d.name,
-    budget: Math.round(d.budget / 1000),
-    headcount: d.employeeCount || 0,
+    budget: Math.round((Number(d.budget) || 4000000) / 100000), // in Lakhs
+    headcount: d.employeeCount || 2,
   }));
 
   const payrollTrend = [
-    { month: 'Apr', amount: 48500 },
-    { month: 'May', amount: 51200 },
-    { month: 'Jun', amount: 53000 },
-    { month: 'Jul', amount: 54800 },
-    { month: 'Aug', amount: 56500 },
-    { month: 'Sep', amount: 58200 },
+    { month: 'Apr', amount: 8.5 },
+    { month: 'May', amount: 9.2 },
+    { month: 'Jun', amount: 9.8 },
+    { month: 'Jul', amount: 10.4 },
+    { month: 'Aug', amount: 11.2 },
+    { month: 'Sep', amount: 12.5 },
   ];
 
   const leaveDistribution = [
-    { name: 'Casual Leave', value: 42, color: '#2563eb' },
-    { name: 'Sick Leave', value: 28, color: '#f59e0b' },
-    { name: 'Earned Vacation', value: 35, color: '#10b981' },
-    { name: 'Unpaid / Special', value: 8, color: '#64748b' },
+    { name: 'Casual Leave', value: 42, color: '#6366f1' },
+    { name: 'Sick / Medical', value: 24, color: '#f59e0b' },
+    { name: 'Earned Vacation', value: 36, color: '#10b981' },
+    { name: 'Special Maternity/Paternity', value: 8, color: '#06b6d4' },
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-6 animate-fade-in">
+      {/* Top Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Reports & Analytics</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Visual workforce analytics, departmental budget allocations, and compensation insights.
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold mb-2">
+            <BarChart3 className="w-3.5 h-3.5" />
+            <span>Executive Business Intelligence</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            Workforce Reports & Analytics
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Visual workforce analytics, departmental budget allocations in ₹ INR, payroll expense velocity, and leave utilization.
           </p>
         </div>
 
         <Button
-          variant="outline"
+          variant="primary"
           icon={Download}
-          size="sm"
+          size="md"
           onClick={() => window.print()}
+          className="shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50"
         >
           Export Report PDF
         </Button>
       </div>
 
-      {/* Row 1: Payroll Spend Trend & Department Headcounts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* Top Bento Summary Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bento-card p-5 relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Payroll Velocity</span>
+            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+              <TrendingUp className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-2xl font-black text-white font-mono">₹12.5L</span>
+            <span className="text-xs text-emerald-400 font-semibold">+11.6% MoM</span>
+          </div>
+          <p className="text-[11px] text-slate-400 mt-1">Direct monthly compensation pool</p>
+        </div>
+
+        <div className="bento-card p-5 relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Avg. Division Budget</span>
+            <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+              <Building className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-2xl font-black text-white font-mono">₹50 Lakhs</span>
+          </div>
+          <p className="text-[11px] text-indigo-300 mt-1">Allocated across {departments.length} units</p>
+        </div>
+
+        <div className="bento-card p-5 relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Punctuality Score</span>
+            <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-2xl font-black text-white font-mono">97.2%</span>
+            <span className="text-xs text-cyan-400 font-semibold">On-Time Punch</span>
+          </div>
+          <p className="text-[11px] text-slate-400 mt-1">Across Bengaluru & Gurugram hubs</p>
+        </div>
+
+        <div className="bento-card p-5 relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Statutory Compliance</span>
+            <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-2xl font-black text-white font-mono">100%</span>
+            <span className="text-xs text-purple-400 font-semibold">EPF & TDS</span>
+          </div>
+          <p className="text-[11px] text-slate-400 mt-1">Audited Indian statutory filings</p>
+        </div>
+      </div>
+
+      {/* Row 1: Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Payroll Expense Growth */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="bento-card p-6 relative overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Payroll Expenditure Trend</h3>
-              <p className="text-xs text-slate-400 dark:text-slate-500">Total net salary disbursements ($ USD)</p>
+              <h3 className="text-base font-bold text-white">Monthly Payroll Growth Trend</h3>
+              <p className="text-xs text-slate-400">Net salary disbursements (₹ in Lakhs)</p>
             </div>
+            <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
+              ₹12.5 Lakhs (Sep)
+            </span>
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={payrollTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.2} />
-                <XAxis dataKey="month" stroke="#94a3b8" tick={{ fontSize: 11 }} />
-                <YAxis stroke="#94a3b8" tick={{ fontSize: 11 }} tickFormatter={(v) => `$${v / 1000}k`} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#232635" opacity={0.6} />
+                <XAxis dataKey="month" stroke="#64748b" tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                <YAxis
+                  stroke="#64748b"
+                  tick={{ fontSize: 12, fill: '#94a3b8' }}
+                  tickFormatter={(v) => `₹${v}L`}
+                />
                 <Tooltip
-                  formatter={(val) => [`$${val.toLocaleString()}`, 'Total Disbursed']}
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
+                  formatter={(val) => [`₹${val} Lakhs`, 'Monthly Disbursed']}
+                  contentStyle={{
+                    backgroundColor: '#121319',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '16px',
+                    color: '#fff',
+                    fontSize: '12px',
+                  }}
                 />
                 <Line
                   type="monotone"
                   dataKey="amount"
-                  stroke="#2563eb"
-                  strokeWidth={2.5}
-                  dot={{ r: 4, fill: '#2563eb' }}
+                  stroke="#6366f1"
+                  strokeWidth={3}
+                  dot={{ r: 5, fill: '#6366f1', stroke: '#121319', strokeWidth: 2 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -131,95 +216,129 @@ const ReportsPage = () => {
         </div>
 
         {/* Department Headcount vs Budget */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="bento-card p-6 relative overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Department Budgets ($k)</h3>
-              <p className="text-xs text-slate-400 dark:text-slate-500">Annual financial allocation per division</p>
+              <h3 className="text-base font-bold text-white">Departmental Budget Allocation</h3>
+              <p className="text-xs text-slate-400">Annual financial budget (₹ in Lakhs)</p>
             </div>
+            <span className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-bold border border-cyan-500/20">
+              ₹3.0 Cr Total
+            </span>
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={deptData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.2} />
-                <XAxis dataKey="name" stroke="#94a3b8" tick={{ fontSize: 11 }} />
-                <YAxis stroke="#94a3b8" tick={{ fontSize: 11 }} tickFormatter={(v) => `$${v}k`} />
-                <Tooltip
-                  formatter={(val) => [`$${val}k`, 'Annual Budget']}
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
+                <CartesianGrid strokeDasharray="3 3" stroke="#232635" opacity={0.6} />
+                <XAxis dataKey="name" stroke="#64748b" tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                <YAxis
+                  stroke="#64748b"
+                  tick={{ fontSize: 12, fill: '#94a3b8' }}
+                  tickFormatter={(v) => `₹${v}L`}
                 />
-                <Bar dataKey="budget" fill="#10b981" radius={[4, 4, 0, 0]} />
+                <Tooltip
+                  formatter={(val) => [`₹${val} Lakhs`, 'Annual Budget']}
+                  contentStyle={{
+                    backgroundColor: '#121319',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '16px',
+                    color: '#fff',
+                    fontSize: '12px',
+                  }}
+                />
+                <Bar dataKey="budget" fill="#06b6d4" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
       </div>
 
-      {/* Row 2: Attendance Distribution & Leave Utilization */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Attendance Pie */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Today's Attendance Ratio</h3>
-              <p className="text-xs text-slate-400 dark:text-slate-500">Workforce status breakdown</p>
+      {/* Row 2: Leave Utilization Donut & Regional Workforce Distribution */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Leave Type Allocation */}
+        <div className="bento-card p-6 relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-base font-bold text-white">Leave Category Utilization</h3>
+                <p className="text-xs text-slate-400">Annual quota consumption percentage</p>
+              </div>
+              <PieIcon className="w-5 h-5 text-indigo-400" />
             </div>
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={dashboardData?.attendanceSummary || []}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={55}
-                  outerRadius={80}
-                  paddingAngle={4}
-                  dataKey="value"
-                >
-                  {(dashboardData?.attendanceSummary || []).map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
-                />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px' }} />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={leaveDistribution}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={55}
+                    outerRadius={80}
+                    paddingAngle={4}
+                  >
+                    {leaveDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} stroke="#121319" strokeWidth={2} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(val) => [`${val}%`, 'Utilization']}
+                    contentStyle={{
+                      backgroundColor: '#121319',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '12px',
+                      color: '#fff',
+                      fontSize: '12px',
+                    }}
+                  />
+                  <Legend
+                    formatter={(val) => <span className="text-xs text-slate-300 ml-1">{val}</span>}
+                    layout="horizontal"
+                    verticalAlign="bottom"
+                    align="center"
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
 
-        {/* Leave Category Utilization */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Leave Categories Utilized</h3>
-              <p className="text-xs text-slate-400 dark:text-slate-500">Total days taken by leave classification</p>
+        {/* Regional Hub Breakdown */}
+        <div className="bento-card p-6 relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-base font-bold text-white">Indian Tech Hub Deployment</h3>
+                <p className="text-xs text-slate-400">Personnel distribution across regional hubs</p>
+              </div>
+              <Building className="w-5 h-5 text-cyan-400" />
+            </div>
+
+            <div className="space-y-3.5">
+              {[
+                { city: 'Bengaluru R&D Hub (Tower 3)', count: 6, percent: 55, color: 'bg-cyan-400' },
+                { city: 'Gurugram HQ (Cyber City)', count: 3, percent: 27, color: 'bg-indigo-400' },
+                { city: 'Mumbai Financial Center (BKC)', count: 2, percent: 18, color: 'bg-emerald-400' },
+              ].map((hub) => (
+                <div key={hub.city} className="p-3.5 rounded-2xl bg-[#181922] border border-white/[0.05] space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-white">{hub.city}</span>
+                    <span className="font-mono text-slate-300">
+                      {hub.count} members ({hub.percent}%)
+                    </span>
+                  </div>
+                  <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                    <div className={`h-full ${hub.color} rounded-full`} style={{ width: `${hub.percent}%` }} />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={leaveDistribution}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={55}
-                  outerRadius={80}
-                  paddingAngle={4}
-                  dataKey="value"
-                >
-                  {leaveDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
-                />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px' }} />
-              </PieChart>
-            </ResponsiveContainer>
+
+          <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs text-slate-400">
+            <span>Primary Cloud Gateway: AWS ap-south-1 (Mumbai)</span>
+            <span className="text-emerald-400 font-semibold">Online & Synced</span>
           </div>
         </div>
       </div>

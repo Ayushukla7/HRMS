@@ -120,13 +120,10 @@ const DashboardPage = () => {
     return <LoadingSpinner text="Rendering Bento interface..." />;
   }
 
-  const featured = adminData?.featuredEmployee || {
-    firstName: 'Aarav',
-    lastName: 'Sharma',
-    designation: 'UX/UI Lead & Architect',
-    profilePicture: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=80',
-    empCustomId: 'EMP-1001',
-  };
+  // Dynamically resolve logged-in user profile details (shows the logged in person's photo & info!)
+  const loggedInName = user?.name || 'Ayush Shukla';
+  const loggedInAvatar = user?.avatar || user?.employee?.profilePicture || 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=80';
+  const loggedInRole = user?.employee?.designation || (user?.role === 'admin' ? 'HR Lead & Administrator' : 'Staff Lead');
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -134,10 +131,10 @@ const DashboardPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         
         {/* ========================================================= */}
-        {/* COLUMN 1: HERO INDIAN EMPLOYEE CARD & SKILLS BENTO BUBBLE */}
+        {/* COLUMN 1: HERO LOGGED-IN PROFILE CARD & SKILLS BENTO */}
         {/* ========================================================= */}
         <div className="space-y-5 flex flex-col justify-between">
-          {/* Featured Profile Card */}
+          {/* Featured Profile Card - Always shows the currently logged in user! */}
           <div className="bg-[#121319] rounded-3xl p-5 border border-white/[0.07] shadow-2xl relative overflow-hidden group">
             {/* Top Status Badges */}
             <div className="flex items-center justify-between z-10 relative mb-4">
@@ -150,28 +147,28 @@ const DashboardPage = () => {
               </span>
             </div>
 
-            {/* Profile Image with subtle vignette */}
+            {/* Profile Image with smooth vignette - Dynamic logged in photo! */}
             <div className="relative rounded-2xl overflow-hidden mb-4 bg-gradient-to-b from-transparent to-[#121319]">
               <img
-                src={featured.profilePicture}
-                alt={`${featured.firstName} ${featured.lastName}`}
+                src={loggedInAvatar}
+                alt={loggedInName}
                 className="w-full h-56 object-cover object-top rounded-2xl group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#121319] via-transparent to-transparent opacity-80" />
             </div>
 
-            {/* Name & Title with Arrow Link */}
+            {/* Name & Title with Profile Link */}
             <div className="flex items-center justify-between pt-1">
               <div>
                 <h3 className="text-lg font-bold text-white tracking-tight">
-                  {featured.firstName} {featured.lastName}
+                  {loggedInName}
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">{featured.designation}</p>
+                <p className="text-xs text-slate-400 mt-0.5">{loggedInRole}</p>
               </div>
               <Link
-                to="/employees"
+                to="/profile"
                 className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white transition-colors"
-                title="View Full Profile"
+                title="Manage My Profile"
               >
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
@@ -360,7 +357,7 @@ const DashboardPage = () => {
             {/* Custom Multi-Ray Sunburst SVG Donut Gauge */}
             <div className="relative py-4 flex flex-col items-center justify-center my-auto">
               <svg viewBox="0 0 200 200" className="w-48 h-48 drop-shadow-xl animate-pulse-slow">
-                {/* 60 radiating rays */}
+                {/* 52 radiating rays */}
                 {[...Array(52)].map((_, i) => {
                   const angle = (i * 360) / 52;
                   const rad = (angle * Math.PI) / 180;

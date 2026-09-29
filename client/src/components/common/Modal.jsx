@@ -21,7 +21,7 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
       <div className="min-h-screen px-4 text-center">
         {/* Backdrop */}
         <div
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 bg-[#090a0f]/80 backdrop-blur-md transition-opacity"
           onClick={onClose}
         />
 
@@ -29,21 +29,21 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
 
         {/* Modal Panel */}
         <div
-          className={`inline-block w-full ${maxWidth} p-6 my-8 text-left align-middle bg-white dark:bg-slate-900 rounded-xl shadow-xl transform transition-all relative border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100`}
+          className={`inline-block w-full ${maxWidth} p-6 my-8 text-left align-middle bg-[#121319] rounded-3xl shadow-2xl transform transition-all relative border border-white/[0.09] text-slate-100 backdrop-blur-xl`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-100 dark:border-slate-800">
-            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
+          <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-white/[0.08]">
+            <h3 className="text-base font-bold text-white font-sans">{title}</h3>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-white/[0.06] transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Body */}
-          <div className="max-h-[75vh] overflow-y-auto pr-1">{children}</div>
+          <div className="max-h-[75vh] overflow-y-auto pr-1 text-slate-200">{children}</div>
         </div>
       </div>
     </div>

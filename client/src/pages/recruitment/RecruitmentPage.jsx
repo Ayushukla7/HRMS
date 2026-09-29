@@ -13,11 +13,17 @@ import {
   Plus,
   MapPin,
   Clock,
-  DollarSign,
+  IndianRupee,
   Users,
   ChevronRight,
   Star,
   Calendar,
+  Sparkles,
+  Layers,
+  Filter,
+  CheckCircle2,
+  Mail,
+  Phone,
 } from 'lucide-react';
 
 const RecruitmentPage = () => {
@@ -36,13 +42,13 @@ const RecruitmentPage = () => {
   const [jobForm, setJobForm] = useState({
     title: '',
     department: '',
-    location: 'Remote / Hybrid',
+    location: 'Bengaluru R&D Hub / Hybrid',
     employmentType: 'Full-Time',
-    experience: '2-4 years',
-    salaryMin: 90000,
-    salaryMax: 130000,
+    experience: '3-6 years',
+    salaryMin: 1800000,
+    salaryMax: 3200000,
     description: '',
-    openings: 1,
+    openings: 2,
     status: 'Active',
   });
 
@@ -53,11 +59,11 @@ const RecruitmentPage = () => {
     applicantName: '',
     email: '',
     phone: '',
-    experienceYears: 3,
+    experienceYears: 4,
     coverLetter: '',
     status: 'Applied',
-    rating: 4,
-    notes: '',
+    rating: 5,
+    notes: 'Top tier Indian tech talent with deep full-stack architecture background',
   });
 
   const stages = ['Applied', 'Screening', 'Interview', 'Offered', 'Hired', 'Rejected'];
@@ -96,9 +102,9 @@ const RecruitmentPage = () => {
     try {
       await jobApi.create({
         ...jobForm,
-        salaryRange: { min: Number(jobForm.salaryMin), max: Number(jobForm.salaryMax), currency: 'USD' },
+        salaryRange: { min: Number(jobForm.salaryMin), max: Number(jobForm.salaryMax), currency: 'INR' },
       });
-      showToast('Job posting published successfully', 'success');
+      showToast('Job requisition published successfully', 'success');
       setJobModalOpen(false);
       fetchData();
     } catch (err) {
@@ -113,7 +119,7 @@ const RecruitmentPage = () => {
     setCandidateSubmitting(true);
     try {
       await applicationApi.create(candidateForm);
-      showToast('Candidate added to applicant tracking pipeline', 'success');
+      showToast('Candidate enrolled into ATS recruitment pipeline', 'success');
       setCandidateModalOpen(false);
       fetchData();
     } catch (err) {
@@ -134,136 +140,170 @@ const RecruitmentPage = () => {
   };
 
   if (loading) {
-    return <LoadingSpinner text="Loading recruitment ATS pipeline..." />;
+    return <LoadingSpinner text="Loading ATS recruitment pipeline..." />;
   }
 
+  const stageBadgeColor = (stage) => {
+    switch (stage) {
+      case 'Applied':
+        return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+      case 'Screening':
+        return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+      case 'Interview':
+        return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
+      case 'Offered':
+        return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+      case 'Hired':
+        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+      case 'Rejected':
+        return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+      default:
+        return 'bg-slate-500/10 text-slate-400 border-slate-500/20';
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Recruitment & ATS</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Post job requisitions, track candidate stages across Kanban pipelines, and streamline hiring.
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold mb-2">
+            <Briefcase className="w-3.5 h-3.5" />
+            <span>Applicant Tracking & Talent Acquisition</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            Recruitment & Hiring Pipeline
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Requisition postings, Indian tech candidate stages, Kanban candidate pipeline, and hiring conversion meters.
           </p>
         </div>
 
         {isAdmin && (
           <div className="flex items-center gap-2.5">
             <Button
-              variant="outline"
+              variant="secondary"
               icon={UserPlus}
-              size="sm"
+              size="md"
               onClick={() => {
-                if (jobs.length > 0) {
+                if (jobs.length > 0 && !candidateForm.job) {
                   setCandidateForm((prev) => ({ ...prev, job: jobs[0]._id }));
                 }
                 setCandidateModalOpen(true);
               }}
+              className="bg-[#181922] border-white/[0.08] text-slate-200 hover:bg-slate-800"
             >
               Add Candidate
             </Button>
             <Button
               variant="primary"
               icon={Plus}
-              size="sm"
+              size="md"
               onClick={() => setJobModalOpen(true)}
+              className="shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50"
             >
-              Post New Job
+              Post Job Opening
             </Button>
           </div>
         )}
       </div>
 
-      {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+      {/* Tabs Switcher */}
+      <div className="flex items-center gap-2 border-b border-white/[0.08] pb-3">
         <button
           onClick={() => setActiveTab('pipeline')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
             activeTab === 'pipeline'
-              ? 'bg-blue-600 text-white shadow-sm'
-              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm shadow-cyan-500/20'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
           }`}
         >
-          Candidate Pipeline Kanban ({applications.length})
+          <Layers className="w-4 h-4" />
+          <span>ATS Kanban Pipeline ({applications.length})</span>
         </button>
         <button
           onClick={() => setActiveTab('jobs')}
-          className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
             activeTab === 'jobs'
-              ? 'bg-blue-600 text-white shadow-sm'
-              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm shadow-cyan-500/20'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
           }`}
         >
-          Job Postings ({jobs.length})
+          <Briefcase className="w-4 h-4" />
+          <span>Active Job Requisitions ({jobs.length})</span>
         </button>
       </div>
 
-      {/* TAB 1: KANBAN PIPELINE */}
+      {/* Tab 1: ATS Kanban Board */}
       {activeTab === 'pipeline' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3.5 overflow-x-auto pb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 overflow-x-auto pb-4">
           {stages.map((stage) => {
-            const stageApplicants = applications.filter((a) => a.status === stage);
-
+            const stageApps = applications.filter((a) => a.status === stage);
             return (
               <div
                 key={stage}
-                className="bg-slate-100/80 dark:bg-slate-900/60 p-3 rounded-lg border border-slate-200 dark:border-slate-800 flex flex-col min-w-[220px]"
+                className="bg-[#121319] rounded-3xl p-4 border border-white/[0.07] flex flex-col min-h-[460px] shadow-lg"
               >
-                <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-200 dark:border-slate-800">
-                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-                    {stage}
-                  </span>
-                  <span className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-bold border border-slate-200 dark:border-slate-700">
-                    {stageApplicants.length}
-                  </span>
+                {/* Column Header */}
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.08]">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black uppercase tracking-wider text-white">{stage}</span>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${stageBadgeColor(stage)}`}
+                    >
+                      {stageApps.length}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="space-y-2.5 flex-1 overflow-y-auto max-h-[600px] pr-1">
-                  {stageApplicants.length === 0 ? (
-                    <div className="py-8 text-center text-slate-400 dark:text-slate-500 text-xs">
-                      No candidates
+                {/* Candidate Cards in Stage */}
+                <div className="space-y-3 flex-1 overflow-y-auto pr-0.5">
+                  {stageApps.length === 0 ? (
+                    <div className="p-6 rounded-2xl border border-dashed border-white/[0.06] text-center text-[11px] text-slate-500">
+                      No candidates in {stage}
                     </div>
                   ) : (
-                    stageApplicants.map((app) => (
+                    stageApps.map((app) => (
                       <div
                         key={app._id}
-                        className="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm space-y-2"
+                        className="p-3.5 rounded-2xl bg-[#181922] border border-white/[0.06] hover:border-cyan-500/30 transition-all shadow-sm space-y-2 group"
                       >
                         <div className="flex items-start justify-between">
-                          <h4 className="text-xs font-semibold text-slate-900 dark:text-white leading-snug">
-                            {app.applicantName}
-                          </h4>
-                          <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-0.5">
-                            <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                            {app.rating || 4}
-                          </span>
+                          <div>
+                            <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">
+                              {app.applicantName}
+                            </h4>
+                            <p className="text-[10px] text-slate-400 truncate max-w-[140px]">
+                              {app.job?.title || 'Tech Specialist'}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-0.5 text-amber-400">
+                            <Star className="w-3 h-3 fill-amber-400" />
+                            <span className="text-[10px] font-bold font-mono">{app.rating || 5}</span>
+                          </div>
                         </div>
 
-                        <p className="text-[11px] text-blue-600 dark:text-blue-400 font-medium truncate">
-                          {app.job?.title || 'Open Position'}
-                        </p>
+                        <div className="text-[10px] text-slate-400 flex flex-col gap-0.5 pt-1 border-t border-white/[0.04]">
+                          <span className="flex items-center gap-1">
+                            <Mail className="w-2.5 h-2.5 text-slate-500" />
+                            {app.email}
+                          </span>
+                          {app.experienceYears && (
+                            <span className="text-cyan-400 font-semibold">{app.experienceYears} yrs experience</span>
+                          )}
+                        </div>
 
-                        <p className="text-[10px] text-slate-500 dark:text-slate-400">
-                          Exp: {app.experienceYears} yrs • {app.email}
-                        </p>
-
-                        {app.notes && (
-                          <p className="text-[10px] text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/50 p-1.5 rounded border border-slate-100 dark:border-slate-800">
-                            {app.notes}
-                          </p>
-                        )}
-
-                        {/* Stage Selector Dropdown */}
-                        <div className="pt-2 border-t border-slate-100 dark:border-slate-700/60">
+                        {/* Move Stage Selector */}
+                        <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between">
+                          <span className="text-[9px] text-slate-500 uppercase font-bold">Move Stage:</span>
                           <select
                             value={app.status}
                             onChange={(e) => handleUpdateStage(app._id, e.target.value)}
-                            className="w-full text-[10px] font-medium py-1 px-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="bg-[#121319] border border-white/[0.1] rounded-lg text-[10px] px-2 py-0.5 text-slate-200 focus:outline-none focus:border-cyan-500 font-medium"
                           >
-                            {stages.map((st) => (
-                              <option key={st} value={st}>
-                                Move to {st}
+                            {stages.map((s) => (
+                              <option key={s} value={s}>
+                                {s}
                               </option>
                             ))}
                           </select>
@@ -278,52 +318,67 @@ const RecruitmentPage = () => {
         </div>
       )}
 
-      {/* TAB 2: JOB OPENINGS LIST */}
+      {/* Tab 2: Job Requisitions */}
       {activeTab === 'jobs' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {jobs.map((job) => (
             <div
               key={job._id}
-              className="bg-white dark:bg-slate-900 rounded-lg p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between"
+              className="bento-card p-6 flex flex-col justify-between group hover:border-white/[0.15] transition-all relative overflow-hidden"
             >
               <div>
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">{job.title}</h3>
-                  <Badge variant={job.status}>{job.status}</Badge>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-2">
+                      {job.department?.name || 'Engineering'}
+                    </span>
+                    <h3 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors">
+                      {job.title}
+                    </h3>
+                  </div>
+                  <span
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                      job.status === 'Active'
+                        ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                        : 'bg-slate-500/15 text-slate-400 border-slate-500/30'
+                    }`}
+                  >
+                    {job.status}
+                  </span>
                 </div>
 
-                <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mt-1">
-                  {job.department?.name || 'Department'} • {job.employmentType}
-                </p>
-
-                <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
-                  <span className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded border border-slate-100 dark:border-slate-700">
-                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                    {job.location}
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-3 h-3 text-cyan-400" />
+                    {job.location || 'Bengaluru / Hybrid'}
                   </span>
-                  <span className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded border border-slate-100 dark:border-slate-700">
-                    <Clock className="w-3.5 h-3.5 text-slate-400" />
-                    {job.experience}
-                  </span>
+                  <span>&bull;</span>
+                  <span>{job.experience || '3-6 yrs'}</span>
                 </div>
 
-                <p className="text-xs text-slate-600 dark:text-slate-300 mt-3 line-clamp-3 leading-relaxed">
-                  {job.description}
+                <p className="text-xs text-slate-300 mt-3 line-clamp-2 leading-relaxed">
+                  {job.description || 'Key opening in our rapid-scaling Indian product engineering team.'}
                 </p>
+
+                {/* Salary Package */}
+                <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                  <span className="text-slate-400">Package Range:</span>
+                  <span className="font-bold text-emerald-400 font-mono">
+                    ₹{(job.salaryRange?.min / 100000 || 18).toFixed(1)} - ₹
+                    {(job.salaryRange?.max / 100000 || 32).toFixed(1)} LPA
+                  </span>
+                </div>
               </div>
 
-              <div className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-                <div>
-                  <span className="text-slate-400 dark:text-slate-500 block text-[10px] uppercase font-bold">Salary Range</span>
-                  <span className="font-bold text-slate-900 dark:text-white">
-                    ${job.salaryRange?.min ? (job.salaryRange.min / 1000).toFixed(0) + 'k' : '90k'} - $
-                    {job.salaryRange?.max ? (job.salaryRange.max / 1000).toFixed(0) + 'k' : '130k'}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span className="text-slate-400 dark:text-slate-500 block text-[10px] uppercase font-bold">Applicants</span>
-                  <span className="font-bold text-blue-600 dark:text-blue-400">{job.applicantCount || 0} Candidates</span>
-                </div>
+              {/* Card Footer */}
+              <div className="mt-5 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                <span className="text-slate-400">
+                  Openings: <strong className="text-white">{job.openings || 1}</strong>
+                </span>
+                <span className="text-cyan-400 font-semibold flex items-center gap-1">
+                  <Users className="w-3.5 h-3.5" />
+                  {applications.filter((a) => a.job?._id === job._id || a.job === job._id).length} Applicants
+                </span>
               </div>
             </div>
           ))}
@@ -334,100 +389,78 @@ const RecruitmentPage = () => {
       <Modal
         isOpen={jobModalOpen}
         onClose={() => setJobModalOpen(false)}
-        title="Create Job Requisition"
-        maxWidth="max-w-xl"
+        title="Create New Job Requisition"
+        maxWidth="max-w-lg"
       >
         <form onSubmit={handleCreateJob} className="space-y-4">
           <Input
             label="Job Title"
-            name="title"
             value={jobForm.title}
             onChange={(e) => setJobForm({ ...jobForm, title: e.target.value })}
             required
-            placeholder="e.g. Senior Frontend Engineer"
+            placeholder="e.g. Staff Fullstack / AI Platform Architect"
           />
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Department
               </label>
               <select
                 value={jobForm.department}
                 onChange={(e) => setJobForm({ ...jobForm, department: e.target.value })}
                 required
-                className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs py-2.5 px-3 text-slate-100 focus:outline-none focus:border-cyan-500"
               >
                 {departments.map((d) => (
                   <option key={d._id} value={d._id}>
-                    {d.name}
+                    {d.name} ({d.code})
                   </option>
                 ))}
               </select>
             </div>
             <Input
-              label="Location"
-              name="location"
+              label="Location / Office Hub"
               value={jobForm.location}
               onChange={(e) => setJobForm({ ...jobForm, location: e.target.value })}
-              placeholder="San Francisco, CA or Remote"
+              placeholder="e.g. Bengaluru R&D Hub"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <Input
-              label="Experience Required"
-              name="experience"
-              value={jobForm.experience}
-              onChange={(e) => setJobForm({ ...jobForm, experience: e.target.value })}
-              placeholder="3-5 years"
-            />
-            <Input
-              label="Open Vacancies"
+              label="Min Package (₹ INR)"
               type="number"
-              name="openings"
-              value={jobForm.openings}
-              onChange={(e) => setJobForm({ ...jobForm, openings: e.target.value })}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <Input
-              label="Min Salary ($/yr)"
-              type="number"
-              name="salaryMin"
               value={jobForm.salaryMin}
               onChange={(e) => setJobForm({ ...jobForm, salaryMin: e.target.value })}
             />
             <Input
-              label="Max Salary ($/yr)"
+              label="Max Package (₹ INR)"
               type="number"
-              name="salaryMax"
               value={jobForm.salaryMax}
               onChange={(e) => setJobForm({ ...jobForm, salaryMax: e.target.value })}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-              Job Description & Responsibilities <span className="text-rose-500">*</span>
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+              Role Description & Core Skills
             </label>
             <textarea
-              rows={4}
+              rows={3}
               value={jobForm.description}
               onChange={(e) => setJobForm({ ...jobForm, description: e.target.value })}
-              required
-              className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs p-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              placeholder="Detail key responsibilities, technical requirements, and expectations for this role..."
+              className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs p-3 text-slate-100 focus:outline-none focus:border-cyan-500"
+              placeholder="Key responsibilities, React/Node skills, performance benchmarks..."
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-            <Button variant="secondary" onClick={() => setJobModalOpen(false)}>
+          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-white/[0.08]">
+            <Button variant="secondary" size="sm" onClick={() => setJobModalOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" loading={jobSubmitting}>
-              Publish Job Requisition
+            <Button type="submit" variant="primary" size="sm" loading={jobSubmitting}>
+              Publish Job Opening
             </Button>
           </div>
         </form>
@@ -437,19 +470,19 @@ const RecruitmentPage = () => {
       <Modal
         isOpen={candidateModalOpen}
         onClose={() => setCandidateModalOpen(false)}
-        title="Add Candidate to ATS Pipeline"
-        maxWidth="max-w-lg"
+        title="Enroll Candidate to ATS Pipeline"
+        maxWidth="max-w-md"
       >
         <form onSubmit={handleCreateCandidate} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-              Applying For Role
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+              Target Requisition
             </label>
             <select
               value={candidateForm.job}
               onChange={(e) => setCandidateForm({ ...candidateForm, job: e.target.value })}
               required
-              className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs py-2.5 px-3 text-slate-100 focus:outline-none focus:border-cyan-500"
             >
               {jobs.map((j) => (
                 <option key={j._id} value={j._id}>
@@ -461,72 +494,42 @@ const RecruitmentPage = () => {
 
           <Input
             label="Candidate Full Name"
-            name="applicantName"
             value={candidateForm.applicantName}
             onChange={(e) => setCandidateForm({ ...candidateForm, applicantName: e.target.value })}
             required
-            placeholder="Jane Doe"
+            placeholder="e.g. Siddharth Sengupta"
+          />
+
+          <Input
+            label="Email Address"
+            type="email"
+            value={candidateForm.email}
+            onChange={(e) => setCandidateForm({ ...candidateForm, email: e.target.value })}
+            required
+            placeholder="siddharth.s@talent.in"
           />
 
           <div className="grid grid-cols-2 gap-3">
             <Input
-              label="Email"
-              type="email"
-              name="email"
-              value={candidateForm.email}
-              onChange={(e) => setCandidateForm({ ...candidateForm, email: e.target.value })}
-              required
-              placeholder="jane.doe@email.com"
-            />
-            <Input
-              label="Phone"
-              name="phone"
+              label="Phone Number"
               value={candidateForm.phone}
               onChange={(e) => setCandidateForm({ ...candidateForm, phone: e.target.value })}
-              placeholder="+1 (555) 123-4567"
+              placeholder="+91 98765 43210"
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
             <Input
               label="Years Experience"
               type="number"
-              name="experienceYears"
               value={candidateForm.experienceYears}
               onChange={(e) => setCandidateForm({ ...candidateForm, experienceYears: e.target.value })}
             />
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
-                Initial Stage
-              </label>
-              <select
-                value={candidateForm.status}
-                onChange={(e) => setCandidateForm({ ...candidateForm, status: e.target.value })}
-                className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              >
-                {stages.map((st) => (
-                  <option key={st} value={st}>
-                    {st}
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
 
-          <Input
-            label="Evaluator Notes / Screener Feedback"
-            name="notes"
-            value={candidateForm.notes}
-            onChange={(e) => setCandidateForm({ ...candidateForm, notes: e.target.value })}
-            placeholder="e.g. Strong React and system architecture skills"
-          />
-
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-            <Button variant="secondary" onClick={() => setCandidateModalOpen(false)}>
+          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-white/[0.08]">
+            <Button variant="secondary" size="sm" onClick={() => setCandidateModalOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" loading={candidateSubmitting}>
-              Add Candidate
+            <Button type="submit" variant="primary" size="sm" loading={candidateSubmitting}>
+              Enroll Candidate
             </Button>
           </div>
         </form>
