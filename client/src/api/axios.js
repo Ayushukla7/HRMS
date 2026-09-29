@@ -2,9 +2,15 @@ import axios from 'axios';
 
 const getBaseUrl = () => {
   let envUrl = import.meta.env.VITE_API_URL;
+  
+  // If not explicitly set in env, detect if running on production (Vercel/custom domain)
   if (!envUrl) {
+    if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      return 'https://hrms-wn16.onrender.com/api';
+    }
     return 'http://localhost:5000/api';
   }
+  
   // Trim trailing slashes
   envUrl = envUrl.replace(/\/+$/, '');
   if (!envUrl.endsWith('/api')) {
