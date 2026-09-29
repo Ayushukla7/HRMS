@@ -61,7 +61,7 @@ const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
   const loggedInAvatar =
     user?.avatar ||
     user?.employee?.profilePicture ||
-    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&auto=format&fit=crop&q=80';
+    '/avatars/ayush_shukla.png';
 
   return (
     <>

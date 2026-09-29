@@ -52,7 +52,7 @@ const Login = () => {
       email: 'admin@hrms.com',
       pass: 'admin123',
       badge: 'Admin',
-      avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&auto=format&fit=crop&q=80',
+      avatar: '/avatars/ayush_shukla.png',
     },
     {
       name: 'Aarav Sharma',

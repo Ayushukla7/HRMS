@@ -52,7 +52,7 @@ const Navbar = ({ toggleMobileSidebar }) => {
   const loggedInAvatar =
     user?.avatar ||
     user?.employee?.profilePicture ||
-    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&auto=format&fit=crop&q=80';
+    '/avatars/ayush_shukla.png';
 
   return (
     <header className="h-16 bg-white border-b border-neutral-200 px-4 sm:px-8 flex items-center justify-between gap-4 z-30 sticky top-0">

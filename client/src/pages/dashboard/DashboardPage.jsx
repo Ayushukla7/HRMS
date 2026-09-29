@@ -239,7 +239,7 @@ const DashboardPage = () => {
   ];
 
   const loggedInName = user?.name || 'Ayush Shukla';
-  const loggedInAvatar = user?.avatar || user?.employee?.profilePicture || 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&auto=format&fit=crop&q=80';
+  const loggedInAvatar = user?.avatar || user?.employee?.profilePicture || '/avatars/ayush_shukla.png';
   const loggedInRole = user?.employee?.designation || (user?.role === 'admin' ? 'HR Administrator & Founder' : 'Staff Employee');
 
   return (
