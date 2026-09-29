@@ -2,13 +2,20 @@
 
 @layer base {
   :root {
-    --bg-main: #08090d;
-    --card-bg: #0d1017;
-    --card-surface: #141824;
-    --card-border: rgba(255, 255, 255, 0.09);
-    --text-primary: #ffffff;
-    --text-secondary: #cbd5e1;
-    --text-muted: #94a3b8;
+    /* Exact 5-Color Uxintace Palette */
+    --color-plum: #49225B;
+    --color-royal: #6E3482;
+    --color-lavender: #A56ABD;
+    --color-lilac-light: #E7DBEF;
+    --color-lilac-frost: #F5EBFA;
+
+    --bg-main: #12071a;
+    --card-bg: #1c0d28;
+    --card-surface: #271337;
+    --card-border: rgba(165, 106, 189, 0.25);
+    --text-primary: #F5EBFA;
+    --text-secondary: #E7DBEF;
+    --text-muted: #A56ABD;
   }
 
   html {
@@ -16,8 +23,13 @@
   }
 
   body {
-    background-color: #08090d;
-    color: #f1f5f9;
+    background-color: #12071a;
+    background-image: 
+      radial-gradient(at 15% 15%, rgba(110, 52, 130, 0.28) 0px, transparent 55%),
+      radial-gradient(at 85% 85%, rgba(73, 34, 91, 0.35) 0px, transparent 60%),
+      radial-gradient(at 50% 50%, rgba(165, 106, 189, 0.12) 0px, transparent 70%);
+    background-attachment: fixed;
+    color: #F5EBFA;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -27,6 +39,7 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
     letter-spacing: -0.02em;
+    color: #F5EBFA;
   }
 }
 
@@ -67,28 +80,28 @@
   animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Custom Rich Obsidian Bento Cards with Radiant Accents */
+/* Custom Rich Plum/Royal Purple Bento Cards */
 .bento-card {
-  background-color: #0d1017;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background-color: #1c0d28;
+  border: 1px solid rgba(165, 106, 189, 0.22);
   border-radius: 1.6rem;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 14px 35px -10px rgba(18, 7, 26, 0.7), inset 0 1px 0 rgba(231, 219, 239, 0.08);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .bento-card:hover {
-  border-color: rgba(99, 102, 241, 0.35);
-  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.7), 0 0 20px -5px rgba(99, 102, 241, 0.15);
+  border-color: rgba(165, 106, 189, 0.55);
+  box-shadow: 0 20px 40px -10px rgba(73, 34, 91, 0.6), 0 0 25px -5px rgba(165, 106, 189, 0.25);
 }
 
 /* Secondary Surface Elements */
 .bento-surface {
-  background-color: #141824;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background-color: #271337;
+  border: 1px solid rgba(165, 106, 189, 0.20);
   border-radius: 1.1rem;
 }
 
-/* Crisp Clean Dark Scrollbars */
+/* Crisp Clean Dark Scrollbars in Imperial Purple */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -99,10 +112,16 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #232938;
+  background: #49225B;
   border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3b4356;
+  background: #6E3482;
+}
+
+/* Selection Color in Palette */
+::selection {
+  background-color: #6E3482;
+  color: #F5EBFA;
 }

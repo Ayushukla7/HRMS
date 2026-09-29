@@ -9,8 +9,8 @@ const Badge = ({ variant = 'default', children, className = '' }) => {
       case 'paid':
       case 'hired':
       case 'completed':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/50';
-      
+        return 'bg-[#A56ABD]/20 text-[#F5EBFA] border-[#A56ABD]/50 shadow-xs';
+
       case 'pending':
       case 'late':
       case 'screening':
@@ -18,35 +18,35 @@ const Badge = ({ variant = 'default', children, className = '' }) => {
       case 'draft':
       case 'in progress':
       case 'processing':
-        return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800/50';
-      
+        return 'bg-[#6E3482]/30 text-[#F5EBFA] border-[#A56ABD]/40 shadow-xs';
+
       case 'absent':
       case 'rejected':
       case 'terminated':
       case 'cancelled':
       case 'closed':
-        return 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800/50';
-      
+        return 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+
       case 'half day':
       case 'on leave':
       case 'offered':
       case 'leave':
-        return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-800/50';
+        return 'bg-[#49225B]/60 text-[#E7DBEF] border-[#A56ABD]/40';
 
       case 'admin':
-        return 'bg-slate-100 text-slate-800 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 font-semibold';
+        return 'bg-gradient-to-r from-[#6E3482] to-[#49225B] text-[#F5EBFA] border-[#A56ABD]/60 font-bold shadow-sm';
 
       case 'employee':
-        return 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800/60 dark:text-slate-300 dark:border-slate-700';
+        return 'bg-[#271337] text-[#E7DBEF] border-[#A56ABD]/30 font-medium';
 
       default:
-        return 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700';
+        return 'bg-[#271337] text-[#E7DBEF] border-[#A56ABD]/30';
     }
   };
 
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${getVariantStyles()} ${className}`}
+      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${getVariantStyles()} ${className}`}
     >
       {children}
     </span>

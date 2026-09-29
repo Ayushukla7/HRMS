@@ -202,13 +202,13 @@ const PayrollPage = () => {
             src={row.employee?.profilePicture}
             name={`${row.employee?.firstName || ''} ${row.employee?.lastName || ''}`}
             size="md"
-            className="ring-2 ring-white/10"
+            className="ring-1 ring-[#A56ABD]/40"
           />
           <div>
-            <span className="font-bold text-slate-100 text-sm block">
+            <span className="font-bold text-[#F5EBFA] text-sm block">
               {row.employee?.firstName} {row.employee?.lastName}
             </span>
-            <span className="text-[11px] text-cyan-400 font-mono tracking-wider">
+            <span className="text-xs text-[#A56ABD] font-mono tracking-wider">
               {row.employee?.empCustomId || 'EMP-ID'}
             </span>
           </div>
@@ -218,8 +218,8 @@ const PayrollPage = () => {
     {
       header: 'Pay Cycle',
       render: (row) => (
-        <div className="flex items-center gap-1.5 text-xs text-slate-300 font-medium">
-          <Calendar className="w-3.5 h-3.5 text-slate-500" />
+        <div className="flex items-center gap-1.5 text-xs sm:text-sm text-[#E7DBEF] font-medium">
+          <Calendar className="w-4 h-4 text-[#A56ABD]" />
           <span>
             {row.month} {row.year}
           </span>
@@ -229,7 +229,7 @@ const PayrollPage = () => {
     {
       header: 'Gross Earnings',
       render: (row) => (
-        <span className="font-mono text-xs font-semibold text-slate-300">
+        <span className="font-mono text-xs sm:text-sm font-semibold text-[#E7DBEF]">
           ₹{row.grossSalary ? Number(row.grossSalary).toLocaleString('en-IN') : '0'}
         </span>
       ),
@@ -237,7 +237,7 @@ const PayrollPage = () => {
     {
       header: 'EPF & TDS Deductions',
       render: (row) => (
-        <span className="font-mono text-xs font-semibold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+        <span className="font-mono text-xs font-semibold text-rose-300 bg-rose-500/20 px-2 py-0.5 rounded-lg border border-rose-500/30">
           -₹{row.totalDeductions ? Number(row.totalDeductions).toLocaleString('en-IN') : '0'}
         </span>
       ),
@@ -245,7 +245,7 @@ const PayrollPage = () => {
     {
       header: 'Net Disbursed',
       render: (row) => (
-        <span className="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/15 px-2.5 py-1 rounded-lg border border-emerald-500/30 inline-block">
+        <span className="font-mono text-xs sm:text-sm font-bold text-[#F5EBFA] bg-[#6E3482]/40 px-2.5 py-1 rounded-xl border border-[#A56ABD]/40 inline-block">
           ₹{row.netSalary ? Number(row.netSalary).toLocaleString('en-IN') : '0'}
         </span>
       ),
@@ -256,13 +256,13 @@ const PayrollPage = () => {
         const isPaid = row.paymentStatus === 'Paid';
         return (
           <span
-            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
               isPaid
-                ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
-                : 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                ? 'bg-[#A56ABD]/20 text-[#F5EBFA] border-[#A56ABD]/50'
+                : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
             }`}
           >
-            <span className={`w-1.5 h-1.5 rounded-full ${isPaid ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+            <span className={`w-2 h-2 rounded-full ${isPaid ? 'bg-[#A56ABD]' : 'bg-amber-400'}`} />
             {row.paymentStatus}
           </span>
         );
@@ -276,9 +276,9 @@ const PayrollPage = () => {
             setSelectedPayroll(row);
             setPayslipModalOpen(true);
           }}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#181922] hover:bg-cyan-500/10 text-cyan-400 hover:text-cyan-300 border border-white/[0.08] hover:border-cyan-500/30 text-xs font-semibold transition-all"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#271337] hover:bg-[#6E3482] text-[#F5EBFA] border border-[#A56ABD]/30 hover:border-[#A56ABD] text-xs font-bold transition-all shadow-xs"
         >
-          <FileText className="w-3.5 h-3.5" />
+          <FileText className="w-3.5 h-3.5 text-[#A56ABD]" />
           <span>View Voucher</span>
         </button>
       ),
@@ -290,14 +290,14 @@ const PayrollPage = () => {
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold mb-2">
-            <CreditCard className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#6E3482]/30 border border-[#A56ABD]/40 text-[#F5EBFA] text-xs font-semibold mb-2 shadow-xs">
+            <CreditCard className="w-3.5 h-3.5 text-[#A56ABD]" />
             <span>Compensation & Payroll Engine</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#F5EBFA]">
             Payroll & Indian Tax Management
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-[#E7DBEF] mt-1">
             Calculate gross salaries, EPF/TDS statutory deductions, execute automated batch payroll, and download tax vouchers.
           </p>
         </div>
@@ -309,7 +309,6 @@ const PayrollPage = () => {
               size="md"
               icon={Zap}
               onClick={() => setBulkModalOpen(true)}
-              className="bg-[#181922] border-white/[0.08] text-slate-200 hover:bg-slate-800"
             >
               Batch Auto-Disburse
             </Button>
@@ -318,7 +317,6 @@ const PayrollPage = () => {
               size="md"
               icon={Plus}
               onClick={() => setCreateModalOpen(true)}
-              className="shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50"
             >
               Generate Payslip
             </Button>
@@ -330,64 +328,64 @@ const PayrollPage = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bento-card p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Net Disbursed</span>
-            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#A56ABD]">Total Net Disbursed</span>
+            <div className="p-2 rounded-xl bg-[#6E3482]/40 text-[#F5EBFA]">
               <Landmark className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-white font-mono">
+            <span className="text-2xl font-black text-[#F5EBFA] font-mono">
               ₹{totalNetDisbursed ? Number(totalNetDisbursed).toLocaleString('en-IN') : '0'}
             </span>
           </div>
-          <p className="text-[11px] text-emerald-400 mt-1 font-medium flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3" /> All direct IMPS transfers cleared
+          <p className="text-xs text-[#E7DBEF] mt-1 font-medium flex items-center gap-1">
+            <CheckCircle2 className="w-3 h-3 text-[#A56ABD]" /> All direct IMPS transfers cleared
           </p>
         </div>
 
         <div className="bento-card p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Gross Wage Allocation</span>
-            <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#A56ABD]">Gross Wage Allocation</span>
+            <div className="p-2 rounded-xl bg-[#6E3482]/40 text-[#F5EBFA]">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-white font-mono">
+            <span className="text-2xl font-black text-[#F5EBFA] font-mono">
               ₹{totalGrossDisbursed ? Number(totalGrossDisbursed).toLocaleString('en-IN') : '0'}
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">Pre-deduction corporate salary pool</p>
+          <p className="text-xs text-[#E7DBEF]/80 mt-1">Pre-deduction corporate salary pool</p>
         </div>
 
         <div className="bento-card p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">EPF & TDS Withholdings</span>
-            <div className="p-2 rounded-xl bg-rose-500/10 text-rose-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#A56ABD]">EPF & TDS Withholdings</span>
+            <div className="p-2 rounded-xl bg-[#6E3482]/40 text-[#F5EBFA]">
               <ShieldCheck className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-white font-mono">
+            <span className="text-2xl font-black text-[#F5EBFA] font-mono">
               ₹{totalTaxDeductions ? Number(totalTaxDeductions).toLocaleString('en-IN') : '0'}
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">Remitted to Indian EPFO & Income Tax</p>
+          <p className="text-xs text-[#E7DBEF]/80 mt-1">Remitted to Indian EPFO & Income Tax</p>
         </div>
 
         <div className="bento-card p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Avg. Salary / Member</span>
-            <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#A56ABD]">Avg. Salary / Member</span>
+            <div className="p-2 rounded-xl bg-[#6E3482]/40 text-[#F5EBFA]">
               <Sparkles className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-black text-white font-mono">
+            <span className="text-2xl font-black text-[#F5EBFA] font-mono">
               ₹{avgNetSalary ? Number(avgNetSalary).toLocaleString('en-IN') : '0'}
             </span>
           </div>
-          <p className="text-[11px] text-cyan-400 mt-1 font-medium">Competitive Tier-1 Tech Baseline</p>
+          <p className="text-xs text-[#E7DBEF] mt-1 font-semibold">Competitive Tier-1 Tech Baseline</p>
         </div>
       </div>
 
@@ -395,11 +393,11 @@ const PayrollPage = () => {
       <div className="bento-card p-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Month:</span>
+            <span className="text-xs font-bold text-[#E7DBEF] uppercase tracking-wider">Month:</span>
             <select
               value={monthFilter}
               onChange={(e) => setMonthFilter(e.target.value)}
-              className="px-3 py-1.5 bg-[#181922] border border-white/[0.08] rounded-xl text-xs text-slate-200 focus:outline-none focus:border-cyan-500 transition-colors"
+              className="px-3 py-1.5 bg-[#271337] border border-[#A56ABD]/30 rounded-2xl text-xs text-[#F5EBFA] focus:outline-none focus:border-[#A56ABD]"
             >
               <option value="all">All Months</option>
               {months.map((m) => (
@@ -411,11 +409,11 @@ const PayrollPage = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Fiscal Year:</span>
+            <span className="text-xs font-bold text-[#E7DBEF] uppercase tracking-wider">Fiscal Year:</span>
             <select
               value={yearFilter}
               onChange={(e) => setYearFilter(e.target.value)}
-              className="px-3 py-1.5 bg-[#181922] border border-white/[0.08] rounded-xl text-xs text-slate-200 focus:outline-none focus:border-cyan-500 transition-colors"
+              className="px-3 py-1.5 bg-[#271337] border border-[#A56ABD]/30 rounded-2xl text-xs text-[#F5EBFA] focus:outline-none focus:border-[#A56ABD]"
             >
               <option value="2026">2026</option>
               <option value="2025">2025</option>
@@ -423,8 +421,8 @@ const PayrollPage = () => {
           </div>
         </div>
 
-        <div className="text-xs text-slate-400 font-mono">
-          Showing <span className="text-white font-bold">{payrolls.length}</span> payroll vouchers
+        <div className="text-xs text-[#E7DBEF] font-mono">
+          Showing <span className="text-[#F5EBFA] font-bold">{payrolls.length}</span> payroll vouchers
         </div>
       </div>
 
@@ -444,19 +442,19 @@ const PayrollPage = () => {
         maxWidth="max-w-md"
       >
         <form onSubmit={handleBulkGenerate} className="space-y-4">
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#E7DBEF] leading-relaxed">
             This will calculate gross salary, HRA, Provident Fund (EPF), and professional tax deductions for all active
             Indian team members for the selected pay cycle.
           </p>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-bold text-[#E7DBEF] mb-1.5 uppercase tracking-wider">
               Disbursement Month
             </label>
             <select
               value={bulkMonth}
               onChange={(e) => setBulkMonth(e.target.value)}
-              className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs py-2.5 px-3 text-slate-100 focus:outline-none focus:border-cyan-500"
+              className="block w-full rounded-2xl border border-[#A56ABD]/30 bg-[#271337] text-xs py-2.5 px-3.5 text-[#F5EBFA] focus:outline-none focus:border-[#A56ABD]"
             >
               {months.map((m) => (
                 <option key={m} value={m}>
@@ -474,7 +472,7 @@ const PayrollPage = () => {
             required
           />
 
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-white/[0.08]">
+          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[#A56ABD]/20">
             <Button variant="secondary" size="sm" onClick={() => setBulkModalOpen(false)}>
               Cancel
             </Button>
@@ -494,7 +492,7 @@ const PayrollPage = () => {
       >
         <form onSubmit={handleCreateSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-bold text-[#E7DBEF] mb-1.5 uppercase tracking-wider">
               Select Indian Employee
             </label>
             <select
@@ -504,7 +502,7 @@ const PayrollPage = () => {
                 handleEmployeeSelect(e.target.value);
               }}
               required
-              className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs py-2.5 px-3 text-slate-100 focus:outline-none focus:border-cyan-500"
+              className="block w-full rounded-2xl border border-[#A56ABD]/30 bg-[#271337] text-xs py-2.5 px-3.5 text-[#F5EBFA] focus:outline-none focus:border-[#A56ABD]"
             >
               {employees.map((e) => (
                 <option key={e._id} value={e._id}>
@@ -516,13 +514,13 @@ const PayrollPage = () => {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-[#E7DBEF] mb-1.5 uppercase tracking-wider">
                 Pay Month
               </label>
               <select
                 value={form.month}
                 onChange={(e) => setForm({ ...form, month: e.target.value })}
-                className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs py-2 px-3 text-slate-100 focus:outline-none focus:border-cyan-500"
+                className="block w-full rounded-2xl border border-[#A56ABD]/30 bg-[#271337] text-xs py-2 px-3 text-[#F5EBFA] focus:outline-none focus:border-[#A56ABD]"
               >
                 {months.map((m) => (
                   <option key={m} value={m}>
@@ -540,8 +538,8 @@ const PayrollPage = () => {
             />
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-[#181922] border border-white/[0.06] space-y-3">
-            <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">Earnings & Allowances (₹ INR)</h4>
+          <div className="p-3.5 rounded-2xl bg-[#271337] border border-[#A56ABD]/30 space-y-3">
+            <h4 className="text-xs font-bold text-[#F5EBFA] uppercase tracking-wider">Earnings & Allowances (₹ INR)</h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               <Input
                 label="Basic Salary (₹)"
@@ -563,7 +561,7 @@ const PayrollPage = () => {
                 onChange={(e) => setForm({ ...form, conveyance: e.target.value })}
               />
               <Input
-                label="Performance Bonus"
+                label="Bonus / Incentive"
                 type="number"
                 value={form.bonus}
                 onChange={(e) => setForm({ ...form, bonus: e.target.value })}
@@ -571,8 +569,8 @@ const PayrollPage = () => {
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-[#181922] border border-white/[0.06] space-y-3">
-            <h4 className="text-xs font-bold text-rose-400 uppercase tracking-wider">Statutory Deductions (₹ INR)</h4>
+          <div className="p-3.5 rounded-2xl bg-[#271337] border border-[#A56ABD]/30 space-y-3">
+            <h4 className="text-xs font-bold text-rose-300 uppercase tracking-wider">Statutory Deductions (₹ INR)</h4>
             <div className="grid grid-cols-3 gap-2.5">
               <Input
                 label="Provident Fund (EPF)"
@@ -595,7 +593,7 @@ const PayrollPage = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-white/[0.08]">
+          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[#A56ABD]/20">
             <Button variant="secondary" size="sm" onClick={() => setCreateModalOpen(false)}>
               Cancel
             </Button>
@@ -614,85 +612,85 @@ const PayrollPage = () => {
           title="Indian Statutory Salary Slip"
           maxWidth="max-w-2xl"
         >
-          <div ref={payslipRef} className="space-y-6 text-slate-200">
+          <div ref={payslipRef} className="space-y-6 text-[#E7DBEF]">
             {/* Payslip Header */}
-            <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-950/60 via-[#121319] to-cyan-950/40 border border-white/[0.08] flex items-start justify-between">
+            <div className="p-5 rounded-2xl bg-gradient-to-br from-[#49225B] via-[#6E3482] to-[#271337] border border-[#A56ABD]/40 flex items-start justify-between shadow-xl">
               <div>
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-black">
+                  <div className="w-9 h-9 rounded-2xl bg-[#F5EBFA] text-[#49225B] flex items-center justify-center font-black text-sm shadow-md">
                     HR
                   </div>
                   <div>
-                    <h3 className="text-base font-black text-white">HR PULSE TECHNOLOGIES INDIA PVT LTD</h3>
-                    <p className="text-[11px] text-slate-400">Electronic City Phase 1, Bengaluru, Karnataka 560100</p>
+                    <h3 className="text-base font-black text-[#F5EBFA]">HR PULSE TECHNOLOGIES INDIA PVT LTD</h3>
+                    <p className="text-xs text-[#E7DBEF]/80">Electronic City Phase 1, Bengaluru, Karnataka 560100</p>
                   </div>
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-[11px] text-cyan-400 font-mono font-bold block">
+                <span className="text-xs text-[#F5EBFA] font-mono font-bold block">
                   CYCLE: {selectedPayroll.month?.toUpperCase()} {selectedPayroll.year}
                 </span>
-                <span className="text-[10px] text-slate-400">PAYSLIP NO: HRP-{selectedPayroll._id?.slice(-6).toUpperCase()}</span>
+                <span className="text-[10px] text-[#E7DBEF]">NO: HRP-{selectedPayroll._id?.slice(-6).toUpperCase()}</span>
               </div>
             </div>
 
             {/* Employee Dossier Block */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-[#181922] border border-white/[0.06] text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-[#271337] border border-[#A56ABD]/30 text-xs">
               <div>
-                <span className="text-slate-400 text-[10px] uppercase font-bold block">Employee Name</span>
-                <span className="text-white font-bold">
+                <span className="text-[#A56ABD] text-[10px] uppercase font-bold block">Employee Name</span>
+                <span className="text-[#F5EBFA] font-bold">
                   {selectedPayroll.employee?.firstName} {selectedPayroll.employee?.lastName}
                 </span>
               </div>
               <div>
-                <span className="text-slate-400 text-[10px] uppercase font-bold block">Employee Custom ID</span>
-                <span className="text-cyan-400 font-mono font-bold">{selectedPayroll.employee?.empCustomId}</span>
+                <span className="text-[#A56ABD] text-[10px] uppercase font-bold block">Employee ID</span>
+                <span className="text-[#F5EBFA] font-mono font-bold">{selectedPayroll.employee?.empCustomId}</span>
               </div>
               <div>
-                <span className="text-slate-400 text-[10px] uppercase font-bold block">Designation</span>
-                <span className="text-slate-200">{selectedPayroll.employee?.designation || 'Staff'}</span>
+                <span className="text-[#A56ABD] text-[10px] uppercase font-bold block">Designation</span>
+                <span className="text-[#E7DBEF]">{selectedPayroll.employee?.designation || 'Staff'}</span>
               </div>
               <div>
-                <span className="text-slate-400 text-[10px] uppercase font-bold block">Disbursement Mode</span>
-                <span className="text-emerald-400 font-bold">{selectedPayroll.paymentMethod || 'UPI / IMPS'}</span>
+                <span className="text-[#A56ABD] text-[10px] uppercase font-bold block">Disbursement Mode</span>
+                <span className="text-[#F5EBFA] font-bold">{selectedPayroll.paymentMethod || 'UPI / IMPS'}</span>
               </div>
             </div>
 
             {/* Earnings & Deductions Breakdown Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Earnings Table */}
-              <div className="rounded-2xl border border-white/[0.08] overflow-hidden bg-[#181922]/50">
-                <div className="p-3 bg-indigo-500/10 border-b border-white/[0.08] text-xs font-bold text-indigo-300 uppercase tracking-wider">
+              <div className="rounded-2xl border border-[#A56ABD]/30 overflow-hidden bg-[#271337]">
+                <div className="p-3 bg-[#6E3482]/40 border-b border-[#A56ABD]/30 text-xs font-bold text-[#F5EBFA] uppercase tracking-wider">
                   Earnings Breakdown
                 </div>
                 <div className="p-3 space-y-2 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Basic Wage</span>
-                    <span className="font-mono text-white">
+                    <span className="text-[#E7DBEF]">Basic Wage</span>
+                    <span className="font-mono text-[#F5EBFA]">
                       ₹{selectedPayroll.basicSalary?.toLocaleString('en-IN')}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">House Rent Allowance (HRA)</span>
-                    <span className="font-mono text-white">
+                    <span className="text-[#E7DBEF]">House Rent Allowance (HRA)</span>
+                    <span className="font-mono text-[#F5EBFA]">
                       ₹{selectedPayroll.allowances?.hra?.toLocaleString('en-IN') || 0}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Conveyance Allowance</span>
-                    <span className="font-mono text-white">
+                    <span className="text-[#E7DBEF]">Conveyance Allowance</span>
+                    <span className="font-mono text-[#F5EBFA]">
                       ₹{selectedPayroll.allowances?.conveyance?.toLocaleString('en-IN') || 0}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Performance Incentive</span>
-                    <span className="font-mono text-white">
+                    <span className="text-[#E7DBEF]">Performance Incentive</span>
+                    <span className="font-mono text-[#F5EBFA]">
                       ₹{selectedPayroll.bonus?.toLocaleString('en-IN') || 0}
                     </span>
                   </div>
-                  <div className="pt-2 border-t border-white/[0.08] flex justify-between font-bold text-sm">
-                    <span className="text-slate-200">Gross Earnings</span>
-                    <span className="font-mono text-indigo-300">
+                  <div className="pt-2 border-t border-[#A56ABD]/30 flex justify-between font-bold text-sm">
+                    <span className="text-[#F5EBFA]">Gross Earnings</span>
+                    <span className="font-mono text-[#F5EBFA]">
                       ₹{selectedPayroll.grossSalary?.toLocaleString('en-IN')}
                     </span>
                   </div>
@@ -700,32 +698,32 @@ const PayrollPage = () => {
               </div>
 
               {/* Deductions Table */}
-              <div className="rounded-2xl border border-white/[0.08] overflow-hidden bg-[#181922]/50">
-                <div className="p-3 bg-rose-500/10 border-b border-white/[0.08] text-xs font-bold text-rose-400 uppercase tracking-wider">
+              <div className="rounded-2xl border border-[#A56ABD]/30 overflow-hidden bg-[#271337]">
+                <div className="p-3 bg-[#49225B]/60 border-b border-[#A56ABD]/30 text-xs font-bold text-rose-300 uppercase tracking-wider">
                   Statutory Deductions
                 </div>
                 <div className="p-3 space-y-2 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Employees' PF (EPF)</span>
+                    <span className="text-[#E7DBEF]">Employees' PF (EPF)</span>
                     <span className="font-mono text-rose-300">
                       -₹{selectedPayroll.deductions?.providentFund?.toLocaleString('en-IN') || 0}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Income Tax (TDS)</span>
+                    <span className="text-[#E7DBEF]">Income Tax (TDS)</span>
                     <span className="font-mono text-rose-300">
                       -₹{selectedPayroll.deductions?.tax?.toLocaleString('en-IN') || 0}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Medical / Health Policy</span>
+                    <span className="text-[#E7DBEF]">Medical / Health Policy</span>
                     <span className="font-mono text-rose-300">
                       -₹{selectedPayroll.deductions?.insurance?.toLocaleString('en-IN') || 0}
                     </span>
                   </div>
-                  <div className="pt-2 border-t border-white/[0.08] flex justify-between font-bold text-sm">
-                    <span className="text-slate-200">Total Deductions</span>
-                    <span className="font-mono text-rose-400">
+                  <div className="pt-2 border-t border-[#A56ABD]/30 flex justify-between font-bold text-sm">
+                    <span className="text-[#F5EBFA]">Total Deductions</span>
+                    <span className="font-mono text-rose-300">
                       -₹{selectedPayroll.totalDeductions?.toLocaleString('en-IN')}
                     </span>
                   </div>
@@ -734,24 +732,24 @@ const PayrollPage = () => {
             </div>
 
             {/* Net Amount Hero Banner */}
-            <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
+            <div className="p-5 rounded-2xl bg-gradient-to-r from-[#6E3482] to-[#49225B] border border-[#A56ABD]/50 flex items-center justify-between shadow-xl">
               <div>
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block">
+                <span className="text-xs font-bold text-[#E7DBEF] uppercase tracking-wider block">
                   Net Salary Disbursed to Bank
                 </span>
-                <span className="text-2xl sm:text-3xl font-black text-emerald-300 font-mono mt-0.5 block">
+                <span className="text-2xl sm:text-3xl font-black text-[#F5EBFA] font-mono mt-0.5 block">
                   ₹{selectedPayroll.netSalary?.toLocaleString('en-IN')}
                 </span>
               </div>
               <div className="text-right">
-                <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-500/30 inline-block">
+                <span className="text-xs font-bold text-[#F5EBFA] bg-[#A56ABD]/30 px-3.5 py-1.5 rounded-full border border-[#F5EBFA]/30 inline-block shadow-sm">
                   Verified & Disbursed
                 </span>
               </div>
             </div>
 
             {/* Action Bar */}
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/[0.08]">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#A56ABD]/20">
               <Button variant="secondary" size="sm" onClick={() => setPayslipModalOpen(false)}>
                 Close
               </Button>
