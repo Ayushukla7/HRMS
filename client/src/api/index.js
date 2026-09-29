@@ -7,6 +7,7 @@ export const authApi = {
   getMe: () => api.get('/auth/me'),
   updateProfile: (data) => api.put('/auth/profile', data),
   updatePassword: (data) => api.put('/auth/update-password', data),
+  getDemoPersonas: () => api.get('/auth/demo-personas'),
 };
 
 // Employee Endpoints

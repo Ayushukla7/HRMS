@@ -185,3 +185,62 @@ exports.updatePassword = async (req, res, next) => {
     next(err);
   }
 };
+
+// @desc    Get live demo personas for login screen
+// @route   GET /api/auth/demo-personas
+// @access  Public
+exports.getDemoPersonas = async (req, res, next) => {
+  try {
+    const users = await User.find({ isActive: true })
+      .populate({
+        path: 'employeeId',
+        populate: { path: 'department', select: 'name code' },
+      })
+      .sort({ createdAt: 1 });
+
+    const admin = users.find((u) => u.role === 'admin');
+    const employees = users.filter((u) => u.role !== 'admin');
+
+    const personas = [];
+
+    if (admin) {
+      personas.push({
+        name: admin.name || 'Ayush Shukla',
+        role: 'HR Admin & Founder',
+        email: admin.email,
+        pass: 'admin123',
+        badge: 'Admin',
+        avatar: admin.avatar || '/avatars/ayush_shukla.png',
+      });
+    }
+
+    employees.forEach((empUser) => {
+      const emp = empUser.employeeId || {};
+      const deptName = emp.department?.name || 'Operations';
+      const badge = deptName.includes('Design')
+        ? 'Design'
+        : deptName.includes('Tech') || deptName.includes('Eng')
+        ? 'Tech'
+        : deptName.includes('HR') || deptName.includes('People')
+        ? 'HR Ops'
+        : 'Staff';
+
+      personas.push({
+        name: emp.firstName ? `${emp.firstName} ${emp.lastName}` : empUser.name,
+        role: emp.designation || 'Staff Member',
+        email: empUser.email,
+        pass: 'employee123',
+        badge: badge,
+        avatar: emp.profilePicture || empUser.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
+      });
+    });
+
+    res.status(200).json({
+      success: true,
+      data: personas,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+

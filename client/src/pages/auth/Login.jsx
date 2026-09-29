@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
+import { authApi } from '../../api';
 import Button from '../../components/common/Button';
+import Avatar from '../../components/common/Avatar';
 import Logo from '../../components/common/Logo';
 import {
   Mail,
@@ -26,6 +28,57 @@ const Login = () => {
   const { showToast } = useNotification();
   const navigate = useNavigate();
 
+  // Dynamic live demo personas state
+  const [demoAccounts, setDemoAccounts] = useState([
+    {
+      name: 'Ayush Shukla',
+      role: 'HR Admin & Founder',
+      email: 'admin@hrms.com',
+      pass: 'admin123',
+      badge: 'Admin',
+      avatar: '/avatars/ayush_shukla.png',
+    },
+    {
+      name: 'Aarav Sharma',
+      role: 'UX/UI Lead & Architect',
+      email: 'aarav.sharma@hrms.com',
+      pass: 'employee123',
+      badge: 'Design',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
+    },
+    {
+      name: 'Priya Patel',
+      role: 'Principal Frontend Engineer',
+      email: 'priya.patel@hrms.com',
+      pass: 'employee123',
+      badge: 'Tech',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80',
+    },
+    {
+      name: 'Rohan Verma',
+      role: 'People Operations & Culture Lead',
+      email: 'rohan.verma@hrms.com',
+      pass: 'employee123',
+      badge: 'HR Ops',
+      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&auto=format&fit=crop&q=80',
+    },
+  ]);
+
+  // Fetch live personas from database on mount
+  useEffect(() => {
+    const fetchLivePersonas = async () => {
+      try {
+        const res = await authApi.getDemoPersonas();
+        if (res.data?.success && res.data.data?.length > 0) {
+          setDemoAccounts(res.data.data);
+        }
+      } catch (err) {
+        console.warn('Could not load dynamic demo personas, using defaults', err);
+      }
+    };
+    fetchLivePersonas();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -44,41 +97,6 @@ const Login = () => {
     setEmail(demoEmail);
     setPassword(demoPass);
   };
-
-  const demoAccounts = [
-    {
-      name: 'Ayush Shukla',
-      role: 'HR Admin',
-      email: 'admin@hrms.com',
-      pass: 'admin123',
-      badge: 'Admin',
-      avatar: '/avatars/ayush_shukla.png',
-    },
-    {
-      name: 'Aarav Sharma',
-      role: 'UX/UI Lead',
-      email: 'aarav.sharma@hrms.com',
-      pass: 'employee123',
-      badge: 'Design',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
-    },
-    {
-      name: 'Priya Patel',
-      role: 'Frontend Lead',
-      email: 'priya.patel@hrms.com',
-      pass: 'employee123',
-      badge: 'Tech',
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80',
-    },
-    {
-      name: 'Rohan Verma',
-      role: 'People Ops Lead',
-      email: 'rohan.verma@hrms.com',
-      pass: 'employee123',
-      badge: 'HR Ops',
-      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&auto=format&fit=crop&q=80',
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-neutral-100 flex items-center justify-center p-4 sm:p-6 lg:p-10 font-sans text-neutral-900">
@@ -118,17 +136,18 @@ const Login = () => {
                 Active Organization Directory
               </p>
               <div className="space-y-2.5">
-                {demoAccounts.slice(0, 3).map((acc) => (
+                {demoAccounts.slice(0, 4).map((acc) => (
                   <div
                     key={acc.email}
                     onClick={() => handleQuickLogin(acc.email, acc.pass)}
                     className="flex items-center justify-between p-2.5 rounded-xl bg-neutral-800/80 hover:bg-neutral-800 border border-neutral-700/60 transition-all cursor-pointer group"
                   >
                     <div className="flex items-center gap-3">
-                      <img
+                      <Avatar
                         src={acc.avatar}
-                        alt={acc.name}
-                        className="w-8 h-8 rounded-full object-cover ring-1 ring-neutral-600"
+                        name={acc.name}
+                        size="sm"
+                        className="ring-1 ring-neutral-600"
                       />
                       <div>
                         <span className="text-xs font-bold text-white block group-hover:text-neutral-200">
@@ -252,10 +271,11 @@ const Login = () => {
                         : 'bg-neutral-50 hover:bg-neutral-100 border-neutral-200 text-neutral-800'
                     }`}
                   >
-                    <img
+                    <Avatar
                       src={acc.avatar}
-                      alt={acc.name}
-                      className="w-6 h-6 rounded-full object-cover shrink-0"
+                      name={acc.name}
+                      size="sm"
+                      className="shrink-0"
                     />
                     <div className="truncate">
                       <p className="text-xs font-bold leading-none truncate">{acc.name}</p>
