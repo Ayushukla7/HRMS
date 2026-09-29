@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { leaveApi, employeeApi } from '../../api';
+import { leaveApi } from '../../api';
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
 import DataTable from '../../components/common/DataTable';
@@ -7,15 +7,12 @@ import Badge from '../../components/common/Badge';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
+import Avatar from '../../components/common/Avatar';
 import {
   CalendarDays,
   Plus,
   Check,
   X,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  FileText,
 } from 'lucide-react';
 
 const LeavePage = () => {
@@ -84,7 +81,7 @@ const LeavePage = () => {
         daysCount: days,
       });
 
-      showToast('Leave application submitted for approval', 'success');
+      showToast('Leave request submitted', 'success');
       setApplyModalOpen(false);
       setApplyForm({
         leaveType: 'Casual Leave',
@@ -103,7 +100,7 @@ const LeavePage = () => {
   const handleOpenReview = (leave, action) => {
     setSelectedLeave(leave);
     setActionType(action);
-    setAdminRemarks(action === 'Approved' ? 'Approved by HR.' : 'Cannot be approved due to project deadlines.');
+    setAdminRemarks(action === 'Approved' ? 'Approved by HR.' : 'Cannot be approved.');
     setApprovalModalOpen(true);
   };
 
@@ -130,34 +127,32 @@ const LeavePage = () => {
       header: 'Employee',
       render: (row) => (
         <div className="flex items-center gap-3">
-          <img
-            src={row.employee?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${row.employee?.firstName || 'user'}`}
-            alt=""
-            className="w-9 h-9 rounded-full object-cover bg-slate-100 ring-2 ring-indigo-500/20"
+          <Avatar
+            src={row.employee?.profilePicture}
+            name={`${row.employee?.firstName || ''} ${row.employee?.lastName || ''}`}
+            size="sm"
           />
           <div>
-            <span className="font-bold text-slate-900">
+            <span className="font-semibold text-slate-900 dark:text-slate-100">
               {row.employee?.firstName} {row.employee?.lastName}
             </span>
-            <p className="text-xs text-slate-400 font-mono">{row.employee?.empCustomId}</p>
+            <p className="text-[11px] text-slate-400 font-mono">{row.employee?.empCustomId}</p>
           </div>
         </div>
       ),
     },
     {
       header: 'Leave Type',
-      render: (row) => (
-        <span className="font-semibold text-slate-800 text-xs sm:text-sm">{row.leaveType}</span>
-      ),
+      render: (row) => <span className="font-medium text-slate-800 dark:text-slate-200 text-xs">{row.leaveType}</span>,
     },
     {
       header: 'Period & Duration',
       render: (row) => (
         <div className="text-xs space-y-0.5">
-          <p className="font-semibold text-slate-700">
+          <p className="text-slate-700 dark:text-slate-300">
             {new Date(row.startDate).toLocaleDateString()} - {new Date(row.endDate).toLocaleDateString()}
           </p>
-          <span className="inline-block bg-slate-100 px-2 py-0.5 rounded font-mono text-[11px] font-bold text-slate-600">
+          <span className="font-mono text-[11px] text-slate-500 font-semibold">
             {row.daysCount} Day(s)
           </span>
         </div>
@@ -166,7 +161,7 @@ const LeavePage = () => {
     {
       header: 'Reason',
       render: (row) => (
-        <p className="text-xs text-slate-600 max-w-xs truncate" title={row.reason}>
+        <p className="text-xs text-slate-600 dark:text-slate-400 max-w-xs truncate" title={row.reason}>
           {row.reason}
         </p>
       ),
@@ -176,14 +171,14 @@ const LeavePage = () => {
       render: (row) => <Badge variant={row.status}>{row.status}</Badge>,
     },
     {
-      header: 'Action / Remarks',
+      header: 'Actions',
       render: (row) => {
         if (isAdmin && row.status === 'Pending') {
           return (
             <div className="flex items-center gap-1.5">
               <Button
                 variant="success"
-                size="sm"
+                size="xs"
                 icon={Check}
                 onClick={() => handleOpenReview(row, 'Approved')}
               >
@@ -191,7 +186,7 @@ const LeavePage = () => {
               </Button>
               <Button
                 variant="danger"
-                size="sm"
+                size="xs"
                 icon={X}
                 onClick={() => handleOpenReview(row, 'Rejected')}
               >
@@ -202,7 +197,7 @@ const LeavePage = () => {
         }
         return (
           <span className="text-xs text-slate-400">
-            {row.adminRemarks || (row.status === 'Pending' ? 'Awaiting Review' : 'Processed')}
+            {row.adminRemarks || (row.status === 'Pending' ? 'Pending Review' : 'Processed')}
           </span>
         );
       },
@@ -213,9 +208,9 @@ const LeavePage = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900">Leave Management</h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Apply for leave, manage quotas, and review team time-off requests.
+          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Leave Management</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Apply for time off, monitor annual quota balances, and review leave workflows.
           </p>
         </div>
 
@@ -229,39 +224,39 @@ const LeavePage = () => {
         </Button>
       </div>
 
-      {/* Leave Quota Balances Grid */}
+      {/* Quota Balances Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {balances.slice(0, 3).map((bal, idx) => (
           <div
             key={idx}
-            className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between"
+            className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between"
           >
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                 {bal.leaveType}
               </span>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-2xl font-black text-slate-900">{bal.remainingDays}</span>
-                <span className="text-xs text-slate-400 font-medium">/ {bal.totalQuota} days left</span>
+              <div className="flex items-baseline gap-1.5 mt-0.5">
+                <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{bal.remainingDays}</span>
+                <span className="text-xs text-slate-400">/ {bal.totalQuota} days left</span>
               </div>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs">
+            <span className="text-xs text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
               {bal.usedDays} Used
-            </div>
+            </span>
           </div>
         ))}
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+      <div className="flex items-center gap-1.5 border-b border-slate-200 dark:border-slate-800 pb-2">
         {['all', 'Pending', 'Approved', 'Rejected'].map((status) => (
           <button
             key={status}
             onClick={() => setStatusFilter(status)}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-colors ${
               statusFilter === status
-                ? 'bg-slate-900 text-white'
-                : 'text-slate-600 hover:bg-slate-100'
+                ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
             {status === 'all' ? 'All Requests' : status}
@@ -286,16 +281,16 @@ const LeavePage = () => {
       >
         <form onSubmit={handleApplySubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Leave Type
             </label>
             <select
               value={applyForm.leaveType}
               onChange={(e) => setApplyForm({ ...applyForm, leaveType: e.target.value })}
-              className="block w-full rounded-xl border border-slate-200 bg-white text-sm py-2.5 px-3"
+              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
             >
-              <option value="Casual Leave">Casual Leave (Personal / Family)</option>
-              <option value="Sick Leave">Sick Leave (Medical / Recovery)</option>
+              <option value="Casual Leave">Casual Leave</option>
+              <option value="Sick Leave">Sick Leave</option>
               <option value="Earned Leave">Earned / Vacation Leave</option>
               <option value="Unpaid Leave">Unpaid Leave</option>
             </select>
@@ -321,25 +316,25 @@ const LeavePage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
-              Reason for Leave <span className="text-rose-500">*</span>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              Reason <span className="text-rose-500">*</span>
             </label>
             <textarea
               rows={3}
               value={applyForm.reason}
               onChange={(e) => setApplyForm({ ...applyForm, reason: e.target.value })}
               required
-              className="block w-full rounded-xl border border-slate-200 bg-white text-sm p-3 focus:outline-none focus:border-indigo-500"
-              placeholder="Please provide details regarding your leave request..."
+              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm p-3 text-slate-900 dark:text-slate-100 focus:outline-none"
+              placeholder="Provide reason for time off request..."
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-            <Button variant="secondary" onClick={() => setApplyModalOpen(false)}>
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+            <Button variant="secondary" size="sm" onClick={() => setApplyModalOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" loading={submitting}>
-              Submit Application
+            <Button type="submit" variant="primary" size="sm" loading={submitting}>
+              Submit Request
             </Button>
           </div>
         </form>
@@ -353,33 +348,34 @@ const LeavePage = () => {
         maxWidth="max-w-md"
       >
         <div className="space-y-4">
-          <p className="text-xs text-slate-600">
-            You are about to mark this {selectedLeave?.leaveType} ({selectedLeave?.daysCount} days) for{' '}
-            <span className="font-bold text-slate-900">
+          <p className="text-xs text-slate-600 dark:text-slate-300">
+            You are setting this {selectedLeave?.leaveType} ({selectedLeave?.daysCount} days) for{' '}
+            <span className="font-semibold text-slate-900 dark:text-slate-100">
               {selectedLeave?.employee?.firstName} {selectedLeave?.employee?.lastName}
             </span>{' '}
-            as <span className="font-bold">{actionType}</span>.
+            as <span className="font-semibold">{actionType}</span>.
           </p>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
-              Admin Remarks / Note to Employee
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              Administrative Remarks
             </label>
             <textarea
               rows={3}
               value={adminRemarks}
               onChange={(e) => setAdminRemarks(e.target.value)}
-              className="block w-full rounded-xl border border-slate-200 bg-white text-sm p-3 focus:outline-none focus:border-indigo-500"
-              placeholder="Add optional remarks for the employee..."
+              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm p-3 text-slate-900 dark:text-slate-100 focus:outline-none"
+              placeholder="Optional remarks for employee..."
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-            <Button variant="secondary" onClick={() => setApprovalModalOpen(false)}>
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+            <Button variant="secondary" size="sm" onClick={() => setApprovalModalOpen(false)}>
               Cancel
             </Button>
             <Button
               variant={actionType === 'Approved' ? 'success' : 'danger'}
+              size="sm"
               onClick={handleReviewSubmit}
               loading={reviewLoading}
             >

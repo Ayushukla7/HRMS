@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-  LayoutGrid,
+  LayoutDashboard,
   Users,
   Building2,
   CalendarCheck,
@@ -10,31 +10,24 @@ import {
   Briefcase,
   TrendingUp,
   BarChart3,
-  Bell,
-  Settings,
-  Sparkles,
-  Sun,
-  Moon,
-  User,
+  Shield,
+  Layers,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
-import { useNotification } from '../context/NotificationContext';
+import Avatar from '../components/common/Avatar';
 
 const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
   const { user, isAdmin } = useAuth();
-  const { theme, toggleTheme, isDark } = useTheme();
-  const { unreadCount } = useNotification();
 
   const navItems = [
-    { label: 'Dashboard', path: '/dashboard', icon: LayoutGrid, roles: ['admin', 'employee'] },
+    { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['admin', 'employee'] },
     { label: 'Employees', path: '/employees', icon: Users, roles: ['admin', 'employee'] },
+    { label: 'Departments', path: '/departments', icon: Building2, roles: ['admin', 'employee'] },
     { label: 'Attendance', path: '/attendance', icon: CalendarCheck, roles: ['admin', 'employee'] },
-    { label: 'Leaves', path: '/leaves', icon: CalendarDays, roles: ['admin', 'employee'] },
+    { label: 'Leave Desk', path: '/leaves', icon: CalendarDays, roles: ['admin', 'employee'] },
     { label: 'Payroll', path: '/payroll', icon: CreditCard, roles: ['admin', 'employee'] },
     { label: 'Recruitment', path: '/recruitment', icon: Briefcase, roles: ['admin'] },
     { label: 'Performance', path: '/performance', icon: TrendingUp, roles: ['admin', 'employee'] },
-    { label: 'Departments', path: '/departments', icon: Building2, roles: ['admin', 'employee'] },
     { label: 'Reports', path: '/reports', icon: BarChart3, roles: ['admin'] },
   ];
 
@@ -47,29 +40,38 @@ const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
       {/* Mobile Backdrop */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden"
           onClick={closeMobileSidebar}
         />
       )}
 
-      {/* Floating Glass Icon Rail */}
+      {/* Sidebar Container */}
       <aside
-        className={`fixed top-4 bottom-4 left-4 z-40 w-16 md:w-20 rounded-3xl flex flex-col items-center justify-between py-6 transition-transform duration-300 ease-in-out lg:translate-x-0 glass-panel shadow-2xl border ${
-          isDark
-            ? 'bg-[#14151b]/80 border-white/[0.08] text-slate-300'
-            : 'bg-white/80 border-black/[0.08] text-slate-700 shadow-slate-200/60'
-        } ${isMobileOpen ? 'translate-x-0' : '-translate-x-28'}`}
+        className={`fixed top-0 bottom-0 left-0 z-40 w-60 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${
+          isMobileOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
-        {/* Top Logo */}
-        <div className="flex flex-col items-center gap-6">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-indigo-600 p-0.5 shadow-lg shadow-orange-500/20">
-            <div className="w-full h-full rounded-[14px] bg-[#14151b] flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-orange-400" />
+        {/* Top Header & Brand */}
+        <div>
+          <div className="h-16 px-5 flex items-center gap-3 border-b border-slate-100 dark:border-slate-800">
+            <div className="w-8 h-8 rounded-lg bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 flex items-center justify-center font-black text-sm shadow-sm">
+              HP
+            </div>
+            <div>
+              <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-slate-100 block leading-tight">
+                HR Pulse
+              </span>
+              <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+                Enterprise HRMS
+              </span>
             </div>
           </div>
 
-          {/* Navigation Icons List */}
-          <nav className="flex flex-col items-center gap-2.5">
+          {/* Navigation Links */}
+          <div className="px-3 py-4 space-y-1">
+            <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+              Operations
+            </p>
             {filteredNav.map((item) => {
               const Icon = item.icon;
               return (
@@ -77,64 +79,36 @@ const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
                   key={item.path}
                   to={item.path}
                   onClick={closeMobileSidebar}
-                  title={item.label}
                   className={({ isActive }) =>
-                    `group relative w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-200 ${
+                    `flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                       isActive
-                        ? isDark
-                          ? 'bg-white/15 text-white shadow-inner border border-white/20'
-                          : 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30'
-                        : isDark
-                        ? 'hover:bg-white/10 text-slate-400 hover:text-white'
-                        : 'hover:bg-slate-100 text-slate-500 hover:text-slate-900'
+                        ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-semibold shadow-sm'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
                     }`
                   }
                 >
-                  {({ isActive }) => (
-                    <>
-                      <Icon className="w-5 h-5 transition-transform group-hover:scale-110" />
-                      {/* Tooltip on hover */}
-                      <span className="absolute left-full ml-3.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-xl bg-slate-900 text-white border border-slate-700">
-                        {item.label}
-                      </span>
-                    </>
-                  )}
+                  <Icon className="w-4 h-4 flex-shrink-0" />
+                  <span>{item.label}</span>
                 </NavLink>
               );
             })}
-          </nav>
+          </div>
         </div>
 
-        {/* Bottom Actions: Theme Toggle, Notifications, Profile */}
-        <div className="flex flex-col items-center gap-3">
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            title={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
-            className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all ${
-              isDark
-                ? 'hover:bg-white/10 text-amber-400'
-                : 'hover:bg-slate-100 text-indigo-600'
-            }`}
-          >
-            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
-
-          {/* Settings / Profile link */}
+        {/* Bottom User Snapshot with Dynamic Avatar */}
+        <div className="p-3 border-t border-slate-100 dark:border-slate-800">
           <NavLink
             to="/profile"
-            title="Profile & Settings"
-            className={({ isActive }) =>
-              `w-10 h-10 rounded-2xl flex items-center justify-center transition-all ${
-                isActive
-                  ? 'bg-white/20 text-white'
-                  : isDark
-                  ? 'hover:bg-white/10 text-slate-400 hover:text-white'
-                  : 'hover:bg-slate-100 text-slate-500 hover:text-slate-900'
-              }`
-            }
+            onClick={closeMobileSidebar}
+            className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
-            <Settings className="w-4 h-4" />
+            <Avatar src={user?.avatar} name={user?.name || 'User'} size="sm" />
+            <div className="overflow-hidden flex-1">
+              <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">
+                {user?.name}
+              </p>
+              <p className="text-[10px] text-slate-400 truncate capitalize">{user?.role || 'Employee'}</p>
+            </div>
           </NavLink>
         </div>
       </aside>

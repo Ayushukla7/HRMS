@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { employeeApi, departmentApi } from '../../api';
 import { useAuth } from '../../context/AuthContext';
@@ -9,18 +9,18 @@ import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
 import ConfirmModal from '../../components/common/ConfirmModal';
+import Avatar from '../../components/common/Avatar';
 import {
   Users,
   UserPlus,
   Search,
-  Filter,
   Download,
   Edit2,
   Trash2,
   Eye,
   Mail,
   Phone,
-  Building,
+  Upload,
 } from 'lucide-react';
 
 const EmployeeListPage = () => {
@@ -46,6 +46,8 @@ const EmployeeListPage = () => {
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
+  const fileInputRef = useRef(null);
+
   // Form State
   const initialFormState = {
     empCustomId: '',
@@ -60,6 +62,7 @@ const EmployeeListPage = () => {
     employmentType: 'Full-Time',
     status: 'Active',
     gender: 'Prefer not to say',
+    profilePicture: '',
     street: '',
     city: '',
     state: '',
@@ -136,6 +139,7 @@ const EmployeeListPage = () => {
       employmentType: emp.employmentType || 'Full-Time',
       status: emp.status || 'Active',
       gender: emp.gender || 'Prefer not to say',
+      profilePicture: emp.profilePicture || '',
       street: emp.address?.street || '',
       city: emp.address?.city || '',
       state: emp.address?.state || '',
@@ -146,6 +150,16 @@ const EmployeeListPage = () => {
       password: '',
     });
     setModalOpen(true);
+  };
+
+  const handleAvatarFile = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData((prev) => ({ ...prev, profilePicture: reader.result }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleFormSubmit = async (e) => {
@@ -165,6 +179,7 @@ const EmployeeListPage = () => {
         employmentType: formData.employmentType,
         status: formData.status,
         gender: formData.gender,
+        profilePicture: formData.profilePicture,
         address: {
           street: formData.street,
           city: formData.city,
@@ -181,7 +196,7 @@ const EmployeeListPage = () => {
 
       if (editingEmployee) {
         await employeeApi.update(editingEmployee._id, payload);
-        showToast('Employee updated successfully', 'success');
+        showToast('Employee profile updated', 'success');
       } else {
         await employeeApi.create(payload);
         showToast('Employee created successfully', 'success');
@@ -206,7 +221,7 @@ const EmployeeListPage = () => {
     setDeleteLoading(true);
     try {
       await employeeApi.delete(employeeToDelete._id);
-      showToast('Employee deleted successfully', 'success');
+      showToast('Employee removed successfully', 'success');
       setDeleteModalOpen(false);
       fetchEmployees();
     } catch (err) {
@@ -220,7 +235,7 @@ const EmployeeListPage = () => {
   const exportToCSV = () => {
     if (employees.length === 0) return;
     const headers = ['ID', 'First Name', 'Last Name', 'Email', 'Phone', 'Department', 'Designation', 'Salary', 'Status'];
-    const rows = employees.map(e => [
+    const rows = employees.map((e) => [
       e.empCustomId,
       e.firstName,
       e.lastName,
@@ -232,7 +247,7 @@ const EmployeeListPage = () => {
       e.status,
     ]);
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
@@ -247,19 +262,19 @@ const EmployeeListPage = () => {
       header: 'Employee',
       render: (emp) => (
         <div className="flex items-center gap-3">
-          <img
-            src={emp.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${emp.firstName}`}
-            alt=""
-            className="w-10 h-10 rounded-full object-cover bg-slate-100 ring-2 ring-indigo-500/20"
+          <Avatar
+            src={emp.profilePicture}
+            name={`${emp.firstName} ${emp.lastName}`}
+            size="sm"
           />
           <div>
             <Link
               to={`/employees/${emp._id}`}
-              className="font-bold text-slate-900 hover:text-indigo-600 transition-colors"
+              className="font-semibold text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400"
             >
               {emp.firstName} {emp.lastName}
             </Link>
-            <p className="text-xs text-slate-500 font-mono">{emp.empCustomId}</p>
+            <p className="text-[11px] text-slate-400 font-mono">{emp.empCustomId}</p>
           </div>
         </div>
       ),
@@ -268,8 +283,8 @@ const EmployeeListPage = () => {
       header: 'Department & Role',
       render: (emp) => (
         <div>
-          <p className="font-semibold text-slate-800">{emp.designation}</p>
-          <span className="inline-flex items-center text-xs text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md font-medium">
+          <p className="font-medium text-slate-800 dark:text-slate-200">{emp.designation}</p>
+          <span className="text-xs text-slate-400">
             {emp.department?.name || 'Unassigned'}
           </span>
         </div>
@@ -278,33 +293,25 @@ const EmployeeListPage = () => {
     {
       header: 'Contact',
       render: (emp) => (
-        <div className="text-xs space-y-1">
-          <p className="text-slate-700 flex items-center gap-1.5">
-            <Mail className="w-3.5 h-3.5 text-slate-400" />
-            <span>{emp.email}</span>
-          </p>
-          {emp.phone && (
-            <p className="text-slate-500 flex items-center gap-1.5">
-              <Phone className="w-3.5 h-3.5 text-slate-400" />
-              <span>{emp.phone}</span>
-            </p>
-          )}
+        <div className="text-xs space-y-0.5">
+          <p className="text-slate-700 dark:text-slate-300">{emp.email}</p>
+          {emp.phone && <p className="text-slate-400">{emp.phone}</p>}
         </div>
       ),
     },
     {
-      header: 'Type & Status',
+      header: 'Status',
       render: (emp) => (
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           <Badge variant={emp.status}>{emp.status}</Badge>
           <p className="text-[11px] text-slate-400">{emp.employmentType}</p>
         </div>
       ),
     },
     {
-      header: 'Monthly Salary',
+      header: 'Monthly Base',
       render: (emp) => (
-        <span className="font-semibold text-slate-900">
+        <span className="font-semibold text-slate-900 dark:text-slate-100">
           ${emp.salary ? Number(emp.salary).toLocaleString() : '0'}
         </span>
       ),
@@ -315,7 +322,7 @@ const EmployeeListPage = () => {
         <div className="flex items-center gap-1">
           <Link
             to={`/employees/${emp._id}`}
-            className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-slate-100 transition-colors"
+            className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
             title="View Details"
           >
             <Eye className="w-4 h-4" />
@@ -324,14 +331,14 @@ const EmployeeListPage = () => {
             <>
               <button
                 onClick={() => handleOpenEditModal(emp)}
-                className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-slate-100 transition-colors"
+                className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
                 title="Edit Employee"
               >
                 <Edit2 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleDeleteClick(emp)}
-                className="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
                 title="Delete Employee"
               >
                 <Trash2 className="w-4 h-4" />
@@ -348,9 +355,11 @@ const EmployeeListPage = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900">Employee Directory</h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Manage employee profiles, designations, contact information, and account access.
+          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+            Employee Directory
+          </h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Manage employee records, organizational departments, salaries, and system logins.
           </p>
         </div>
 
@@ -367,15 +376,15 @@ const EmployeeListPage = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-3">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row items-center gap-3">
         <div className="flex-1 w-full relative">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, email, designation, or ID..."
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-indigo-500 focus:bg-white transition-all"
+            className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-slate-900 dark:focus:border-slate-100"
           />
         </div>
 
@@ -383,7 +392,7 @@ const EmployeeListPage = () => {
           <select
             value={selectedDept}
             onChange={(e) => setSelectedDept(e.target.value)}
-            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-indigo-500"
+            className="px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none"
           >
             <option value="all">All Departments</option>
             {departments.map((d) => (
@@ -396,7 +405,7 @@ const EmployeeListPage = () => {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-indigo-500"
+            className="px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none"
           >
             <option value="all">All Status</option>
             <option value="Active">Active</option>
@@ -420,10 +429,36 @@ const EmployeeListPage = () => {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         title={editingEmployee ? 'Edit Employee Profile' : 'Add New Employee'}
-        maxWidth="max-w-3xl"
+        maxWidth="max-w-2xl"
       >
         <form onSubmit={handleFormSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex items-center gap-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+            <Avatar
+              src={formData.profilePicture}
+              name={`${formData.firstName || 'New'} ${formData.lastName || 'User'}`}
+              size="lg"
+            />
+            <div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleAvatarFile}
+                accept="image/*"
+                className="hidden"
+              />
+              <Button
+                variant="outline"
+                size="xs"
+                icon={Upload}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Choose Photo
+              </Button>
+              <p className="text-[10px] text-slate-400 mt-1">Upload a real photo (PNG, JPG under 5MB)</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Employee ID (Optional)"
               name="empCustomId"
@@ -431,15 +466,15 @@ const EmployeeListPage = () => {
               onChange={(e) => setFormData({ ...formData, empCustomId: e.target.value })}
               placeholder="e.g. EMP-0007"
             />
-            <div className="w-full">
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                 Department <span className="text-rose-500">*</span>
               </label>
               <select
                 value={formData.department}
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                 required
-                className="block w-full rounded-xl border border-slate-200 bg-white text-sm py-2.5 px-3 focus:outline-none focus:border-indigo-500"
+                className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
               >
                 {departments.map((d) => (
                   <option key={d._id} value={d._id}>
@@ -450,7 +485,7 @@ const EmployeeListPage = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="First Name"
               name="firstName"
@@ -469,7 +504,7 @@ const EmployeeListPage = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Work Email"
               name="email"
@@ -488,7 +523,7 @@ const EmployeeListPage = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Input
               label="Designation / Role"
               name="designation"
@@ -498,7 +533,7 @@ const EmployeeListPage = () => {
               placeholder="Senior Engineer"
             />
             <Input
-              label="Monthly Basic Salary ($)"
+              label="Monthly Base Salary ($)"
               name="salary"
               type="number"
               value={formData.salary}
@@ -516,15 +551,15 @@ const EmployeeListPage = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="w-full">
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                 Employment Type
               </label>
               <select
                 value={formData.employmentType}
                 onChange={(e) => setFormData({ ...formData, employmentType: e.target.value })}
-                className="block w-full rounded-xl border border-slate-200 bg-white text-sm py-2.5 px-3"
+                className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
               >
                 <option value="Full-Time">Full-Time</option>
                 <option value="Part-Time">Part-Time</option>
@@ -533,14 +568,14 @@ const EmployeeListPage = () => {
               </select>
             </div>
 
-            <div className="w-full">
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                 Status
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="block w-full rounded-xl border border-slate-200 bg-white text-sm py-2.5 px-3"
+                className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
               >
                 <option value="Active">Active</option>
                 <option value="On Leave">On Leave</option>
@@ -549,14 +584,14 @@ const EmployeeListPage = () => {
               </select>
             </div>
 
-            <div className="w-full">
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                 Gender
               </label>
               <select
                 value={formData.gender}
                 onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                className="block w-full rounded-xl border border-slate-200 bg-white text-sm py-2.5 px-3"
+                className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
               >
                 <option value="Female">Female</option>
                 <option value="Male">Male</option>
@@ -566,10 +601,9 @@ const EmployeeListPage = () => {
             </div>
           </div>
 
-          {/* Address & Bank info */}
-          <div className="pt-2 border-t border-slate-100">
-            <h5 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
-              Address & Bank Information
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+            <h5 className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+              Banking & Address
             </h5>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Input
@@ -590,27 +624,27 @@ const EmployeeListPage = () => {
           </div>
 
           {!editingEmployee && (
-            <div className="p-3 bg-indigo-50/60 rounded-xl border border-indigo-100">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={formData.createUserAccount}
                   onChange={(e) => setFormData({ ...formData, createUserAccount: e.target.checked })}
-                  className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                  className="rounded border-slate-300 text-slate-900"
                 />
-                <span className="text-xs font-semibold text-indigo-900">
-                  Automatically create User Login Account (Password: {formData.password})
+                <span className="text-xs font-medium text-slate-800 dark:text-slate-200">
+                  Provision User Portal Account (Default password: {formData.password})
                 </span>
               </label>
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-            <Button variant="secondary" onClick={() => setModalOpen(false)}>
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+            <Button variant="secondary" size="sm" onClick={() => setModalOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" loading={formSubmitting}>
-              {editingEmployee ? 'Update Employee' : 'Save Employee'}
+            <Button type="submit" variant="primary" size="sm" loading={formSubmitting}>
+              {editingEmployee ? 'Update Profile' : 'Save Employee'}
             </Button>
           </div>
         </form>
@@ -622,8 +656,8 @@ const EmployeeListPage = () => {
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
         loading={deleteLoading}
-        title="Delete Employee Record"
-        message={`Are you sure you want to delete ${employeeToDelete?.firstName} ${employeeToDelete?.lastName}? This will permanently remove their records.`}
+        title="Delete Employee"
+        message={`Are you sure you want to delete ${employeeToDelete?.firstName} ${employeeToDelete?.lastName}? This action removes all linked records.`}
       />
     </div>
   );

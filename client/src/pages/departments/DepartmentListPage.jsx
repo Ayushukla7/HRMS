@@ -6,6 +6,7 @@ import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
 import ConfirmModal from '../../components/common/ConfirmModal';
+import Avatar from '../../components/common/Avatar';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import {
   Building2,
@@ -137,8 +138,8 @@ const DepartmentListPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900">Departments</h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Departments</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Organize departments, manage departmental budgets, and assign leadership.
           </p>
         </div>
@@ -151,21 +152,21 @@ const DepartmentListPage = () => {
       </div>
 
       {/* Department Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {departments.map((dept) => (
           <div
             key={dept._id}
-            className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm card-hover flex flex-col justify-between"
+            className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between"
           >
             <div>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-black text-sm">
+                  <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-800 dark:text-slate-200 font-bold text-xs">
                     {dept.code}
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-slate-900">{dept.name}</h3>
-                    <span className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">{dept.name}</h3>
+                    <span className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
                       <MapPin className="w-3 h-3" />
                       {dept.location}
                     </span>
@@ -176,49 +177,49 @@ const DepartmentListPage = () => {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleOpenEdit(dept)}
-                      className="p-1.5 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-slate-100"
+                      className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded hover:bg-slate-100 dark:hover:bg-slate-800"
                     >
-                      <Edit2 className="w-4 h-4" />
+                      <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => handleDelete(dept)}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50"
+                      className="p-1 text-slate-400 hover:text-rose-600 rounded hover:bg-rose-50 dark:hover:bg-rose-950/30"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 )}
               </div>
 
-              <p className="text-xs text-slate-600 mt-4 leading-relaxed line-clamp-2">
-                {dept.description || 'No description provided for this department.'}
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-3 line-clamp-2">
+                {dept.description || 'No description provided.'}
               </p>
 
               {/* Head of Department */}
-              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2 text-xs">
+              <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 text-xs">
                 <Crown className="w-3.5 h-3.5 text-amber-500" />
-                <span className="text-slate-500">Head:</span>
-                <span className="font-semibold text-slate-800">
+                <span className="text-slate-400">Head:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
                   {dept.headOfDepartment
                     ? `${dept.headOfDepartment.firstName} ${dept.headOfDepartment.lastName}`
-                    : 'Not Assigned'}
+                    : 'Unassigned'}
                 </span>
               </div>
             </div>
 
             {/* Footer Stats */}
-            <div className="mt-5 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-slate-50 p-2.5 rounded-xl">
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Workforce</span>
-                <span className="font-bold text-slate-800 flex items-center gap-1 mt-0.5">
-                  <Users className="w-3.5 h-3.5 text-indigo-500" />
+            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-2 text-xs">
+              <div className="bg-slate-50 dark:bg-slate-800/40 p-2 rounded-lg">
+                <span className="text-slate-400 block text-[10px] uppercase font-semibold">Headcount</span>
+                <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1 mt-0.5">
+                  <Users className="w-3 h-3 text-slate-500" />
                   {dept.employeeCount || 0} Members
                 </span>
               </div>
-              <div className="bg-slate-50 p-2.5 rounded-xl">
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Annual Budget</span>
-                <span className="font-bold text-slate-800 flex items-center gap-1 mt-0.5">
-                  <DollarSign className="w-3.5 h-3.5 text-emerald-500" />
+              <div className="bg-slate-50 dark:bg-slate-800/40 p-2 rounded-lg">
+                <span className="text-slate-400 block text-[10px] uppercase font-semibold">Budget</span>
+                <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1 mt-0.5">
+                  <DollarSign className="w-3 h-3 text-slate-500" />
                   ${dept.budget ? (dept.budget / 1000).toFixed(0) + 'k' : '0'}
                 </span>
               </div>
@@ -231,8 +232,8 @@ const DepartmentListPage = () => {
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editingDept ? 'Edit Department' : 'Create New Department'}
-        maxWidth="max-w-lg"
+        title={editingDept ? 'Edit Department' : 'Create Department'}
+        maxWidth="max-w-md"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
@@ -241,7 +242,7 @@ const DepartmentListPage = () => {
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             required
-            placeholder="e.g. Artificial Intelligence Research"
+            placeholder="e.g. Engineering"
           />
           <Input
             label="Department Code"
@@ -249,16 +250,16 @@ const DepartmentListPage = () => {
             value={formData.code}
             onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
             required
-            placeholder="e.g. AIR"
+            placeholder="e.g. ENG"
           />
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Head of Department
             </label>
             <select
               value={formData.headOfDepartment}
               onChange={(e) => setFormData({ ...formData, headOfDepartment: e.target.value })}
-              className="block w-full rounded-xl border border-slate-200 bg-white text-sm py-2.5 px-3"
+              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
             >
               <option value="">-- Select Department Head --</option>
               {employees.map((e) => (
@@ -277,31 +278,31 @@ const DepartmentListPage = () => {
             placeholder="500000"
           />
           <Input
-            label="Office Location"
+            label="Location"
             name="location"
             value={formData.location}
             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
             placeholder="Building A - Floor 2"
           />
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Description
             </label>
             <textarea
               rows={3}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="block w-full rounded-xl border border-slate-200 bg-white text-sm p-3 focus:outline-none focus:border-indigo-500"
+              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm p-3 text-slate-900 dark:text-slate-100 focus:outline-none"
               placeholder="Brief summary of department responsibilities..."
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-            <Button variant="secondary" onClick={() => setModalOpen(false)}>
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+            <Button variant="secondary" size="sm" onClick={() => setModalOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" loading={submitting}>
-              {editingDept ? 'Update Department' : 'Create Department'}
+            <Button type="submit" variant="primary" size="sm" loading={submitting}>
+              {editingDept ? 'Update' : 'Create'}
             </Button>
           </div>
         </form>
@@ -314,7 +315,7 @@ const DepartmentListPage = () => {
         onConfirm={confirmDelete}
         loading={deleteLoading}
         title="Delete Department"
-        message={`Are you sure you want to delete ${deptToDelete?.name}? Make sure no active employees are assigned to it.`}
+        message={`Are you sure you want to delete ${deptToDelete?.name}?`}
       />
     </div>
   );

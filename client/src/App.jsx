@@ -20,6 +20,8 @@ import RecruitmentPage from './pages/recruitment/RecruitmentPage';
 import PerformancePage from './pages/performance/PerformancePage';
 import ReportsPage from './pages/reports/ReportsPage';
 import ProfilePage from './pages/profile/ProfilePage';
+import PrivacyPolicyPage from './pages/legal/PrivacyPolicyPage';
+import TermsPage from './pages/legal/TermsPage';
 
 // Protected Route Guard
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -79,6 +81,10 @@ function App() {
                   </PublicRoute>
                 }
               />
+
+              {/* Standalone Legal Routes (Publicly viewable) */}
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/terms-and-conditions" element={<TermsPage />} />
 
               {/* Protected Main Application Routes */}
               <Route

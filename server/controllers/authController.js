@@ -112,7 +112,7 @@ exports.getMe = async (req, res, next) => {
   }
 };
 
-// @desc    Update current user profile
+// @desc    Update current user profile (including reactive avatar sync)
 // @route   PUT /api/auth/profile
 // @access  Private
 exports.updateProfile = async (req, res, next) => {
@@ -125,10 +125,32 @@ exports.updateProfile = async (req, res, next) => {
 
     await user.save();
 
+    // If linked to an employee profile, update employee picture & name as well
+    if (user.employeeId) {
+      const nameParts = (name || user.name).trim().split(' ');
+      const firstName = nameParts[0] || 'User';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      await Employee.findByIdAndUpdate(user.employeeId, {
+        profilePicture: avatar !== undefined ? avatar : undefined,
+        firstName,
+        lastName,
+      });
+    }
+
+    const updatedUser = await User.findById(req.user._id).populate('employeeId');
+
     res.status(200).json({
       success: true,
       message: 'Profile updated successfully',
-      user,
+      user: {
+        id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        avatar: updatedUser.avatar,
+        employee: updatedUser.employeeId,
+      },
     });
   } catch (err) {
     next(err);

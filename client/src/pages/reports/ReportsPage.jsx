@@ -9,7 +9,6 @@ import {
   Users,
   CreditCard,
   Building,
-  Sparkles,
 } from 'lucide-react';
 import {
   BarChart,
@@ -73,18 +72,18 @@ const ReportsPage = () => {
   ];
 
   const leaveDistribution = [
-    { name: 'Casual Leave', value: 42, color: '#6366f1' },
+    { name: 'Casual Leave', value: 42, color: '#2563eb' },
     { name: 'Sick Leave', value: 28, color: '#f59e0b' },
     { name: 'Earned Vacation', value: 35, color: '#10b981' },
-    { name: 'Unpaid / Special', value: 8, color: '#ec4899' },
+    { name: 'Unpaid / Special', value: 8, color: '#64748b' },
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900">Reports & Analytics</h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Reports & Analytics</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Visual workforce analytics, departmental budget allocations, and compensation insights.
           </p>
         </div>
@@ -100,31 +99,31 @@ const ReportsPage = () => {
       </div>
 
       {/* Row 1: Payroll Spend Trend & Department Headcounts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Payroll Expense Growth */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-base font-bold text-slate-900">Payroll Expenditure Trend</h3>
-              <p className="text-xs text-slate-400">Total net salary disbursements ($ USD)</p>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Payroll Expenditure Trend</h3>
+              <p className="text-xs text-slate-400 dark:text-slate-500">Total net salary disbursements ($ USD)</p>
             </div>
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={payrollTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="month" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${v / 1000}k`} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.2} />
+                <XAxis dataKey="month" stroke="#94a3b8" tick={{ fontSize: 11 }} />
+                <YAxis stroke="#94a3b8" tick={{ fontSize: 11 }} tickFormatter={(v) => `$${v / 1000}k`} />
                 <Tooltip
                   formatter={(val) => [`$${val.toLocaleString()}`, 'Total Disbursed']}
-                  contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff' }}
+                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
                 />
                 <Line
                   type="monotone"
                   dataKey="amount"
-                  stroke="#4f46e5"
-                  strokeWidth={3}
-                  dot={{ r: 5, fill: '#4f46e5' }}
+                  stroke="#2563eb"
+                  strokeWidth={2.5}
+                  dot={{ r: 4, fill: '#2563eb' }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -132,24 +131,24 @@ const ReportsPage = () => {
         </div>
 
         {/* Department Headcount vs Budget */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-base font-bold text-slate-900">Department Budgets ($k)</h3>
-              <p className="text-xs text-slate-400">Annual financial allocation per division</p>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Department Budgets ($k)</h3>
+              <p className="text-xs text-slate-400 dark:text-slate-500">Annual financial allocation per division</p>
             </div>
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={deptData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="name" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${v}k`} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.2} />
+                <XAxis dataKey="name" stroke="#94a3b8" tick={{ fontSize: 11 }} />
+                <YAxis stroke="#94a3b8" tick={{ fontSize: 11 }} tickFormatter={(v) => `$${v}k`} />
                 <Tooltip
                   formatter={(val) => [`$${val}k`, 'Annual Budget']}
-                  contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff' }}
+                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
                 />
-                <Bar dataKey="budget" fill="#10b981" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="budget" fill="#10b981" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -157,13 +156,13 @@ const ReportsPage = () => {
       </div>
 
       {/* Row 2: Attendance Distribution & Leave Utilization */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Attendance Pie */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-base font-bold text-slate-900">Today's Attendance Ratio</h3>
-              <p className="text-xs text-slate-400">Workforce status breakdown</p>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Today's Attendance Ratio</h3>
+              <p className="text-xs text-slate-400 dark:text-slate-500">Workforce status breakdown</p>
             </div>
           </div>
           <div className="h-64">
@@ -173,9 +172,9 @@ const ReportsPage = () => {
                   data={dashboardData?.attendanceSummary || []}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={85}
-                  paddingAngle={5}
+                  innerRadius={55}
+                  outerRadius={80}
+                  paddingAngle={4}
                   dataKey="value"
                 >
                   {(dashboardData?.attendanceSummary || []).map((entry, index) => (
@@ -183,20 +182,20 @@ const ReportsPage = () => {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff' }}
+                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
                 />
-                <Legend iconType="circle" />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Leave Category Utilization */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-base font-bold text-slate-900">Leave Categories Utilized</h3>
-              <p className="text-xs text-slate-400">Total days taken by leave classification</p>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Leave Categories Utilized</h3>
+              <p className="text-xs text-slate-400 dark:text-slate-500">Total days taken by leave classification</p>
             </div>
           </div>
           <div className="h-64">
@@ -206,9 +205,9 @@ const ReportsPage = () => {
                   data={leaveDistribution}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={85}
-                  paddingAngle={5}
+                  innerRadius={55}
+                  outerRadius={80}
+                  paddingAngle={4}
                   dataKey="value"
                 >
                   {leaveDistribution.map((entry, index) => (
@@ -216,9 +215,9 @@ const ReportsPage = () => {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff' }}
+                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
                 />
-                <Legend iconType="circle" />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '11px' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>

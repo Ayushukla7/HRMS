@@ -3,21 +3,20 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import {
   Menu,
   Bell,
-  Search,
-  Mail,
   Clock,
-  CheckCircle2,
   RefreshCw,
   LogOut,
   User,
   Sun,
   Moon,
-  Sparkles,
+  Shield,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useNotification } from '../context/NotificationContext';
 import { attendanceApi } from '../api';
+import Avatar from '../components/common/Avatar';
+import Button from '../components/common/Button';
 
 const Navbar = ({ toggleMobileSidebar }) => {
   const { user, isAdmin, logout, login } = useAuth();
@@ -87,120 +86,114 @@ const Navbar = ({ toggleMobileSidebar }) => {
     }
   };
 
-  const getPageTitle = () => {
+  const getBreadcrumb = () => {
     const path = location.pathname;
-    if (path.includes('employees')) return 'Workforce Directory';
-    if (path.includes('departments')) return 'Departments & Organization';
-    if (path.includes('attendance')) return 'Time & Attendance Tracker';
-    if (path.includes('leaves')) return 'Time Off & Leave Desk';
-    if (path.includes('payroll')) return 'Compensation & Payroll';
-    if (path.includes('recruitment')) return 'Talent Acquisition (ATS)';
+    if (path.includes('employees')) return 'Employees';
+    if (path.includes('departments')) return 'Departments';
+    if (path.includes('attendance')) return 'Attendance';
+    if (path.includes('leaves')) return 'Leave Management';
+    if (path.includes('payroll')) return 'Payroll & Compensation';
+    if (path.includes('recruitment')) return 'Recruitment';
     if (path.includes('performance')) return 'Performance Appraisals';
-    if (path.includes('reports')) return 'Executive HR Analytics';
-    if (path.includes('profile')) return 'Security & Profile';
-    return 'Workforce Hub';
+    if (path.includes('reports')) return 'Reports & Analytics';
+    if (path.includes('profile')) return 'Settings';
+    if (path.includes('privacy-policy')) return 'Privacy Policy';
+    if (path.includes('terms-and-conditions')) return 'Terms & Conditions';
+    return 'Dashboard';
   };
 
   return (
-    <header className="h-20 px-4 sm:px-8 flex items-center justify-between transition-colors">
-      {/* Left: Hamburger & Dynamic Title */}
-      <div className="flex items-center gap-4">
+    <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 transition-colors">
+      {/* Left: Mobile menu & Breadcrumb */}
+      <div className="flex items-center gap-3">
         <button
           onClick={toggleMobileSidebar}
-          className="p-2.5 rounded-2xl glass-panel text-slate-400 hover:text-white lg:hidden"
+          className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden"
         >
           <Menu className="w-5 h-5" />
         </button>
 
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-2">
-            <span>{getPageTitle()}</span>
-          </h1>
-          <p className="text-xs text-slate-400 hidden sm:block">
-            {new Date().toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-            })}
-          </p>
+        <div className="flex items-center gap-2 text-xs">
+          <span className="text-slate-400 dark:text-slate-500 font-medium">HR Pulse</span>
+          <span className="text-slate-300 dark:text-slate-700">/</span>
+          <span className="font-semibold text-slate-800 dark:text-slate-200">{getBreadcrumb()}</span>
         </div>
       </div>
 
-      {/* Right: Quick Punch, Demo Switcher, Theme, Notifications, Avatar */}
+      {/* Right Controls */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Quick Shift Punch */}
-        <button
-          onClick={handleClockToggle}
-          disabled={clockLoading}
-          className={`hidden md:flex items-center gap-2 px-3.5 py-2 rounded-2xl text-xs font-bold transition-all ${
+        {/* Attendance Punch Button */}
+        <Button
+          variant={
             todayAttendance?.checkIn && todayAttendance?.checkOut
-              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+              ? 'secondary'
               : todayAttendance?.checkIn
-              ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30 animate-pulse'
-              : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/30'
-          }`}
+              ? 'danger'
+              : 'success'
+          }
+          size="xs"
+          icon={Clock}
+          loading={clockLoading}
+          onClick={handleClockToggle}
+          className="hidden sm:inline-flex"
         >
-          <Clock className="w-3.5 h-3.5" />
-          <span>
-            {todayAttendance?.checkIn && todayAttendance?.checkOut
-              ? `Completed (${todayAttendance.workHours}h)`
-              : todayAttendance?.checkIn
-              ? `Clock Out`
-              : 'Clock In'}
-          </span>
-        </button>
+          {todayAttendance?.checkIn && todayAttendance?.checkOut
+            ? `Shift Done (${todayAttendance.workHours}h)`
+            : todayAttendance?.checkIn
+            ? 'Clock Out'
+            : 'Clock In'}
+        </Button>
 
         {/* Demo Role Switcher */}
-        <button
+        <Button
+          variant="secondary"
+          size="xs"
+          icon={RefreshCw}
           onClick={handleQuickRoleSwitch}
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-bold transition-all glass-panel ${
-            isDark ? 'text-amber-300 hover:bg-white/10' : 'text-indigo-600 hover:bg-slate-100'
-          }`}
-          title="Switch Demo Role"
+          className="hidden md:inline-flex"
+          title="Switch between Admin and Employee"
         >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Role: {isAdmin ? 'Admin' : 'Employee'}</span>
+          Role: {isAdmin ? 'Admin' : 'Employee'}
+        </Button>
+
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          title={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
+        >
+          {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
         </button>
 
         {/* Notifications */}
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setNotifOpen(!notifOpen)}
-            className={`p-2.5 rounded-2xl glass-panel relative transition-all ${
-              isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
-            }`}
+            className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 relative transition-colors"
           >
-            <Bell className="w-5 h-5" />
+            <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-orange-500 rounded-full ring-2 ring-[#14151b] animate-ping" />
-            )}
-            {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-orange-500 rounded-full ring-2 ring-[#14151b]" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-blue-600 rounded-full" />
             )}
           </button>
 
           {notifOpen && (
-            <div
-              className={`absolute right-0 mt-3 w-80 sm:w-96 rounded-3xl p-4 z-50 glass-panel shadow-2xl border ${
-                isDark ? 'bg-[#181920]/95 border-white/10' : 'bg-white/95 border-black/10'
-              }`}
-            >
-              <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl p-4 z-50 bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-3">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-bold">Notifications</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Notifications</h4>
                   {unreadCount > 0 && (
-                    <span className="px-2 py-0.5 bg-orange-500/20 text-orange-400 rounded-full text-[10px] font-bold">
-                      {unreadCount} new
+                    <span className="px-1.5 py-0.2 rounded bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[10px] font-bold">
+                      {unreadCount} unread
                     </span>
                   )}
                 </div>
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllAsRead}
-                    className="text-xs text-orange-400 hover:underline font-semibold"
+                    className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
                   >
-                    Mark read
+                    Mark all read
                   </button>
                 )}
               </div>
@@ -213,19 +206,19 @@ const Navbar = ({ toggleMobileSidebar }) => {
                     <div
                       key={n._id}
                       onClick={() => markAsRead(n._id)}
-                      className={`p-3 rounded-2xl border text-xs transition-colors cursor-pointer ${
+                      className={`p-3 rounded-lg border text-xs transition-colors cursor-pointer ${
                         n.isRead
-                          ? isDark ? 'bg-white/[0.02] border-white/5 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-600'
-                          : isDark ? 'bg-orange-500/10 border-orange-500/20 text-slate-200' : 'bg-orange-50 border-orange-200 text-slate-800'
+                          ? 'bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400'
+                          : 'bg-blue-50/50 dark:bg-blue-950/30 border-blue-100 dark:border-blue-900/40 text-slate-800 dark:text-slate-200 font-medium'
                       }`}
                     >
                       <div className="flex justify-between items-center">
-                        <span className="font-bold text-sm">{n.title}</span>
+                        <span className="font-semibold text-slate-900 dark:text-slate-100">{n.title}</span>
                         <span className="text-[10px] text-slate-400">
                           {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
-                      <p className="mt-1 leading-relaxed">{n.message}</p>
+                      <p className="mt-1 leading-relaxed text-slate-600 dark:text-slate-300">{n.message}</p>
                     </div>
                   ))
                 )}
@@ -234,52 +227,48 @@ const Navbar = ({ toggleMobileSidebar }) => {
           )}
         </div>
 
-        {/* User Profile Avatar with dropdown */}
+        {/* User Menu with Dynamic Avatar */}
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => setProfileOpen(!profileOpen)}
-            className="flex items-center gap-2 p-1 rounded-2xl glass-panel hover:ring-2 hover:ring-orange-500/40 transition-all"
+            className="flex items-center gap-2 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
-            <img
-              src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`}
-              alt=""
-              className="w-10 h-10 rounded-xl object-cover ring-2 ring-orange-500/30"
-            />
+            <Avatar src={user?.avatar} name={user?.name || 'User'} size="sm" />
+            <div className="hidden lg:block text-left">
+              <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-tight">
+                {user?.name}
+              </p>
+              <p className="text-[10px] text-slate-400 capitalize">{user?.role}</p>
+            </div>
           </button>
 
           {profileOpen && (
-            <div
-              className={`absolute right-0 mt-3 w-56 rounded-3xl p-3 z-50 glass-panel shadow-2xl border ${
-                isDark ? 'bg-[#181920]/95 border-white/10' : 'bg-white/95 border-black/10'
-              }`}
-            >
-              <div className="p-3 border-b border-white/10">
-                <p className="text-xs font-bold truncate">{user?.name}</p>
-                <p className="text-[10px] text-slate-400 truncate">{user?.email}</p>
+            <div className="absolute right-0 mt-2 w-52 rounded-xl p-1.5 z-50 bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 text-xs">
+              <div className="p-2 border-b border-slate-100 dark:border-slate-800 mb-1">
+                <p className="font-semibold text-slate-900 dark:text-slate-100 truncate">{user?.name}</p>
+                <p className="text-[11px] text-slate-400 truncate">{user?.email}</p>
               </div>
 
-              <div className="py-2 space-y-1">
-                <Link
-                  to="/profile"
-                  onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-2.5 px-3 py-2 text-xs rounded-xl hover:bg-white/10 transition-colors"
-                >
-                  <User className="w-4 h-4 text-slate-400" />
-                  <span>Account & Settings</span>
-                </Link>
+              <Link
+                to="/profile"
+                onClick={() => setProfileOpen(false)}
+                className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>Account & Profile</span>
+              </Link>
 
-                <button
-                  onClick={() => {
-                    setProfileOpen(false);
-                    logout();
-                    navigate('/login');
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors text-left"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>Sign Out</span>
-                </button>
-              </div>
+              <button
+                onClick={() => {
+                  setProfileOpen(false);
+                  logout();
+                  navigate('/login');
+                }}
+                className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors text-left"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Sign Out</span>
+              </button>
             </div>
           )}
         </div>

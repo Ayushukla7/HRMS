@@ -7,16 +7,13 @@ import Badge from '../../components/common/Badge';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
-import StatCard from '../../components/common/StatCard';
+import Avatar from '../../components/common/Avatar';
 import {
   CalendarCheck,
   Clock,
   MapPin,
-  Search,
-  CheckCircle2,
-  AlertCircle,
   Plus,
-  Users,
+  CheckCircle2,
 } from 'lucide-react';
 
 const AttendancePage = () => {
@@ -123,28 +120,28 @@ const AttendancePage = () => {
       header: 'Employee',
       render: (row) => (
         <div className="flex items-center gap-3">
-          <img
-            src={row.employee?.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${row.employee?.firstName || 'user'}`}
-            alt=""
-            className="w-9 h-9 rounded-full object-cover bg-slate-100 ring-2 ring-indigo-500/20"
+          <Avatar
+            src={row.employee?.profilePicture}
+            name={`${row.employee?.firstName || ''} ${row.employee?.lastName || ''}`}
+            size="sm"
           />
           <div>
-            <span className="font-bold text-slate-900">
+            <span className="font-semibold text-slate-900 dark:text-slate-100">
               {row.employee?.firstName} {row.employee?.lastName}
             </span>
-            <p className="text-xs text-slate-400 font-mono">{row.employee?.empCustomId}</p>
+            <p className="text-[11px] text-slate-400 font-mono">{row.employee?.empCustomId}</p>
           </div>
         </div>
       ),
     },
     {
       header: 'Date',
-      render: (row) => <span className="font-semibold text-slate-800">{row.date}</span>,
+      render: (row) => <span className="font-medium text-slate-800 dark:text-slate-200 text-xs">{row.date}</span>,
     },
     {
       header: 'Clock In',
       render: (row) => (
-        <span className="text-xs text-slate-600">
+        <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">
           {row.checkIn
             ? new Date(row.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             : '--'}
@@ -154,7 +151,7 @@ const AttendancePage = () => {
     {
       header: 'Clock Out',
       render: (row) => (
-        <span className="text-xs text-slate-600">
+        <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">
           {row.checkOut
             ? new Date(row.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             : '--'}
@@ -162,9 +159,9 @@ const AttendancePage = () => {
       ),
     },
     {
-      header: 'Work Hours',
+      header: 'Logged Hours',
       render: (row) => (
-        <span className="font-mono font-bold text-slate-800 text-xs">
+        <span className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200">
           {row.workHours ? `${row.workHours} hrs` : '--'}
         </span>
       ),
@@ -189,9 +186,9 @@ const AttendancePage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900">Attendance Management</h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Real-time shift clocking, daily logs, work hour calculations, and attendance history.
+          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Time & Attendance</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Shift clocking, work hour tracking, and historical attendance logs.
           </p>
         </div>
 
@@ -211,71 +208,69 @@ const AttendancePage = () => {
               setManualModalOpen(true);
             }}
           >
-            Mark / Adjust Attendance
+            Adjust / Log Attendance
           </Button>
         )}
       </div>
 
-      {/* Clock In / Out Banner Widget for Employee */}
-      <div className="bg-gradient-to-r from-slate-900 to-indigo-950 rounded-2xl p-6 text-white border border-slate-800 shadow-md">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center">
-              <Clock className="w-6 h-6 text-indigo-400" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-white">Daily Attendance Punch</h3>
-              <p className="text-xs text-indigo-200 mt-0.5">
-                Today: {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}
-              </p>
-            </div>
+      {/* Clock In / Out Banner Card */}
+      <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+            <Clock className="w-5 h-5" />
           </div>
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Daily Shift Punch</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}
+            </p>
+          </div>
+        </div>
 
-          <div className="flex items-center gap-3">
-            {todayRecord?.checkIn && todayRecord?.checkOut ? (
-              <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 rounded-xl text-xs font-bold">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Today's Shift Logged ({todayRecord.workHours} hrs)</span>
-              </div>
-            ) : todayRecord?.checkIn ? (
-              <Button
-                variant="danger"
-                icon={Clock}
-                loading={clockLoading}
-                onClick={handleClockOut}
-                className="shadow-lg shadow-rose-600/30"
-              >
-                Clock Out (In at {new Date(todayRecord.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
-              </Button>
-            ) : (
-              <Button
-                variant="success"
-                icon={Clock}
-                loading={clockLoading}
-                onClick={handleClockIn}
-                className="shadow-lg shadow-emerald-600/30"
-              >
-                Clock In Now
-              </Button>
-            )}
-          </div>
+        <div>
+          {todayRecord?.checkIn && todayRecord?.checkOut ? (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 rounded-lg text-xs font-semibold border border-emerald-200 dark:border-emerald-800">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Shift Logged ({todayRecord.workHours} hrs)</span>
+            </div>
+          ) : todayRecord?.checkIn ? (
+            <Button
+              variant="danger"
+              size="sm"
+              icon={Clock}
+              loading={clockLoading}
+              onClick={handleClockOut}
+            >
+              Clock Out (Started at {new Date(todayRecord.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
+            </Button>
+          ) : (
+            <Button
+              variant="success"
+              size="sm"
+              icon={Clock}
+              loading={clockLoading}
+              onClick={handleClockIn}
+            >
+              Clock In Now
+            </Button>
+          )}
         </div>
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center gap-3">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <label className="text-xs font-semibold text-slate-500 uppercase">Date:</label>
+          <label className="text-xs font-medium text-slate-500">Date:</label>
           <input
             type="date"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
-            className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-indigo-500"
+            className="px-2.5 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-slate-100 focus:outline-none"
           />
           {dateFilter && (
             <button
               onClick={() => setDateFilter('')}
-              className="text-xs text-indigo-600 hover:underline"
+              className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
             >
               Clear
             </button>
@@ -283,11 +278,11 @@ const AttendancePage = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="text-xs font-semibold text-slate-500 uppercase">Status:</label>
+          <label className="text-xs font-medium text-slate-500">Status:</label>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-indigo-500"
+            className="px-2.5 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none"
           >
             <option value="all">All Status</option>
             <option value="Present">Present</option>
@@ -300,11 +295,11 @@ const AttendancePage = () => {
 
         {isAdmin && employees.length > 0 && (
           <div className="flex items-center gap-2">
-            <label className="text-xs font-semibold text-slate-500 uppercase">Employee:</label>
+            <label className="text-xs font-medium text-slate-500">Employee:</label>
             <select
               value={selectedEmpFilter}
               onChange={(e) => setSelectedEmpFilter(e.target.value)}
-              className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-indigo-500 max-w-xs"
+              className="px-2.5 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none max-w-xs"
             >
               <option value="">All Employees</option>
               {employees.map((emp) => (
@@ -329,19 +324,19 @@ const AttendancePage = () => {
       <Modal
         isOpen={manualModalOpen}
         onClose={() => setManualModalOpen(false)}
-        title="Manual Attendance Entry / Correction"
+        title="Manual Attendance Entry / Adjustment"
         maxWidth="max-w-md"
       >
         <form onSubmit={handleManualSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Employee
             </label>
             <select
               value={manualForm.employeeId}
               onChange={(e) => setManualForm({ ...manualForm, employeeId: e.target.value })}
               required
-              className="block w-full rounded-xl border border-slate-200 bg-white text-sm py-2.5 px-3"
+              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
             >
               {employees.map((e) => (
                 <option key={e._id} value={e._id}>
@@ -361,13 +356,13 @@ const AttendancePage = () => {
           />
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Status
             </label>
             <select
               value={manualForm.status}
               onChange={(e) => setManualForm({ ...manualForm, status: e.target.value })}
-              className="block w-full rounded-xl border border-slate-200 bg-white text-sm py-2.5 px-3"
+              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
             >
               <option value="Present">Present</option>
               <option value="Late">Late</option>
@@ -391,15 +386,15 @@ const AttendancePage = () => {
             name="notes"
             value={manualForm.notes}
             onChange={(e) => setManualForm({ ...manualForm, notes: e.target.value })}
-            placeholder="e.g. Approved client-side visit"
+            placeholder="e.g. Approved site visit"
           />
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-            <Button variant="secondary" onClick={() => setManualModalOpen(false)}>
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+            <Button variant="secondary" size="sm" onClick={() => setManualModalOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" loading={manualSubmitting}>
-              Save Record
+            <Button type="submit" variant="primary" size="sm" loading={manualSubmitting}>
+              Save Attendance
             </Button>
           </div>
         </form>

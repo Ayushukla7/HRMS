@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { employeeApi, attendanceApi, leaveApi, payrollApi, performanceApi } from '../../api';
 import Badge from '../../components/common/Badge';
 import Button from '../../components/common/Button';
+import Avatar from '../../components/common/Avatar';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import {
   ArrowLeft,
@@ -10,12 +11,10 @@ import {
   Phone,
   Building,
   Calendar,
-  DollarSign,
   CreditCard,
   MapPin,
   Clock,
   Award,
-  CheckCircle,
 } from 'lucide-react';
 
 const EmployeeDetailPage = () => {
@@ -24,7 +23,6 @@ const EmployeeDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Related data
   const [attendance, setAttendance] = useState([]);
   const [leaves, setLeaves] = useState([]);
   const [payrolls, setPayrolls] = useState([]);
@@ -39,7 +37,6 @@ const EmployeeDetailPage = () => {
           setEmployee(empRes.data.data);
         }
 
-        // Fetch related module records for this employee
         const [attRes, leaveRes, payRes, perfRes] = await Promise.all([
           attendanceApi.getAll({ employeeId: id }),
           leaveApi.getAll({ employeeId: id }),
@@ -70,7 +67,7 @@ const EmployeeDetailPage = () => {
       <div className="p-8 text-center">
         <p className="text-slate-500 mb-4">Employee record not found.</p>
         <Link to="/employees">
-          <Button variant="primary">Back to Directory</Button>
+          <Button variant="primary" size="sm">Back to Directory</Button>
         </Link>
       </div>
     );
@@ -78,36 +75,36 @@ const EmployeeDetailPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Back button */}
       <Link
         to="/employees"
-        className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Employee Directory</span>
       </Link>
 
-      {/* Main Profile Card */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+      {/* Main Profile Header */}
+      <div className="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
-            <img
-              src={employee.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${employee.firstName}`}
-              alt=""
-              className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover bg-slate-100 ring-4 ring-indigo-500/20"
+          <div className="flex items-center gap-4">
+            <Avatar
+              src={employee.profilePicture}
+              name={`${employee.firstName} ${employee.lastName}`}
+              size="2xl"
+              className="w-20 h-20"
             />
             <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-black text-slate-900">
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
                   {employee.firstName} {employee.lastName}
                 </h1>
                 <Badge variant={employee.status}>{employee.status}</Badge>
               </div>
-              <p className="text-sm font-semibold text-indigo-600 mt-0.5">
-                {employee.designation} • {employee.department?.name}
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">
+                {employee.designation} &bull; {employee.department?.name}
               </p>
-              <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-slate-500">
-                <span className="font-mono bg-slate-100 px-2 py-0.5 rounded font-bold text-slate-700">
+              <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-slate-500">
+                <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded font-bold text-slate-700 dark:text-slate-300">
                   {employee.empCustomId}
                 </span>
                 <span className="flex items-center gap-1">
@@ -124,13 +121,13 @@ const EmployeeDetailPage = () => {
             </div>
           </div>
 
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-right w-full sm:w-auto">
-            <p className="text-xs text-slate-400 uppercase font-semibold">Compensation</p>
-            <p className="text-2xl font-black text-slate-900 mt-0.5">
+          <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700 text-right w-full sm:w-auto">
+            <p className="text-[11px] text-slate-400 uppercase font-semibold">Compensation</p>
+            <p className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-0.5">
               ${employee.salary ? Number(employee.salary).toLocaleString() : '0'}
-              <span className="text-xs font-medium text-slate-400"> /mo</span>
+              <span className="text-xs font-normal text-slate-400"> /mo</span>
             </p>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-[11px] text-slate-400 mt-0.5">
               Joined {new Date(employee.joiningDate).toLocaleDateString()}
             </p>
           </div>
@@ -138,7 +135,7 @@ const EmployeeDetailPage = () => {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
+      <div className="flex items-center gap-1 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto">
         {[
           { id: 'overview', label: 'Overview & Details' },
           { id: 'attendance', label: `Attendance (${attendance.length})` },
@@ -149,10 +146,10 @@ const EmployeeDetailPage = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors whitespace-nowrap ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
               activeTab === tab.id
-                ? 'bg-indigo-600 text-white shadow-sm'
-                : 'text-slate-600 hover:bg-slate-100'
+                ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
             {tab.label}
@@ -163,52 +160,52 @@ const EmployeeDetailPage = () => {
       {/* Tab Content */}
       {activeTab === 'overview' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100">
+          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider pb-2 border-b border-slate-100 dark:border-slate-800">
               Employment Details
             </h3>
-            <div className="grid grid-cols-2 gap-4 text-xs">
+            <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
                 <span className="text-slate-400">Employment Type</span>
-                <p className="font-semibold text-slate-800 mt-0.5">{employee.employmentType}</p>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">{employee.employmentType}</p>
               </div>
               <div>
                 <span className="text-slate-400">Department</span>
-                <p className="font-semibold text-slate-800 mt-0.5">{employee.department?.name}</p>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">{employee.department?.name}</p>
               </div>
               <div>
                 <span className="text-slate-400">Date of Joining</span>
-                <p className="font-semibold text-slate-800 mt-0.5">{new Date(employee.joiningDate).toLocaleDateString()}</p>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">{new Date(employee.joiningDate).toLocaleDateString()}</p>
               </div>
               <div>
                 <span className="text-slate-400">Gender</span>
-                <p className="font-semibold text-slate-800 mt-0.5">{employee.gender || 'Not specified'}</p>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">{employee.gender || 'Not specified'}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100">
+          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider pb-2 border-b border-slate-100 dark:border-slate-800">
               Address & Banking
             </h3>
-            <div className="grid grid-cols-2 gap-4 text-xs">
+            <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
                 <span className="text-slate-400">Address</span>
-                <p className="font-semibold text-slate-800 mt-0.5">
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
                   {employee.address?.city ? `${employee.address?.street || ''}, ${employee.address?.city}, ${employee.address?.state || ''}` : 'No address specified'}
                 </p>
               </div>
               <div>
                 <span className="text-slate-400">Bank Name</span>
-                <p className="font-semibold text-slate-800 mt-0.5">{employee.bankDetails?.bankName || 'N/A'}</p>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">{employee.bankDetails?.bankName || 'N/A'}</p>
               </div>
               <div>
                 <span className="text-slate-400">Account Number</span>
-                <p className="font-semibold font-mono text-slate-800 mt-0.5">{employee.bankDetails?.accountNumber || 'N/A'}</p>
+                <p className="font-semibold font-mono text-slate-800 dark:text-slate-200 mt-0.5">{employee.bankDetails?.accountNumber || 'N/A'}</p>
               </div>
               <div>
-                <span className="text-slate-400">Routing / IFSC</span>
-                <p className="font-semibold font-mono text-slate-800 mt-0.5">{employee.bankDetails?.ifscCode || 'N/A'}</p>
+                <span className="text-slate-400">IFSC / Routing</span>
+                <p className="font-semibold font-mono text-slate-800 dark:text-slate-200 mt-0.5">{employee.bankDetails?.ifscCode || 'N/A'}</p>
               </div>
             </div>
           </div>
@@ -216,22 +213,22 @@ const EmployeeDetailPage = () => {
       )}
 
       {activeTab === 'attendance' && (
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <h3 className="text-base font-bold text-slate-900 mb-4">Recent Attendance Logs</h3>
-          <div className="divide-y divide-slate-100">
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Attendance History</h3>
+          <div className="divide-y divide-slate-100 dark:divide-slate-800">
             {attendance.length === 0 ? (
               <p className="text-xs text-slate-400 text-center py-6">No attendance records found</p>
             ) : (
               attendance.map((a) => (
-                <div key={a._id} className="py-3 flex items-center justify-between text-xs">
+                <div key={a._id} className="py-2.5 flex items-center justify-between text-xs">
                   <div>
-                    <span className="font-bold text-slate-800">{a.date}</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">{a.date}</span>
                     <p className="text-slate-400">
                       In: {a.checkIn ? new Date(a.checkIn).toLocaleTimeString() : '--'} | Out: {a.checkOut ? new Date(a.checkOut).toLocaleTimeString() : '--'}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="font-semibold text-slate-600">{a.workHours} hrs</span>
+                  <div className="flex items-center gap-2.5">
+                    <span className="font-mono text-slate-600 dark:text-slate-300">{a.workHours} hrs</span>
                     <Badge variant={a.status}>{a.status}</Badge>
                   </div>
                 </div>
@@ -242,19 +239,19 @@ const EmployeeDetailPage = () => {
       )}
 
       {activeTab === 'leaves' && (
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <h3 className="text-base font-bold text-slate-900 mb-4">Leave Application History</h3>
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2.5">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Leave History</h3>
           {leaves.length === 0 ? (
             <p className="text-xs text-slate-400 text-center py-6">No leave records</p>
           ) : (
             leaves.map((l) => (
-              <div key={l._id} className="p-3.5 rounded-xl border border-slate-100 flex items-center justify-between">
+              <div key={l._id} className="p-3 rounded-lg border border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30">
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-900">{l.leaveType}</h4>
-                  <p className="text-xs text-slate-500">
-                    {new Date(l.startDate).toLocaleDateString()} to {new Date(l.endDate).toLocaleDateString()} • {l.daysCount} day(s)
+                  <h4 className="text-xs font-semibold text-slate-900 dark:text-slate-100">{l.leaveType}</h4>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {new Date(l.startDate).toLocaleDateString()} to {new Date(l.endDate).toLocaleDateString()} &bull; {l.daysCount} day(s)
                   </p>
-                  <p className="text-xs text-slate-400 italic mt-0.5">"{l.reason}"</p>
+                  <p className="text-[11px] text-slate-400 italic mt-0.5">"{l.reason}"</p>
                 </div>
                 <Badge variant={l.status}>{l.status}</Badge>
               </div>
@@ -264,21 +261,21 @@ const EmployeeDetailPage = () => {
       )}
 
       {activeTab === 'payroll' && (
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-          <h3 className="text-base font-bold text-slate-900 mb-4">Salary & Payslips</h3>
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2.5">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Salary & Payslips</h3>
           {payrolls.length === 0 ? (
             <p className="text-xs text-slate-400 text-center py-6">No payroll records</p>
           ) : (
             payrolls.map((p) => (
-              <div key={p._id} className="p-3.5 rounded-xl border border-slate-100 flex items-center justify-between">
+              <div key={p._id} className="p-3 rounded-lg border border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30">
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-900">{p.month} {p.year}</h4>
-                  <p className="text-xs text-slate-500">
+                  <h4 className="text-xs font-semibold text-slate-900 dark:text-slate-100">{p.month} {p.year}</h4>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     Basic: ${p.basicSalary} | Deductions: -${p.totalDeductions}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-black text-emerald-600">${p.netSalary?.toLocaleString()}</p>
+                  <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">${p.netSalary?.toLocaleString()}</p>
                   <Badge variant={p.paymentStatus}>{p.paymentStatus}</Badge>
                 </div>
               </div>
@@ -288,23 +285,22 @@ const EmployeeDetailPage = () => {
       )}
 
       {activeTab === 'performance' && (
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <h3 className="text-base font-bold text-slate-900 mb-4">Performance Appraisals</h3>
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Performance Appraisals</h3>
           {reviews.length === 0 ? (
-            <p className="text-xs text-slate-400 text-center py-6">No performance reviews recorded</p>
+            <p className="text-xs text-slate-400 text-center py-6">No reviews recorded</p>
           ) : (
             reviews.map((r) => (
-              <div key={r._id} className="p-4 rounded-xl border border-slate-100 space-y-2">
+              <div key={r._id} className="p-3.5 rounded-lg border border-slate-100 dark:border-slate-800 space-y-1.5 bg-slate-50/50 dark:bg-slate-800/30">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-slate-900">{r.reviewPeriod} Appraisal</h4>
-                  <div className="flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 text-amber-700 text-xs font-black">
-                    <Award className="w-4 h-4" />
-                    <span>{r.rating} / 5.0</span>
-                  </div>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100">{r.reviewPeriod} Evaluation</h4>
+                  <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                    Score: {r.rating} / 5.0
+                  </span>
                 </div>
-                <p className="text-xs text-slate-600">{r.feedback}</p>
+                <p className="text-xs text-slate-600 dark:text-slate-300">{r.feedback}</p>
                 {r.achievements && (
-                  <p className="text-xs text-emerald-700 font-medium">🏆 {r.achievements}</p>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Achievement: {r.achievements}</p>
                 )}
               </div>
             ))
