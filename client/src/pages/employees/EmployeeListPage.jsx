@@ -196,10 +196,10 @@ const EmployeeListPage = () => {
 
       if (editingEmployee) {
         await employeeApi.update(editingEmployee._id, payload);
-        showToast('Employee profile updated', 'success');
+        showToast('Employee profile updated successfully', 'success');
       } else {
         await employeeApi.create(payload);
-        showToast('Employee created successfully', 'success');
+        showToast('Employee added to organization', 'success');
       }
 
       setModalOpen(false);
@@ -274,7 +274,7 @@ const EmployeeListPage = () => {
             >
               {emp.firstName} {emp.lastName}
             </Link>
-            <p className="text-[11px] text-slate-400 font-mono">{emp.empCustomId}</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{emp.empCustomId}</p>
           </div>
         </div>
       ),
@@ -283,8 +283,8 @@ const EmployeeListPage = () => {
       header: 'Department & Role',
       render: (emp) => (
         <div>
-          <p className="font-medium text-slate-800 dark:text-slate-200">{emp.designation}</p>
-          <span className="text-xs text-slate-400">
+          <p className="font-medium text-slate-800 dark:text-slate-200 text-xs sm:text-sm">{emp.designation}</p>
+          <span className="text-xs text-slate-500 dark:text-slate-400">
             {emp.department?.name || 'Unassigned'}
           </span>
         </div>
@@ -295,7 +295,7 @@ const EmployeeListPage = () => {
       render: (emp) => (
         <div className="text-xs space-y-0.5">
           <p className="text-slate-700 dark:text-slate-300">{emp.email}</p>
-          {emp.phone && <p className="text-slate-400">{emp.phone}</p>}
+          {emp.phone && <p className="text-slate-500 dark:text-slate-400">{emp.phone}</p>}
         </div>
       ),
     },
@@ -304,14 +304,14 @@ const EmployeeListPage = () => {
       render: (emp) => (
         <div className="space-y-0.5">
           <Badge variant={emp.status}>{emp.status}</Badge>
-          <p className="text-[11px] text-slate-400">{emp.employmentType}</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">{emp.employmentType}</p>
         </div>
       ),
     },
     {
       header: 'Monthly Base',
       render: (emp) => (
-        <span className="font-semibold text-slate-900 dark:text-slate-100">
+        <span className="font-semibold text-slate-900 dark:text-slate-100 font-mono text-xs sm:text-sm">
           ${emp.salary ? Number(emp.salary).toLocaleString() : '0'}
         </span>
       ),
@@ -322,7 +322,7 @@ const EmployeeListPage = () => {
         <div className="flex items-center gap-1">
           <Link
             to={`/employees/${emp._id}`}
-            className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
             title="View Details"
           >
             <Eye className="w-4 h-4" />
@@ -331,14 +331,14 @@ const EmployeeListPage = () => {
             <>
               <button
                 onClick={() => handleOpenEditModal(emp)}
-                className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
                 title="Edit Employee"
               >
                 <Edit2 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleDeleteClick(emp)}
-                className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
                 title="Delete Employee"
               >
                 <Trash2 className="w-4 h-4" />
@@ -376,7 +376,7 @@ const EmployeeListPage = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row items-center gap-3">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row items-center gap-3">
         <div className="flex-1 w-full relative">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -384,7 +384,7 @@ const EmployeeListPage = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, email, designation, or ID..."
-            className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-slate-900 dark:focus:border-slate-100"
+            className="w-full pl-9 pr-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
 
@@ -392,7 +392,7 @@ const EmployeeListPage = () => {
           <select
             value={selectedDept}
             onChange={(e) => setSelectedDept(e.target.value)}
-            className="px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none"
+            className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           >
             <option value="all">All Departments</option>
             {departments.map((d) => (
@@ -405,7 +405,7 @@ const EmployeeListPage = () => {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none"
+            className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           >
             <option value="all">All Status</option>
             <option value="Active">Active</option>
@@ -467,14 +467,14 @@ const EmployeeListPage = () => {
               placeholder="e.g. EMP-0007"
             />
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                 Department <span className="text-rose-500">*</span>
               </label>
               <select
                 value={formData.department}
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                 required
-                className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
+                className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 {departments.map((d) => (
                   <option key={d._id} value={d._id}>
@@ -553,13 +553,13 @@ const EmployeeListPage = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                 Employment Type
               </label>
               <select
                 value={formData.employmentType}
                 onChange={(e) => setFormData({ ...formData, employmentType: e.target.value })}
-                className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
+                className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 <option value="Full-Time">Full-Time</option>
                 <option value="Part-Time">Part-Time</option>
@@ -569,13 +569,13 @@ const EmployeeListPage = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                 Status
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
+                className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 <option value="Active">Active</option>
                 <option value="On Leave">On Leave</option>
@@ -585,13 +585,13 @@ const EmployeeListPage = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                 Gender
               </label>
               <select
                 value={formData.gender}
                 onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
+                className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 <option value="Female">Female</option>
                 <option value="Male">Male</option>
@@ -602,7 +602,7 @@ const EmployeeListPage = () => {
           </div>
 
           <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-            <h5 className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+            <h5 className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wider">
               Banking & Address
             </h5>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -630,7 +630,7 @@ const EmployeeListPage = () => {
                   type="checkbox"
                   checked={formData.createUserAccount}
                   onChange={(e) => setFormData({ ...formData, createUserAccount: e.target.checked })}
-                  className="rounded border-slate-300 text-slate-900"
+                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-xs font-medium text-slate-800 dark:text-slate-200">
                   Provision User Portal Account (Default password: {formData.password})

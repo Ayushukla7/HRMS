@@ -156,18 +156,18 @@ const DepartmentListPage = () => {
         {departments.map((dept) => (
           <div
             key={dept._id}
-            className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between"
+            className="bg-white dark:bg-slate-900 rounded-lg p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between"
           >
             <div>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-800 dark:text-slate-200 font-bold text-xs">
+                  <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-xs">
                     {dept.code}
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">{dept.name}</h3>
-                    <span className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
-                      <MapPin className="w-3 h-3" />
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                      <MapPin className="w-3 h-3 text-slate-400" />
                       {dept.location}
                     </span>
                   </div>
@@ -177,13 +177,13 @@ const DepartmentListPage = () => {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleOpenEdit(dept)}
-                      className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => handleDelete(dept)}
-                      className="p-1 text-slate-400 hover:text-rose-600 rounded hover:bg-rose-50 dark:hover:bg-rose-950/30"
+                      className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -191,8 +191,8 @@ const DepartmentListPage = () => {
                 )}
               </div>
 
-              <p className="text-xs text-slate-600 dark:text-slate-400 mt-3 line-clamp-2">
-                {dept.description || 'No description provided.'}
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-3 line-clamp-2 leading-relaxed">
+                {dept.description || 'Core organizational division.'}
               </p>
 
               {/* Head of Department */}
@@ -209,17 +209,16 @@ const DepartmentListPage = () => {
 
             {/* Footer Stats */}
             <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-slate-50 dark:bg-slate-800/40 p-2 rounded-lg">
-                <span className="text-slate-400 block text-[10px] uppercase font-semibold">Headcount</span>
+              <div className="bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
+                <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-semibold">Headcount</span>
                 <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1 mt-0.5">
-                  <Users className="w-3 h-3 text-slate-500" />
+                  <Users className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                   {dept.employeeCount || 0} Members
                 </span>
               </div>
-              <div className="bg-slate-50 dark:bg-slate-800/40 p-2 rounded-lg">
-                <span className="text-slate-400 block text-[10px] uppercase font-semibold">Budget</span>
-                <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1 mt-0.5">
-                  <DollarSign className="w-3 h-3 text-slate-500" />
+              <div className="bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
+                <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-semibold">Annual Budget</span>
+                <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1 mt-0.5 font-mono">
                   ${dept.budget ? (dept.budget / 1000).toFixed(0) + 'k' : '0'}
                 </span>
               </div>
@@ -253,13 +252,13 @@ const DepartmentListPage = () => {
             placeholder="e.g. ENG"
           />
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
               Head of Department
             </label>
             <select
               value={formData.headOfDepartment}
               onChange={(e) => setFormData({ ...formData, headOfDepartment: e.target.value })}
-              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
+              className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="">-- Select Department Head --</option>
               {employees.map((e) => (
@@ -285,14 +284,14 @@ const DepartmentListPage = () => {
             placeholder="Building A - Floor 2"
           />
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
               Description
             </label>
             <textarea
               rows={3}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm p-3 text-slate-900 dark:text-slate-100 focus:outline-none"
+              className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs p-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="Brief summary of department responsibilities..."
             />
           </div>
@@ -302,7 +301,7 @@ const DepartmentListPage = () => {
               Cancel
             </Button>
             <Button type="submit" variant="primary" size="sm" loading={submitting}>
-              {editingDept ? 'Update' : 'Create'}
+              {editingDept ? 'Update Department' : 'Create Department'}
             </Button>
           </div>
         </form>

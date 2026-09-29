@@ -2,6 +2,7 @@ const Leave = require('../models/Leave');
 const Employee = require('../models/Employee');
 const Notification = require('../models/Notification');
 const User = require('../models/User');
+const Department = require('../models/Department');
 
 // @desc    Get all leave applications
 // @route   GET /api/leaves
@@ -12,10 +13,20 @@ exports.getLeaves = async (req, res, next) => {
     const query = {};
 
     if (req.user.role === 'employee') {
-      if (!req.user.employeeId) {
-        return res.status(200).json({ success: true, data: [] });
+      let empId = req.user.employeeId?._id || req.user.employeeId;
+      if (!empId) {
+        const emp = await Employee.findOne({ email: req.user.email });
+        if (emp) {
+          empId = emp._id;
+          // Synchronize user.employeeId
+          await User.findByIdAndUpdate(req.user._id, { employeeId: emp._id });
+        }
       }
-      query.employee = req.user.employeeId._id || req.user.employeeId;
+
+      if (!empId) {
+        return res.status(200).json({ success: true, count: 0, data: [] });
+      }
+      query.employee = empId;
     } else if (employeeId) {
       query.employee = employeeId;
     }
@@ -31,7 +42,7 @@ exports.getLeaves = async (req, res, next) => {
     const leaves = await Leave.find(query)
       .populate({
         path: 'employee',
-        select: 'firstName lastName empCustomId designation profilePicture department',
+        select: 'firstName lastName empCustomId designation profilePicture department email',
         populate: { path: 'department', select: 'name' },
       })
       .populate('approvedBy', 'name email')
@@ -53,49 +64,100 @@ exports.getLeaves = async (req, res, next) => {
 exports.applyLeave = async (req, res, next) => {
   try {
     const { leaveType, startDate, endDate, daysCount, reason, documentUrl } = req.body;
-    const employeeId = req.body.employeeId || req.user.employeeId?._id || req.user.employeeId;
+    let employeeId = req.body.employeeId || req.user.employeeId?._id || req.user.employeeId;
 
+    // If employee profile is not explicitly linked, find by email or auto-provision
     if (!employeeId) {
-      return res.status(400).json({ success: false, message: 'No employee profile linked to account' });
+      let employee = await Employee.findOne({ email: req.user.email });
+      if (!employee) {
+        const names = (req.user.name || 'Employee').trim().split(' ');
+        const firstName = names[0] || 'Employee';
+        const lastName = names.slice(1).join(' ') || 'Team';
+
+        let defaultDept = await Department.findOne();
+        if (!defaultDept) {
+          defaultDept = await Department.create({
+            name: 'Operations',
+            code: 'OPS',
+            description: 'Operations Department',
+          });
+        }
+
+        const count = await Employee.countDocuments();
+        const empCustomId = `EMP${String(count + 101).padStart(4, '0')}`;
+
+        employee = await Employee.create({
+          empCustomId,
+          firstName,
+          lastName,
+          email: req.user.email,
+          department: defaultDept._id,
+          designation: 'Staff Member',
+          salary: 65000,
+          userAccount: req.user._id,
+        });
+      }
+
+      employeeId = employee._id;
+      await User.findByIdAndUpdate(req.user._id, { employeeId: employee._id });
     }
 
     // Calculate days count if not provided
-    let calculatedDays = daysCount;
-    if (!calculatedDays) {
+    let calculatedDays = Number(daysCount);
+    if (!calculatedDays || calculatedDays <= 0) {
       const start = new Date(startDate);
       const end = new Date(endDate);
       const diffTime = Math.abs(end - start);
-      calculatedDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      calculatedDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1);
     }
 
     const leave = await Leave.create({
       employee: employeeId,
-      leaveType,
+      leaveType: leaveType || 'Casual Leave',
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       daysCount: calculatedDays,
-      reason,
+      reason: reason || 'Personal Leave Request',
       documentUrl: documentUrl || '',
       status: 'Pending',
     });
 
-    const populatedLeave = await Leave.findById(leave._id).populate('employee', 'firstName lastName empCustomId');
+    const populatedLeave = await Leave.findById(leave._id)
+      .populate({
+        path: 'employee',
+        select: 'firstName lastName empCustomId designation profilePicture department email',
+        populate: { path: 'department', select: 'name' },
+      });
 
-    // Notify Admins about new leave request
+    const empName = populatedLeave?.employee
+      ? `${populatedLeave.employee.firstName} ${populatedLeave.employee.lastName}`
+      : (req.user.name || 'Employee');
+    const empCode = populatedLeave?.employee?.empCustomId || 'Staff';
+
+    // 1. Notify all HR / Admins with a real-time message notification
     const adminUsers = await User.find({ role: 'admin' });
     for (const admin of adminUsers) {
       await Notification.create({
         recipient: admin._id,
-        title: 'New Leave Request',
-        message: `${populatedLeave.employee.firstName} ${populatedLeave.employee.lastName} applied for ${calculatedDays} day(s) ${leaveType}.`,
+        title: 'New Leave Request Received',
+        message: `${empName} (${empCode}) requested ${calculatedDays} day(s) of ${leaveType || 'Casual Leave'} from ${new Date(startDate).toLocaleDateString()} to ${new Date(endDate).toLocaleDateString()}.${reason ? ` Reason: "${reason}"` : ''}`,
         type: 'leave',
         link: '/leaves',
       });
     }
 
+    // 2. Notify the submitting employee that their application is recorded
+    await Notification.create({
+      recipient: req.user._id,
+      title: 'Leave Application Submitted',
+      message: `Your application for ${calculatedDays} day(s) of ${leaveType} has been submitted to HR for approval.`,
+      type: 'leave',
+      link: '/leaves',
+    });
+
     res.status(201).json({
       success: true,
-      message: 'Leave application submitted successfully',
+      message: 'Leave application submitted successfully and sent to HR for approval.',
       data: populatedLeave,
     });
   } catch (err) {
@@ -126,20 +188,31 @@ exports.updateLeaveStatus = async (req, res, next) => {
 
     await leave.save();
 
+    // Find the user account belonging to the employee
+    let recipientUserId = leave.employee?.userAccount;
+    if (!recipientUserId && leave.employee?.email) {
+      const userAcc = await User.findOne({ email: leave.employee.email });
+      if (userAcc) recipientUserId = userAcc._id;
+    }
+
     // Notify employee about approval / rejection
-    if (leave.employee && leave.employee.userAccount) {
+    if (recipientUserId) {
       await Notification.create({
-        recipient: leave.employee.userAccount,
+        recipient: recipientUserId,
         title: `Leave Request ${status}`,
-        message: `Your ${leave.leaveType} from ${new Date(leave.startDate).toLocaleDateString()} has been ${status.toLowerCase()}.${adminRemarks ? ` Remarks: ${adminRemarks}` : ''}`,
+        message: `Your ${leave.leaveType} (${leave.daysCount} day(s)) has been ${status.toLowerCase()} by HR.${adminRemarks ? ` Note: "${adminRemarks}"` : ''}`,
         type: 'leave',
         link: '/leaves',
       });
     }
 
     const updatedLeave = await Leave.findById(leave._id)
-      .populate('employee', 'firstName lastName empCustomId')
-      .populate('approvedBy', 'name');
+      .populate({
+        path: 'employee',
+        select: 'firstName lastName empCustomId designation profilePicture department email',
+        populate: { path: 'department', select: 'name' },
+      })
+      .populate('approvedBy', 'name email');
 
     res.status(200).json({
       success: true,
@@ -151,52 +224,58 @@ exports.updateLeaveStatus = async (req, res, next) => {
   }
 };
 
-// @desc    Get leave balance summary for an employee
-// @route   GET /api/leaves/balance/:employeeId?
+// @desc    Get leave balance quotas
+// @route   GET /api/leaves/balance
 // @access  Private
 exports.getLeaveBalance = async (req, res, next) => {
   try {
-    const employeeId = req.params.employeeId || req.user.employeeId?._id || req.user.employeeId;
+    let employeeId = req.user.employeeId?._id || req.user.employeeId;
     if (!employeeId) {
-      return res.status(400).json({ success: false, message: 'Employee ID required' });
+      const emp = await Employee.findOne({ email: req.user.email });
+      if (emp) employeeId = emp._id;
+    }
+
+    const quotas = [
+      { leaveType: 'Casual Leave', totalQuota: 12 },
+      { leaveType: 'Sick Leave', totalQuota: 10 },
+      { leaveType: 'Earned Leave', totalQuota: 15 },
+      { leaveType: 'Unpaid Leave', totalQuota: 30 },
+    ];
+
+    if (!employeeId) {
+      const defaultBalances = quotas.map((q) => ({
+        ...q,
+        usedDays: 0,
+        remainingDays: q.totalQuota,
+      }));
+      return res.status(200).json({ success: true, data: defaultBalances });
     }
 
     const approvedLeaves = await Leave.find({
       employee: employeeId,
       status: 'Approved',
-      startDate: { $gte: new Date(new Date().getFullYear(), 0, 1) },
+      startDate: {
+        $gte: new Date(new Date().getFullYear(), 0, 1),
+        $lte: new Date(new Date().getFullYear(), 11, 31),
+      },
     });
 
-    const standardQuotas = {
-      'Casual Leave': 12,
-      'Sick Leave': 10,
-      'Earned Leave': 15,
-      'Maternity Leave': 90,
-      'Paternity Leave': 10,
-      'Unpaid Leave': 30,
-    };
+    const balances = quotas.map((quota) => {
+      const usedDays = approvedLeaves
+        .filter((l) => l.leaveType === quota.leaveType)
+        .reduce((sum, l) => sum + (l.daysCount || 0), 0);
 
-    const used = {};
-    for (const key of Object.keys(standardQuotas)) {
-      used[key] = 0;
-    }
-
-    approvedLeaves.forEach((l) => {
-      if (used[l.leaveType] !== undefined) {
-        used[l.leaveType] += l.daysCount;
-      }
+      return {
+        leaveType: quota.leaveType,
+        totalQuota: quota.totalQuota,
+        usedDays,
+        remainingDays: Math.max(0, quota.totalQuota - usedDays),
+      };
     });
-
-    const summary = Object.keys(standardQuotas).map((type) => ({
-      leaveType: type,
-      totalQuota: standardQuotas[type],
-      usedDays: used[type] || 0,
-      remainingDays: Math.max(0, standardQuotas[type] - (used[type] || 0)),
-    }));
 
     res.status(200).json({
       success: true,
-      data: summary,
+      data: balances,
     });
   } catch (err) {
     next(err);

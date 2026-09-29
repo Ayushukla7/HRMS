@@ -13,11 +13,18 @@ import {
   Plus,
   Check,
   X,
+  Clock,
+  AlertCircle,
+  FileText,
+  User,
+  Calendar,
+  CheckCircle2,
+  XCircle,
 } from 'lucide-react';
 
 const LeavePage = () => {
   const { user, isAdmin } = useAuth();
-  const { showToast } = useNotification();
+  const { showToast, fetchNotifications } = useNotification();
 
   const [leaves, setLeaves] = useState([]);
   const [balances, setBalances] = useState([]);
@@ -76,12 +83,12 @@ const LeavePage = () => {
       const diffTime = Math.abs(end - start);
       const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
-      await leaveApi.apply({
+      const res = await leaveApi.apply({
         ...applyForm,
         daysCount: days,
       });
 
-      showToast('Leave request submitted', 'success');
+      showToast(res.data.message || 'Leave request submitted and sent to HR for approval', 'success');
       setApplyModalOpen(false);
       setApplyForm({
         leaveType: 'Casual Leave',
@@ -90,6 +97,7 @@ const LeavePage = () => {
         reason: '',
       });
       fetchData();
+      if (fetchNotifications) fetchNotifications();
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to submit leave', 'error');
     } finally {
@@ -100,8 +108,22 @@ const LeavePage = () => {
   const handleOpenReview = (leave, action) => {
     setSelectedLeave(leave);
     setActionType(action);
-    setAdminRemarks(action === 'Approved' ? 'Approved by HR.' : 'Cannot be approved.');
+    setAdminRemarks(action === 'Approved' ? 'Approved by HR.' : 'Cannot be approved at this time.');
     setApprovalModalOpen(true);
+  };
+
+  const handleQuickDecision = async (leaveId, status) => {
+    try {
+      await leaveApi.updateStatus(leaveId, {
+        status,
+        adminRemarks: status === 'Approved' ? 'Approved by HR' : 'Rejected by HR',
+      });
+      showToast(`Leave request ${status.toLowerCase()}`, 'success');
+      fetchData();
+      if (fetchNotifications) fetchNotifications();
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to update leave', 'error');
+    }
   };
 
   const handleReviewSubmit = async () => {
@@ -115,12 +137,15 @@ const LeavePage = () => {
       showToast(`Leave request ${actionType.toLowerCase()}`, 'success');
       setApprovalModalOpen(false);
       fetchData();
+      if (fetchNotifications) fetchNotifications();
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to update status', 'error');
     } finally {
       setReviewLoading(false);
     }
   };
+
+  const pendingLeavesList = leaves.filter((l) => l.status === 'Pending');
 
   const columns = [
     {
@@ -136,23 +161,23 @@ const LeavePage = () => {
             <span className="font-semibold text-slate-900 dark:text-slate-100">
               {row.employee?.firstName} {row.employee?.lastName}
             </span>
-            <p className="text-[11px] text-slate-400 font-mono">{row.employee?.empCustomId}</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{row.employee?.empCustomId}</p>
           </div>
         </div>
       ),
     },
     {
       header: 'Leave Type',
-      render: (row) => <span className="font-medium text-slate-800 dark:text-slate-200 text-xs">{row.leaveType}</span>,
+      render: (row) => <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs">{row.leaveType}</span>,
     },
     {
-      header: 'Period & Duration',
+      header: 'Dates & Duration',
       render: (row) => (
         <div className="text-xs space-y-0.5">
-          <p className="text-slate-700 dark:text-slate-300">
-            {new Date(row.startDate).toLocaleDateString()} - {new Date(row.endDate).toLocaleDateString()}
+          <p className="text-slate-700 dark:text-slate-300 font-medium">
+            {new Date(row.startDate).toLocaleDateString()} &ndash; {new Date(row.endDate).toLocaleDateString()}
           </p>
-          <span className="font-mono text-[11px] text-slate-500 font-semibold">
+          <span className="font-mono text-[11px] text-blue-600 dark:text-blue-400 font-semibold">
             {row.daysCount} Day(s)
           </span>
         </div>
@@ -171,7 +196,7 @@ const LeavePage = () => {
       render: (row) => <Badge variant={row.status}>{row.status}</Badge>,
     },
     {
-      header: 'Actions',
+      header: 'Actions / Remarks',
       render: (row) => {
         if (isAdmin && row.status === 'Pending') {
           return (
@@ -196,8 +221,8 @@ const LeavePage = () => {
           );
         }
         return (
-          <span className="text-xs text-slate-400">
-            {row.adminRemarks || (row.status === 'Pending' ? 'Pending Review' : 'Processed')}
+          <span className="text-xs text-slate-500 dark:text-slate-400">
+            {row.adminRemarks || (row.status === 'Pending' ? 'Pending HR Review' : 'Processed')}
           </span>
         );
       },
@@ -206,11 +231,12 @@ const LeavePage = () => {
 
   return (
     <div className="space-y-6">
+      {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Leave Management</h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Apply for time off, monitor annual quota balances, and review leave workflows.
+            Submit leave requests, review employee time-off applications, and monitor quota balances.
           </p>
         </div>
 
@@ -225,27 +251,118 @@ const LeavePage = () => {
       </div>
 
       {/* Quota Balances Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {balances.slice(0, 3).map((bal, idx) => (
-          <div
-            key={idx}
-            className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between"
-          >
-            <div>
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                {bal.leaveType}
-              </span>
-              <div className="flex items-baseline gap-1.5 mt-0.5">
-                <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{bal.remainingDays}</span>
-                <span className="text-xs text-slate-400">/ {bal.totalQuota} days left</span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {balances.map((bal, idx) => {
+          const percentUsed = Math.min(100, Math.round((bal.usedDays / bal.totalQuota) * 100));
+          return (
+            <div
+              key={idx}
+              className="bg-white dark:bg-slate-900 rounded-lg p-4 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                    {bal.leaveType}
+                  </span>
+                  <span className="text-[11px] font-mono text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                    {bal.usedDays} Used
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-1.5 mt-2">
+                  <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{bal.remainingDays}</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">/ {bal.totalQuota} days remaining</span>
+                </div>
+              </div>
+
+              {/* Progress bar */}
+              <div className="mt-3">
+                <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full ${
+                      percentUsed > 80
+                        ? 'bg-rose-500'
+                        : percentUsed > 50
+                        ? 'bg-amber-500'
+                        : 'bg-blue-600 dark:bg-blue-500'
+                    }`}
+                    style={{ width: `${percentUsed}%` }}
+                  />
+                </div>
               </div>
             </div>
-            <span className="text-xs text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
-              {bal.usedDays} Used
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
+
+      {/* HR Direct Approvals Panel (Shows when Admin has pending requests) */}
+      {isAdmin && pendingLeavesList.length > 0 && (
+        <div className="bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-lg p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-semibold text-xs uppercase tracking-wider">
+              <AlertCircle className="w-4 h-4" />
+              <span>Pending HR Approvals ({pendingLeavesList.length} Request{pendingLeavesList.length > 1 ? 's' : ''})</span>
+            </div>
+            <span className="text-[11px] text-amber-700 dark:text-amber-400 font-medium">Action required</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {pendingLeavesList.map((req) => (
+              <div
+                key={req._id}
+                className="bg-white dark:bg-slate-900 p-3.5 rounded-lg border border-amber-200/80 dark:border-amber-800/50 shadow-sm flex flex-col justify-between space-y-3"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <Avatar
+                      src={req.employee?.profilePicture}
+                      name={`${req.employee?.firstName || ''} ${req.employee?.lastName || ''}`}
+                      size="sm"
+                    />
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                        {req.employee?.firstName} {req.employee?.lastName}
+                      </h4>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                        {req.employee?.designation} &bull; <span className="font-mono">{req.employee?.empCustomId}</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <Badge variant="pending">{req.leaveType}</Badge>
+                </div>
+
+                <div className="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded text-xs space-y-1">
+                  <p className="text-slate-700 dark:text-slate-300 font-medium">
+                    {new Date(req.startDate).toLocaleDateString()} &ndash; {new Date(req.endDate).toLocaleDateString()} ({req.daysCount} Day{req.daysCount > 1 ? 's' : ''})
+                  </p>
+                  <p className="text-slate-600 dark:text-slate-400 italic text-[11px]">
+                    &ldquo;{req.reason}&rdquo;
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-1">
+                  <Button
+                    variant="danger"
+                    size="xs"
+                    icon={X}
+                    onClick={() => handleOpenReview(req, 'Rejected')}
+                  >
+                    Reject
+                  </Button>
+                  <Button
+                    variant="success"
+                    size="xs"
+                    icon={Check}
+                    onClick={() => handleOpenReview(req, 'Approved')}
+                  >
+                    Approve Request
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Filter Tabs */}
       <div className="flex items-center gap-1.5 border-b border-slate-200 dark:border-slate-800 pb-2">
@@ -255,11 +372,11 @@ const LeavePage = () => {
             onClick={() => setStatusFilter(status)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-colors ${
               statusFilter === status
-                ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
+                ? 'bg-blue-600 text-white shadow-sm'
                 : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
-            {status === 'all' ? 'All Requests' : status}
+            {status === 'all' ? `All Requests (${leaves.length})` : `${status} (${leaves.filter(l => l.status === status).length})`}
           </button>
         ))}
       </div>
@@ -276,18 +393,18 @@ const LeavePage = () => {
       <Modal
         isOpen={applyModalOpen}
         onClose={() => setApplyModalOpen(false)}
-        title="Apply for Leave"
+        title="Apply for Time Off"
         maxWidth="max-w-md"
       >
         <form onSubmit={handleApplySubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Leave Type
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+              Leave Classification
             </label>
             <select
               value={applyForm.leaveType}
               onChange={(e) => setApplyForm({ ...applyForm, leaveType: e.target.value })}
-              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
+              className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="Casual Leave">Casual Leave</option>
               <option value="Sick Leave">Sick Leave</option>
@@ -316,16 +433,16 @@ const LeavePage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Reason <span className="text-rose-500">*</span>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+              Reason for Request <span className="text-rose-500">*</span>
             </label>
             <textarea
               rows={3}
               value={applyForm.reason}
               onChange={(e) => setApplyForm({ ...applyForm, reason: e.target.value })}
               required
-              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm p-3 text-slate-900 dark:text-slate-100 focus:outline-none"
-              placeholder="Provide reason for time off request..."
+              className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs p-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="State clear reason for absence (e.g. Medical recovery, Personal emergency, Family commitment)..."
             />
           </div>
 
@@ -334,7 +451,7 @@ const LeavePage = () => {
               Cancel
             </Button>
             <Button type="submit" variant="primary" size="sm" loading={submitting}>
-              Submit Request
+              Submit to HR
             </Button>
           </div>
         </form>
@@ -349,23 +466,23 @@ const LeavePage = () => {
       >
         <div className="space-y-4">
           <p className="text-xs text-slate-600 dark:text-slate-300">
-            You are setting this {selectedLeave?.leaveType} ({selectedLeave?.daysCount} days) for{' '}
-            <span className="font-semibold text-slate-900 dark:text-slate-100">
+            Confirm decision for{' '}
+            <span className="font-bold text-slate-900 dark:text-slate-100">
               {selectedLeave?.employee?.firstName} {selectedLeave?.employee?.lastName}
-            </span>{' '}
-            as <span className="font-semibold">{actionType}</span>.
+            </span>
+            &rsquo;s {selectedLeave?.leaveType} ({selectedLeave?.daysCount} day{selectedLeave?.daysCount > 1 ? 's' : ''}):
           </p>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Administrative Remarks
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+              Administrative Remarks / Feedback
             </label>
             <textarea
               rows={3}
               value={adminRemarks}
               onChange={(e) => setAdminRemarks(e.target.value)}
-              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm p-3 text-slate-900 dark:text-slate-100 focus:outline-none"
-              placeholder="Optional remarks for employee..."
+              className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs p-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Optional remarks that will be delivered directly to the employee..."
             />
           </div>
 

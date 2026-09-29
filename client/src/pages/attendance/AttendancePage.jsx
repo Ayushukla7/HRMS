@@ -14,17 +14,20 @@ import {
   MapPin,
   Plus,
   CheckCircle2,
+  Calendar,
+  Filter,
 } from 'lucide-react';
 
 const AttendancePage = () => {
   const { user, isAdmin } = useAuth();
-  const { showToast } = useNotification();
+  const { showToast, fetchNotifications } = useNotification();
 
   const [records, setRecords] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [todayRecord, setTodayRecord] = useState(null);
   const [loading, setLoading] = useState(true);
   const [clockLoading, setClockLoading] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
 
   // Filters
   const [dateFilter, setDateFilter] = useState('');
@@ -42,6 +45,13 @@ const AttendancePage = () => {
     notes: 'Regular attendance',
   });
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -58,7 +68,12 @@ const AttendancePage = () => {
 
       if (attRes.data.success) setRecords(attRes.data.data);
       if (todayRes.data.success) setTodayRecord(todayRes.data.data);
-      if (empRes.data.success) setEmployees(empRes.data.data);
+      if (empRes.data.success) {
+        setEmployees(empRes.data.data);
+        if (empRes.data.data.length > 0 && !manualForm.employeeId) {
+          setManualForm((prev) => ({ ...prev, employeeId: empRes.data.data[0]._id }));
+        }
+      }
     } catch (err) {
       console.error('Failed to load attendance:', err);
     } finally {
@@ -75,8 +90,9 @@ const AttendancePage = () => {
     try {
       const res = await attendanceApi.checkIn({});
       if (res.data.success) {
-        showToast(res.data.message, 'success');
+        showToast('Successfully clocked in for your shift', 'success');
         fetchData();
+        if (fetchNotifications) fetchNotifications();
       }
     } catch (err) {
       showToast(err.response?.data?.message || 'Check-in failed', 'error');
@@ -90,8 +106,9 @@ const AttendancePage = () => {
     try {
       const res = await attendanceApi.checkOut({});
       if (res.data.success) {
-        showToast(res.data.message, 'success');
+        showToast('Successfully clocked out. Shift completed.', 'success');
         fetchData();
+        if (fetchNotifications) fetchNotifications();
       }
     } catch (err) {
       showToast(err.response?.data?.message || 'Check-out failed', 'error');
@@ -129,7 +146,7 @@ const AttendancePage = () => {
             <span className="font-semibold text-slate-900 dark:text-slate-100">
               {row.employee?.firstName} {row.employee?.lastName}
             </span>
-            <p className="text-[11px] text-slate-400 font-mono">{row.employee?.empCustomId}</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{row.employee?.empCustomId}</p>
           </div>
         </div>
       ),
@@ -144,7 +161,7 @@ const AttendancePage = () => {
         <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">
           {row.checkIn
             ? new Date(row.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            : '--'}
+            : '--:--'}
         </span>
       ),
     },
@@ -154,14 +171,14 @@ const AttendancePage = () => {
         <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">
           {row.checkOut
             ? new Date(row.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            : '--'}
+            : '--:--'}
         </span>
       ),
     },
     {
       header: 'Logged Hours',
       render: (row) => (
-        <span className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200">
+        <span className="font-mono text-xs font-semibold text-blue-600 dark:text-blue-400">
           {row.workHours ? `${row.workHours} hrs` : '--'}
         </span>
       ),
@@ -171,11 +188,11 @@ const AttendancePage = () => {
       render: (row) => <Badge variant={row.status}>{row.status}</Badge>,
     },
     {
-      header: 'Location',
+      header: 'Location / Device',
       render: (row) => (
-        <span className="text-xs text-slate-500 flex items-center gap-1">
-          <MapPin className="w-3 h-3 text-slate-400" />
-          {row.location || 'Office'}
+        <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+          <MapPin className="w-3.5 h-3.5 text-slate-400" />
+          {row.location || 'Office Terminal'}
         </span>
       ),
     },
@@ -198,13 +215,6 @@ const AttendancePage = () => {
             icon={Plus}
             size="sm"
             onClick={() => {
-              setManualForm({
-                employeeId: employees[0]?._id || '',
-                date: new Date().toISOString().split('T')[0],
-                status: 'Present',
-                workHours: 8,
-                notes: '',
-              });
               setManualModalOpen(true);
             }}
           >
@@ -214,14 +224,19 @@ const AttendancePage = () => {
       </div>
 
       {/* Clock In / Out Banner Card */}
-      <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 rounded-lg p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-            <Clock className="w-5 h-5" />
+          <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/40">
+            <Clock className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Daily Shift Punch</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Daily Shift Terminal</h3>
+              <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                {currentTime}
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}
             </p>
           </div>
@@ -258,14 +273,14 @@ const AttendancePage = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-wrap items-center gap-3">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <label className="text-xs font-medium text-slate-500">Date:</label>
+          <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Date:</label>
           <input
             type="date"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
-            className="px-2.5 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-slate-100 focus:outline-none"
+            className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
           {dateFilter && (
             <button
@@ -278,11 +293,11 @@ const AttendancePage = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="text-xs font-medium text-slate-500">Status:</label>
+          <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Status:</label>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-2.5 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none"
+            className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           >
             <option value="all">All Status</option>
             <option value="Present">Present</option>
@@ -295,11 +310,11 @@ const AttendancePage = () => {
 
         {isAdmin && employees.length > 0 && (
           <div className="flex items-center gap-2">
-            <label className="text-xs font-medium text-slate-500">Employee:</label>
+            <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Employee:</label>
             <select
               value={selectedEmpFilter}
               onChange={(e) => setSelectedEmpFilter(e.target.value)}
-              className="px-2.5 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none max-w-xs"
+              className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500 max-w-xs"
             >
               <option value="">All Employees</option>
               {employees.map((emp) => (
@@ -324,30 +339,30 @@ const AttendancePage = () => {
       <Modal
         isOpen={manualModalOpen}
         onClose={() => setManualModalOpen(false)}
-        title="Manual Attendance Entry / Adjustment"
+        title="Log / Adjust Attendance Record"
         maxWidth="max-w-md"
       >
         <form onSubmit={handleManualSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
               Employee
             </label>
             <select
               value={manualForm.employeeId}
               onChange={(e) => setManualForm({ ...manualForm, employeeId: e.target.value })}
               required
-              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
+              className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               {employees.map((e) => (
                 <option key={e._id} value={e._id}>
-                  {e.firstName} {e.lastName} ({e.empCustomId})
+                  {e.firstName} {e.lastName} ({e.empCustomId}) - {e.designation}
                 </option>
               ))}
             </select>
           </div>
 
           <Input
-            label="Date"
+            label="Attendance Date"
             type="date"
             name="date"
             value={manualForm.date}
@@ -356,13 +371,13 @@ const AttendancePage = () => {
           />
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Status
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+              Attendance Status
             </label>
             <select
               value={manualForm.status}
               onChange={(e) => setManualForm({ ...manualForm, status: e.target.value })}
-              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
+              className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="Present">Present</option>
               <option value="Late">Late</option>
@@ -373,7 +388,7 @@ const AttendancePage = () => {
           </div>
 
           <Input
-            label="Work Hours"
+            label="Logged Work Hours"
             type="number"
             step="0.5"
             name="workHours"
@@ -382,11 +397,11 @@ const AttendancePage = () => {
           />
 
           <Input
-            label="Remarks / Notes"
+            label="Adjustment Notes"
             name="notes"
             value={manualForm.notes}
             onChange={(e) => setManualForm({ ...manualForm, notes: e.target.value })}
-            placeholder="e.g. Approved site visit"
+            placeholder="e.g. Field assignment approval"
           />
 
           <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
@@ -394,7 +409,7 @@ const AttendancePage = () => {
               Cancel
             </Button>
             <Button type="submit" variant="primary" size="sm" loading={manualSubmitting}>
-              Save Attendance
+              Save Attendance Record
             </Button>
           </div>
         </form>

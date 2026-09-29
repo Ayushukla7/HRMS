@@ -14,6 +14,8 @@ import {
   Zap,
   Printer,
   FileText,
+  DollarSign,
+  Download,
 } from 'lucide-react';
 
 const PayrollPage = () => {
@@ -141,7 +143,7 @@ const PayrollPage = () => {
       };
 
       await payrollApi.create(payload);
-      showToast('Payroll record created', 'success');
+      showToast('Payroll record created successfully', 'success');
       setCreateModalOpen(false);
       fetchData();
     } catch (err) {
@@ -156,7 +158,7 @@ const PayrollPage = () => {
     setBulkSubmitting(true);
     try {
       const res = await payrollApi.bulkGenerate({ month: bulkMonth, year: Number(bulkYear) });
-      showToast(res.data.message || 'Bulk payroll calculated!', 'success');
+      showToast(res.data.message || 'Bulk payroll calculated successfully', 'success');
       setBulkModalOpen(false);
       fetchData();
     } catch (err) {
@@ -184,7 +186,7 @@ const PayrollPage = () => {
             <span className="font-semibold text-slate-900 dark:text-slate-100">
               {row.employee?.firstName} {row.employee?.lastName}
             </span>
-            <p className="text-[11px] text-slate-400 font-mono">{row.employee?.empCustomId}</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{row.employee?.empCustomId}</p>
           </div>
         </div>
       ),
@@ -192,7 +194,7 @@ const PayrollPage = () => {
     {
       header: 'Pay Period',
       render: (row) => (
-        <span className="font-medium text-slate-800 dark:text-slate-200 text-xs sm:text-sm">
+        <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs">
           {row.month} {row.year}
         </span>
       ),
@@ -237,7 +239,7 @@ const PayrollPage = () => {
             setPayslipModalOpen(true);
           }}
         >
-          View Payslip
+          View Statement
         </Button>
       ),
     },
@@ -278,13 +280,13 @@ const PayrollPage = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-wrap items-center gap-3">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <label className="text-xs font-medium text-slate-500">Month:</label>
+          <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Month:</label>
           <select
             value={monthFilter}
             onChange={(e) => setMonthFilter(e.target.value)}
-            className="px-2.5 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none"
+            className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           >
             <option value="all">All Months</option>
             {months.map((m) => (
@@ -296,11 +298,11 @@ const PayrollPage = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="text-xs font-medium text-slate-500">Year:</label>
+          <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Year:</label>
           <select
             value={yearFilter}
             onChange={(e) => setYearFilter(e.target.value)}
-            className="px-2.5 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none"
+            className="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           >
             <option value="2026">2026</option>
             <option value="2025">2025</option>
@@ -320,17 +322,17 @@ const PayrollPage = () => {
       <Modal
         isOpen={payslipModalOpen}
         onClose={() => setPayslipModalOpen(false)}
-        title="Official Payslip"
+        title="Official Payslip Statement"
         maxWidth="max-w-2xl"
       >
         {selectedPayroll && (
           <div className="space-y-6">
-            <div ref={payslipRef} className="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-6 print:border-none">
+            <div ref={payslipRef} className="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg space-y-6 print:border-none">
               {/* Header */}
               <div className="flex items-start justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
                 <div>
                   <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">HR Pulse Enterprises</h2>
-                  <p className="text-xs text-slate-400">742 Evergreen Terrace, San Francisco, CA 94107</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">742 Evergreen Terrace, San Francisco, CA 94107</p>
                   <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-1">
                     Pay Statement: {selectedPayroll.month} {selectedPayroll.year}
                   </p>
@@ -341,21 +343,21 @@ const PayrollPage = () => {
               {/* Employee & Bank Info */}
               <div className="grid grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg text-xs border border-slate-200 dark:border-slate-700">
                 <div>
-                  <p className="text-slate-400 font-medium">Employee</p>
+                  <p className="text-slate-500 dark:text-slate-400 font-medium">Employee Details</p>
                   <p className="font-bold text-slate-900 dark:text-slate-100 text-sm mt-0.5">
                     {selectedPayroll.employee?.firstName} {selectedPayroll.employee?.lastName}
                   </p>
-                  <p className="text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="text-slate-600 dark:text-slate-300 mt-1">
                     Role: {selectedPayroll.employee?.designation}
                   </p>
-                  <p className="text-slate-500 dark:text-slate-400">ID: {selectedPayroll.employee?.empCustomId}</p>
+                  <p className="text-slate-500 dark:text-slate-400 font-mono">ID: {selectedPayroll.employee?.empCustomId}</p>
                 </div>
                 <div>
-                  <p className="text-slate-400 font-medium">Disbursement</p>
+                  <p className="text-slate-500 dark:text-slate-400 font-medium">Disbursement Channel</p>
                   <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
                     Method: {selectedPayroll.paymentMethod || 'Direct Deposit'}
                   </p>
-                  <p className="text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="text-slate-600 dark:text-slate-300 mt-1">
                     Bank: {selectedPayroll.employee?.bankDetails?.bankName || 'Chase Bank'}
                   </p>
                   <p className="text-slate-500 dark:text-slate-400 font-mono">
@@ -368,24 +370,24 @@ const PayrollPage = () => {
               <div className="grid grid-cols-2 gap-6 text-xs">
                 {/* Earnings */}
                 <div className="space-y-1.5">
-                  <h5 className="font-bold text-slate-900 dark:text-slate-100 uppercase pb-1 border-b border-slate-100 dark:border-slate-800">
+                  <h5 className="font-bold text-slate-900 dark:text-slate-100 uppercase pb-1 border-b border-slate-100 dark:border-slate-800 text-[11px] tracking-wider">
                     Earnings
                   </h5>
                   <div className="flex justify-between py-1">
                     <span className="text-slate-600 dark:text-slate-400">Basic Salary</span>
-                    <span className="font-mono font-semibold">${selectedPayroll.basicSalary}</span>
+                    <span className="font-mono font-semibold text-slate-900 dark:text-slate-100">${selectedPayroll.basicSalary?.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between py-1">
                     <span className="text-slate-600 dark:text-slate-400">HRA</span>
-                    <span className="font-mono font-semibold">${selectedPayroll.allowances?.hra || 0}</span>
+                    <span className="font-mono font-semibold text-slate-900 dark:text-slate-100">${selectedPayroll.allowances?.hra || 0}</span>
                   </div>
                   <div className="flex justify-between py-1">
                     <span className="text-slate-600 dark:text-slate-400">Conveyance</span>
-                    <span className="font-mono font-semibold">${selectedPayroll.allowances?.conveyance || 0}</span>
+                    <span className="font-mono font-semibold text-slate-900 dark:text-slate-100">${selectedPayroll.allowances?.conveyance || 0}</span>
                   </div>
                   <div className="flex justify-between py-1">
                     <span className="text-slate-600 dark:text-slate-400">Medical</span>
-                    <span className="font-mono font-semibold">${selectedPayroll.allowances?.medical || 0}</span>
+                    <span className="font-mono font-semibold text-slate-900 dark:text-slate-100">${selectedPayroll.allowances?.medical || 0}</span>
                   </div>
                   {selectedPayroll.bonus > 0 && (
                     <div className="flex justify-between py-1 text-emerald-600 dark:text-emerald-400 font-semibold">
@@ -395,30 +397,30 @@ const PayrollPage = () => {
                   )}
                   <div className="flex justify-between pt-2 border-t border-slate-100 dark:border-slate-800 font-bold text-slate-900 dark:text-slate-100">
                     <span>Total Gross</span>
-                    <span className="font-mono">${selectedPayroll.grossSalary}</span>
+                    <span className="font-mono">${selectedPayroll.grossSalary?.toLocaleString()}</span>
                   </div>
                 </div>
 
                 {/* Deductions */}
                 <div className="space-y-1.5">
-                  <h5 className="font-bold text-slate-900 dark:text-slate-100 uppercase pb-1 border-b border-slate-100 dark:border-slate-800">
+                  <h5 className="font-bold text-slate-900 dark:text-slate-100 uppercase pb-1 border-b border-slate-100 dark:border-slate-800 text-[11px] tracking-wider">
                     Deductions
                   </h5>
                   <div className="flex justify-between py-1">
                     <span className="text-slate-600 dark:text-slate-400">Provident Fund (PF)</span>
-                    <span className="font-mono font-semibold">${selectedPayroll.deductions?.providentFund || 0}</span>
+                    <span className="font-mono font-semibold text-slate-900 dark:text-slate-100">${selectedPayroll.deductions?.providentFund || 0}</span>
                   </div>
                   <div className="flex justify-between py-1">
                     <span className="text-slate-600 dark:text-slate-400">Tax Withholding</span>
-                    <span className="font-mono font-semibold">${selectedPayroll.deductions?.tax || 0}</span>
+                    <span className="font-mono font-semibold text-slate-900 dark:text-slate-100">${selectedPayroll.deductions?.tax || 0}</span>
                   </div>
                   <div className="flex justify-between py-1">
                     <span className="text-slate-600 dark:text-slate-400">Health Insurance</span>
-                    <span className="font-mono font-semibold">${selectedPayroll.deductions?.insurance || 0}</span>
+                    <span className="font-mono font-semibold text-slate-900 dark:text-slate-100">${selectedPayroll.deductions?.insurance || 0}</span>
                   </div>
                   <div className="flex justify-between pt-2 border-t border-slate-100 dark:border-slate-800 font-bold text-rose-600 dark:text-rose-400">
                     <span>Total Deductions</span>
-                    <span className="font-mono">-${selectedPayroll.totalDeductions}</span>
+                    <span className="font-mono">-${selectedPayroll.totalDeductions?.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -426,7 +428,7 @@ const PayrollPage = () => {
               {/* Net Pay Callout */}
               <div className="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 p-4 rounded-lg flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">
+                  <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
                     Net Take Home Pay
                   </span>
                   <p className="text-xs text-slate-400 mt-0.5">Disbursed via automated direct deposit</p>
@@ -458,18 +460,18 @@ const PayrollPage = () => {
       >
         <form onSubmit={handleCreateSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
               Employee
             </label>
             <select
               value={form.employeeId}
               onChange={(e) => handleEmployeeSelect(e.target.value)}
               required
-              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
+              className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               {employees.map((e) => (
                 <option key={e._id} value={e._id}>
-                  {e.firstName} {e.lastName} ({e.empCustomId}) - Base: ${e.salary}
+                  {e.firstName} {e.lastName} ({e.empCustomId}) - Base: ${e.salary?.toLocaleString()}
                 </option>
               ))}
             </select>
@@ -477,13 +479,13 @@ const PayrollPage = () => {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                 Month
               </label>
               <select
                 value={form.month}
                 onChange={(e) => setForm({ ...form, month: e.target.value })}
-                className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
+                className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 {months.map((m) => (
                   <option key={m} value={m}>
@@ -585,13 +587,13 @@ const PayrollPage = () => {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                 Target Month
               </label>
               <select
                 value={bulkMonth}
                 onChange={(e) => setBulkMonth(e.target.value)}
-                className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm py-2 px-3 text-slate-900 dark:text-slate-100"
+                className="block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 {months.map((m) => (
                   <option key={m} value={m}>
