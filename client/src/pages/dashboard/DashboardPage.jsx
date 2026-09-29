@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { dashboardApi, employeeApi, leaveApi, attendanceApi, payrollApi } from '../../api';
 import { useNotification } from '../../context/NotificationContext';
 import Button from '../../components/common/Button';
@@ -56,6 +57,7 @@ import {
 
 const DashboardPage = () => {
   const { user, isAdmin } = useAuth();
+  const { isDark } = useTheme();
   const { showToast, fetchNotifications } = useNotification();
   const navigate = useNavigate();
 
@@ -223,19 +225,24 @@ const DashboardPage = () => {
     { month: 'Sep', attendanceRate: attendanceRate },
   ];
 
+  // Dynamic Pie Colors (Monochrome in light, vibrant in dark)
+  const lightPieColors = ['#09090b', '#3f3f46', '#71717a', '#a1a1aa', '#d4d4d8', '#e4e4e7'];
+  const darkPieColors = ['#4f46e5', '#0284c7', '#059669', '#d97706', '#db2777', '#7c3aed'];
+  const activePieColors = isDark ? darkPieColors : lightPieColors;
+
   // Interactive Chart Data: Department Breakdown
   const deptBreakdown =
     adminData?.departmentDistribution && adminData.departmentDistribution.length > 0
       ? adminData.departmentDistribution.map((d, i) => ({
           name: d.name,
           count: d.count || 2,
-          color: ['#4f46e5', '#0284c7', '#059669', '#d97706', '#db2777', '#7c3aed'][i % 6],
+          color: activePieColors[i % activePieColors.length],
         }))
       : [
-          { name: 'Engineering', count: 5, color: '#4f46e5' },
-          { name: 'Product & Design', count: 3, color: '#0284c7' },
-          { name: 'Human Resources', count: 2, color: '#059669' },
-          { name: 'Operations & QA', count: 2, color: '#d97706' },
+          { name: 'Engineering', count: 5, color: activePieColors[0] },
+          { name: 'Product & Design', count: 3, color: activePieColors[1] },
+          { name: 'Human Resources', count: 2, color: activePieColors[2] },
+          { name: 'Operations & QA', count: 2, color: activePieColors[3] },
         ];
 
   // Interactive Chart Data: Monthly Payroll Velocity (₹ in Lakhs)
@@ -257,7 +264,7 @@ const DashboardPage = () => {
       {/* ========================================================================= */}
       {/* 1. TOP WELCOME CARD & QUICK ACTION BAR */}
       {/* ========================================================================= */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 sm:p-6 shadow-xs">
+      <div className="bg-white dark:bg-slate-900 border border-neutral-200 dark:border-slate-800 rounded-xl p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           {/* User Welcome Information */}
           <div className="flex items-center gap-4">
@@ -266,35 +273,35 @@ const DashboardPage = () => {
                 src={loggedInAvatar}
                 name={loggedInName}
                 size="lg"
-                className="ring-2 ring-slate-200 dark:ring-slate-700 rounded-xl"
+                className="ring-2 ring-neutral-200 dark:ring-slate-700 rounded-xl"
               />
-              <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
+              <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-black dark:bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
             </Link>
 
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                <h1 className="text-xl sm:text-2xl font-bold text-black dark:text-white">
                   Welcome, {loggedInName}
                 </h1>
                 <span
                   className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                     isAdmin
-                      ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-400'
-                      : 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-400'
+                      ? 'bg-black text-white dark:bg-indigo-950/60 dark:text-indigo-400'
+                      : 'bg-neutral-100 text-neutral-900 border border-neutral-300 dark:bg-cyan-950/60 dark:text-cyan-400'
                   }`}
                 >
                   {isAdmin ? 'HR Administrator' : 'Staff Employee'}
                 </span>
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-neutral-500 dark:text-slate-400">
                 <span>{loggedInRole}</span>
                 <span>&bull;</span>
                 <span className="flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400" /> Bengaluru R&D Hub
+                  <MapPin className="w-3.5 h-3.5 text-neutral-400" /> Bengaluru R&D Hub
                 </span>
                 <span>&bull;</span>
-                <span className="font-medium text-slate-700 dark:text-slate-300">
+                <span className="font-semibold text-neutral-900 dark:text-slate-300">
                   {currentTime} (IST)
                 </span>
               </div>
@@ -305,7 +312,7 @@ const DashboardPage = () => {
           <div className="flex flex-wrap items-center gap-2.5">
             {/* 1. Biometric Clock In / Clock Out */}
             <Button
-              variant={!todayAttendance?.checkIn ? 'success' : !todayAttendance?.checkOut ? 'accent' : 'secondary'}
+              variant={!todayAttendance?.checkIn ? 'primary' : !todayAttendance?.checkOut ? 'accent' : 'secondary'}
               size="sm"
               icon={Timer}
               onClick={handlePunchToggle}
@@ -333,7 +340,7 @@ const DashboardPage = () => {
             {isAdmin && (
               <>
                 <Link to="/employees">
-                  <Button variant="primary" size="sm" icon={Plus}>
+                  <Button variant="secondary" size="sm" icon={Plus}>
                     Add Employee
                   </Button>
                 </Link>
@@ -356,96 +363,96 @@ const DashboardPage = () => {
         {/* Card 1: Total Employees */}
         <Link
           to="/employees"
-          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs hover:border-indigo-400 transition-colors"
+          className="bg-white dark:bg-slate-900 border border-neutral-200 dark:border-slate-800 rounded-xl p-5 shadow-xs hover:border-black dark:hover:border-indigo-400 transition-colors"
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-slate-400">
                 Total Employees
               </p>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              <h3 className="text-2xl font-bold text-black dark:text-white mt-1">
                 {totalEmployees}
               </h3>
             </div>
-            <div className="p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+            <div className="p-2.5 rounded-lg bg-neutral-100 text-black border border-neutral-200 dark:bg-indigo-950/60 dark:text-indigo-400 dark:border-transparent">
               <Users className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <p className="text-xs text-neutral-500 dark:text-slate-400 mt-3 pt-3 border-t border-neutral-100 dark:border-slate-800 flex items-center justify-between">
             <span>{adminData?.departmentDistribution?.length || 4} Departments</span>
-            <span className="text-indigo-600 dark:text-indigo-400 font-medium">View all &rarr;</span>
+            <span className="text-black dark:text-indigo-400 font-semibold">View all &rarr;</span>
           </p>
         </Link>
 
         {/* Card 2: Today's Attendance */}
         <Link
           to="/attendance"
-          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs hover:border-emerald-400 transition-colors"
+          className="bg-white dark:bg-slate-900 border border-neutral-200 dark:border-slate-800 rounded-xl p-5 shadow-xs hover:border-black dark:hover:border-emerald-400 transition-colors"
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-slate-400">
                 Today's Attendance
               </p>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              <h3 className="text-2xl font-bold text-black dark:text-white mt-1">
                 {presentToday} / {totalEmployees}
               </h3>
             </div>
-            <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+            <div className="p-2.5 rounded-lg bg-neutral-100 text-black border border-neutral-200 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-transparent">
               <UserCheck className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <p className="text-xs text-neutral-500 dark:text-slate-400 mt-3 pt-3 border-t border-neutral-100 dark:border-slate-800 flex items-center justify-between">
             <span>{attendanceRate}% Present today</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-medium">Logs &rarr;</span>
+            <span className="text-black dark:text-emerald-400 font-semibold">Logs &rarr;</span>
           </p>
         </Link>
 
         {/* Card 3: Pending Leaves */}
         <Link
           to="/leaves"
-          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs hover:border-amber-400 transition-colors"
+          className="bg-white dark:bg-slate-900 border border-neutral-200 dark:border-slate-800 rounded-xl p-5 shadow-xs hover:border-black dark:hover:border-amber-400 transition-colors"
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-slate-400">
                 Pending Leaves
               </p>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              <h3 className="text-2xl font-bold text-black dark:text-white mt-1">
                 {pendingLeavesCount}
               </h3>
             </div>
-            <div className="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400">
+            <div className="p-2.5 rounded-lg bg-neutral-100 text-black border border-neutral-200 dark:bg-amber-950/60 dark:text-amber-400 dark:border-transparent">
               <Calendar className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <p className="text-xs text-neutral-500 dark:text-slate-400 mt-3 pt-3 border-t border-neutral-100 dark:border-slate-800 flex items-center justify-between">
             <span>{pendingLeavesCount > 0 ? 'Requires action' : 'All cleared'}</span>
-            <span className="text-amber-600 dark:text-amber-400 font-medium">Review &rarr;</span>
+            <span className="text-black dark:text-amber-400 font-semibold">Review &rarr;</span>
           </p>
         </Link>
 
         {/* Card 4: Monthly Payroll */}
         <Link
           to="/payroll"
-          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs hover:border-cyan-400 transition-colors"
+          className="bg-white dark:bg-slate-900 border border-neutral-200 dark:border-slate-800 rounded-xl p-5 shadow-xs hover:border-black dark:hover:border-cyan-400 transition-colors"
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-slate-400">
                 Monthly Payroll
               </p>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              <h3 className="text-2xl font-bold text-black dark:text-white mt-1">
                 ₹{((totalPayroll) / 100000).toFixed(2)}L
               </h3>
             </div>
-            <div className="p-2.5 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400">
+            <div className="p-2.5 rounded-lg bg-neutral-100 text-black border border-neutral-200 dark:bg-cyan-950/60 dark:text-cyan-400 dark:border-transparent">
               <IndianRupee className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <p className="text-xs text-neutral-500 dark:text-slate-400 mt-3 pt-3 border-t border-neutral-100 dark:border-slate-800 flex items-center justify-between">
             <span>EPF & TDS Deducted</span>
-            <span className="text-cyan-600 dark:text-cyan-400 font-medium">Vouchers &rarr;</span>
+            <span className="text-black dark:text-cyan-400 font-semibold">Vouchers &rarr;</span>
           </p>
         </Link>
       </div>
@@ -455,18 +462,18 @@ const DashboardPage = () => {
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Attendance Trend Chart */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-neutral-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                <h3 className="text-base font-bold text-black dark:text-white">
                   Monthly Attendance Trends
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-neutral-500 dark:text-slate-400">
                   Workforce punctuality rate (%) over the last 6 months
                 </p>
               </div>
-              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full">
+              <span className="text-xs font-semibold text-black dark:text-emerald-400 bg-neutral-100 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full border border-neutral-200 dark:border-transparent">
                 {attendanceRate}% Current Rate
               </span>
             </div>
@@ -476,17 +483,17 @@ const DashboardPage = () => {
                 <AreaChart data={attendanceTrendData}>
                   <defs>
                     <linearGradient id="attColor" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
+                      <stop offset="5%" stopColor={isDark ? '#4f46e5' : '#000000'} stopOpacity={isDark ? 0.25 : 0.15} />
+                      <stop offset="95%" stopColor={isDark ? '#4f46e5' : '#000000'} stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.6} />
-                  <XAxis dataKey="month" stroke="#94a3b8" tick={{ fontSize: 12 }} />
-                  <YAxis stroke="#94a3b8" domain={[80, 100]} tick={{ fontSize: 12 }} tickFormatter={(v) => `${v}%`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#334155' : '#e4e4e7'} opacity={0.6} />
+                  <XAxis dataKey="month" stroke="#71717a" tick={{ fontSize: 12 }} />
+                  <YAxis stroke="#71717a" domain={[80, 100]} tick={{ fontSize: 12 }} tickFormatter={(v) => `${v}%`} />
                   <Tooltip
                     formatter={(val) => [`${val}%`, 'Attendance Rate']}
                     contentStyle={{
-                      backgroundColor: '#1e293b',
+                      backgroundColor: isDark ? '#1e293b' : '#000000',
                       border: 'none',
                       borderRadius: '8px',
                       color: '#fff',
@@ -496,7 +503,7 @@ const DashboardPage = () => {
                   <Area
                     type="monotone"
                     dataKey="attendanceRate"
-                    stroke="#4f46e5"
+                    stroke={isDark ? '#4f46e5' : '#000000'}
                     strokeWidth={2.5}
                     fillOpacity={1}
                     fill="url(#attColor)"
@@ -506,22 +513,22 @@ const DashboardPage = () => {
             </div>
           </div>
 
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+          <div className="pt-3 border-t border-neutral-100 dark:border-slate-800 flex items-center justify-between text-xs text-neutral-500">
             <span>Direct Biometric Machine Integration</span>
-            <Link to="/attendance" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+            <Link to="/attendance" className="text-black dark:text-indigo-400 font-semibold hover:underline">
               View Attendance Logs &rarr;
             </Link>
           </div>
         </div>
 
         {/* Department Breakdown Chart */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
+        <div className="bg-white dark:bg-slate-900 border border-neutral-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="mb-4">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+              <h3 className="text-base font-bold text-black dark:text-white">
                 Department Distribution
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-neutral-500 dark:text-slate-400">
                 Personnel headcount by department
               </p>
             </div>
@@ -546,7 +553,7 @@ const DashboardPage = () => {
                   <Tooltip
                     formatter={(val) => [`${val} Members`, 'Headcount']}
                     contentStyle={{
-                      backgroundColor: '#1e293b',
+                      backgroundColor: isDark ? '#1e293b' : '#000000',
                       border: 'none',
                       borderRadius: '8px',
                       color: '#fff',
@@ -554,7 +561,7 @@ const DashboardPage = () => {
                     }}
                   />
                   <Legend
-                    formatter={(val) => <span className="text-xs text-slate-600 dark:text-slate-300 ml-1">{val}</span>}
+                    formatter={(val) => <span className="text-xs text-neutral-700 dark:text-slate-300 ml-1">{val}</span>}
                     layout="horizontal"
                     verticalAlign="bottom"
                     align="center"
@@ -564,9 +571,9 @@ const DashboardPage = () => {
             </div>
           </div>
 
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+          <div className="pt-3 border-t border-neutral-100 dark:border-slate-800 flex items-center justify-between text-xs text-neutral-500">
             <span>{adminData?.departmentDistribution?.length || 4} Total Units</span>
-            <Link to="/departments" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+            <Link to="/departments" className="text-black dark:text-indigo-400 font-semibold hover:underline">
               Manage Departments &rarr;
             </Link>
           </div>
@@ -577,20 +584,20 @@ const DashboardPage = () => {
       {/* 4. PENDING LEAVE APPROVALS QUEUE (DIRECT 1-CLICK ACTION) */}
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-neutral-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-4">
+            <div className="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-slate-800 mb-4">
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                <h3 className="text-base font-bold text-black dark:text-white">
                   Leave Requests & Approvals
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-neutral-500 dark:text-slate-400">
                   {isAdmin
                     ? 'Review and take 1-click decisions directly from this dashboard'
                     : 'Your recent leave applications'}
                 </p>
               </div>
-              <Link to="/leaves" className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+              <Link to="/leaves" className="text-xs font-semibold text-black dark:text-indigo-400 hover:underline">
                 View All &rarr;
               </Link>
             </div>
@@ -605,7 +612,7 @@ const DashboardPage = () => {
                   return (
                     <div
                       key={leave._id}
-                      className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                      className="p-3.5 rounded-lg bg-neutral-50 dark:bg-slate-800/60 border border-neutral-200 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                     >
                       <div className="flex items-center gap-3">
                         <Avatar
@@ -615,17 +622,17 @@ const DashboardPage = () => {
                         />
                         <div>
                           <div className="flex items-center gap-2">
-                            <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
+                            <h4 className="text-sm font-semibold text-black dark:text-white">
                               {emp.firstName} {emp.lastName}
                             </h4>
-                            <span className="text-[10px] text-slate-500 font-mono">
+                            <span className="text-[10px] text-neutral-500 font-mono">
                               ({emp.empCustomId || 'EMP'})
                             </span>
                           </div>
-                          <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
+                          <p className="text-xs text-neutral-700 dark:text-indigo-400 font-medium">
                             {leave.leaveType} &bull; {leave.daysCount || 1} day(s)
                           </p>
-                          <p className="text-[11px] text-slate-500 mt-0.5">
+                          <p className="text-[11px] text-neutral-500 mt-0.5">
                             {new Date(leave.startDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })} -{' '}
                             {new Date(leave.endDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}: "{leave.reason}"
                           </p>
@@ -638,7 +645,7 @@ const DashboardPage = () => {
                             <button
                               onClick={() => handleLeaveDecision(leave._id, 'Approved')}
                               disabled={isActionLoading}
-                              className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs flex items-center gap-1 cursor-pointer transition-colors"
+                              className="px-3 py-1.5 rounded-lg bg-black hover:bg-neutral-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs flex items-center gap-1 cursor-pointer transition-colors"
                             >
                               <Check className="w-3.5 h-3.5" />
                               <span>Approve</span>
@@ -646,7 +653,7 @@ const DashboardPage = () => {
                             <button
                               onClick={() => handleLeaveDecision(leave._id, 'Rejected')}
                               disabled={isActionLoading}
-                              className="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-900 text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                              className="px-3 py-1.5 rounded-lg bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-rose-950/40 dark:text-rose-400 border border-neutral-300 dark:border-rose-900 text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors"
                             >
                               <X className="w-3.5 h-3.5" />
                               <span>Reject</span>
@@ -656,10 +663,10 @@ const DashboardPage = () => {
                           <Badge
                             variant={
                               leave.status === 'Approved'
-                                ? 'success'
+                                ? 'active'
                                 : leave.status === 'Pending'
-                                ? 'warning'
-                                : 'danger'
+                                ? 'pending'
+                                : 'absent'
                             }
                           >
                             {leave.status}
@@ -670,16 +677,16 @@ const DashboardPage = () => {
                   );
                 })
               ) : (
-                <p className="text-xs text-slate-400 py-6 text-center">No pending leave applications</p>
+                <p className="text-xs text-neutral-400 py-6 text-center">No pending leave applications</p>
               )}
             </div>
           </div>
 
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 mt-3 flex items-center justify-between text-xs text-slate-500">
+          <div className="pt-3 border-t border-neutral-100 dark:border-slate-800 mt-3 flex items-center justify-between text-xs text-neutral-500">
             <span>Annual Leaves: Casual (12) &bull; Sick (10) &bull; Earned (18)</span>
             <button
               onClick={() => setApplyLeaveModalOpen(true)}
-              className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline cursor-pointer"
+              className="text-black dark:text-indigo-400 font-semibold hover:underline cursor-pointer"
             >
               + Apply Leave
             </button>
@@ -687,18 +694,18 @@ const DashboardPage = () => {
         </div>
 
         {/* Monthly Payroll Bar Chart */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
+        <div className="bg-white dark:bg-slate-900 border border-neutral-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                <h3 className="text-base font-bold text-black dark:text-white">
                   Monthly Payroll
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-neutral-500 dark:text-slate-400">
                   Disbursements in ₹ Lakhs
                 </p>
               </div>
-              <span className="text-xs font-bold text-slate-900 dark:text-white font-mono">
+              <span className="text-xs font-bold text-black dark:text-white font-mono">
                 ₹12.5L /mo
               </span>
             </div>
@@ -706,28 +713,28 @@ const DashboardPage = () => {
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={payrollTrendData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.6} />
-                  <XAxis dataKey="month" stroke="#94a3b8" tick={{ fontSize: 11 }} />
-                  <YAxis stroke="#94a3b8" tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v}L`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#334155' : '#e4e4e7'} opacity={0.6} />
+                  <XAxis dataKey="month" stroke="#71717a" tick={{ fontSize: 11 }} />
+                  <YAxis stroke="#71717a" tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v}L`} />
                   <Tooltip
                     formatter={(val) => [`₹${val} Lakhs`, 'Disbursement']}
                     contentStyle={{
-                      backgroundColor: '#1e293b',
+                      backgroundColor: isDark ? '#1e293b' : '#000000',
                       border: 'none',
                       borderRadius: '8px',
                       color: '#fff',
                       fontSize: '12px',
                     }}
                   />
-                  <Bar dataKey="amount" fill="#4f46e5" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="amount" fill={isDark ? '#4f46e5' : '#000000'} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+          <div className="pt-3 border-t border-neutral-100 dark:border-slate-800 flex items-center justify-between text-xs text-neutral-500">
             <span>EPF & TDS Compliant</span>
-            <Link to="/payroll" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+            <Link to="/payroll" className="text-black dark:text-indigo-400 font-semibold hover:underline">
               Generate Payroll &rarr;
             </Link>
           </div>
@@ -739,18 +746,18 @@ const DashboardPage = () => {
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Active Indian Personnel */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-neutral-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-4">
+            <div className="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-slate-800 mb-4">
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                <h3 className="text-base font-bold text-black dark:text-white">
                   Active Team Members
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-neutral-500 dark:text-slate-400">
                   Key personnel across Bengaluru, Gurugram, and Mumbai hubs
                 </p>
               </div>
-              <Link to="/employees" className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+              <Link to="/employees" className="text-xs font-semibold text-black dark:text-indigo-400 hover:underline">
                 View All ({totalEmployees}) &rarr;
               </Link>
             </div>
@@ -761,7 +768,7 @@ const DashboardPage = () => {
                   <Link
                     key={emp._id}
                     to={`/employees/${emp._id}`}
-                    className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 hover:border-indigo-400 transition-colors flex items-center justify-between"
+                    className="p-3 rounded-lg bg-neutral-50 dark:bg-slate-800/60 border border-neutral-200 dark:border-slate-700/60 hover:border-black dark:hover:border-indigo-400 transition-colors flex items-center justify-between"
                   >
                     <div className="flex items-center gap-3">
                       <Avatar
@@ -770,86 +777,86 @@ const DashboardPage = () => {
                         size="md"
                       />
                       <div>
-                        <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                        <h4 className="text-xs font-bold text-black dark:text-white">
                           {emp.firstName} {emp.lastName}
                         </h4>
-                        <p className="text-[11px] text-indigo-600 dark:text-indigo-400 font-medium">
+                        <p className="text-[11px] text-neutral-600 dark:text-indigo-400 font-medium">
                           {emp.designation}
                         </p>
-                        <p className="text-[10px] text-slate-500">{emp.department?.name || 'Technology'}</p>
+                        <p className="text-[10px] text-neutral-400">{emp.department?.name || 'Technology'}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 block">
+                      <span className="font-mono text-xs font-bold text-black dark:text-emerald-400 block">
                         ₹{emp.salary ? (Number(emp.salary) / 1000).toFixed(0) : '85'}k
                       </span>
-                      <span className="text-[10px] text-slate-400">{emp.empCustomId}</span>
+                      <span className="text-[10px] text-neutral-400">{emp.empCustomId}</span>
                     </div>
                   </Link>
                 ))
               ) : (
-                <p className="text-xs text-slate-400 py-4 text-center col-span-2">Loading employees...</p>
+                <p className="text-xs text-neutral-400 py-4 text-center col-span-2">Loading employees...</p>
               )}
             </div>
           </div>
 
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 mt-3 flex items-center justify-between text-xs text-slate-500">
+          <div className="pt-3 border-t border-neutral-100 dark:border-slate-800 mt-3 flex items-center justify-between text-xs text-neutral-500">
             <span>Verified Indian Personnel</span>
-            <Link to="/employees" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+            <Link to="/employees" className="text-black dark:text-indigo-400 font-semibold hover:underline">
               + Add New Staff
             </Link>
           </div>
         </div>
 
         {/* ATS Recruitment Summary */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
+        <div className="bg-white dark:bg-slate-900 border border-neutral-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-4">
+            <div className="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-slate-800 mb-4">
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                <h3 className="text-base font-bold text-black dark:text-white">
                   Recruitment Pipeline
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-neutral-500 dark:text-slate-400">
                   Open vacancies & applications
                 </p>
               </div>
-              <Link to="/recruitment" className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+              <Link to="/recruitment" className="text-xs font-semibold text-black dark:text-indigo-400 hover:underline">
                 ATS Board &rarr;
               </Link>
             </div>
 
             <div className="space-y-2.5">
-              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
-                <span className="font-medium text-slate-700 dark:text-slate-300">Open Job Positions</span>
-                <span className="font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2.5 py-0.5 rounded-full">
+              <div className="p-3 rounded-lg bg-neutral-50 dark:bg-slate-800/60 border border-neutral-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
+                <span className="font-medium text-neutral-800 dark:text-slate-300">Open Job Positions</span>
+                <span className="font-bold text-black dark:text-indigo-400 bg-neutral-200 dark:bg-indigo-950 px-2.5 py-0.5 rounded-full">
                   {stats.activeJobs || 4} Active
                 </span>
               </div>
 
-              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
-                <span className="font-medium text-slate-700 dark:text-slate-300">Candidate Applications</span>
-                <span className="font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950 px-2.5 py-0.5 rounded-full">
+              <div className="p-3 rounded-lg bg-neutral-50 dark:bg-slate-800/60 border border-neutral-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
+                <span className="font-medium text-neutral-800 dark:text-slate-300">Candidate Applications</span>
+                <span className="font-bold text-black dark:text-cyan-400 bg-neutral-200 dark:bg-cyan-950 px-2.5 py-0.5 rounded-full">
                   {stats.totalApplicants || 18} Total
                 </span>
               </div>
 
-              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
-                <span className="font-medium text-slate-700 dark:text-slate-300">Interviews Scheduled</span>
-                <span className="font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-0.5 rounded-full">
+              <div className="p-3 rounded-lg bg-neutral-50 dark:bg-slate-800/60 border border-neutral-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
+                <span className="font-medium text-neutral-800 dark:text-slate-300">Interviews Scheduled</span>
+                <span className="font-bold text-black dark:text-emerald-400 bg-neutral-200 dark:bg-emerald-950 px-2.5 py-0.5 rounded-full">
                   5 This Week
                 </span>
               </div>
             </div>
 
-            <div className="mt-4 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
-              <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+            <div className="mt-4 p-3 rounded-lg bg-neutral-50 dark:bg-slate-800/60 border border-neutral-200 dark:border-slate-700/60 flex items-center gap-2 text-xs text-neutral-700 dark:text-slate-300">
+              <ShieldCheck className="w-4 h-4 text-black dark:text-emerald-500 shrink-0" />
               <span>100% EPFO, ESIC & TDS Statutory Compliant</span>
             </div>
           </div>
 
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+          <div className="pt-3 border-t border-neutral-100 dark:border-slate-800 flex items-center justify-between text-xs text-neutral-500">
             <span>Cloud: AWS Mumbai</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-medium">Online ✓</span>
+            <span className="text-black dark:text-emerald-400 font-semibold">Online ✓</span>
           </div>
         </div>
       </div>
@@ -865,13 +872,13 @@ const DashboardPage = () => {
       >
         <form onSubmit={handleApplyLeaveSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1">
               Leave Type
             </label>
             <select
               value={leaveForm.leaveType}
               onChange={(e) => setLeaveForm({ ...leaveForm, leaveType: e.target.value })}
-              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="block w-full rounded-lg border border-neutral-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
             >
               <option value="Casual Leave">Casual Leave (12 Days Annual Quota)</option>
               <option value="Sick Leave">Sick Leave (10 Days Quota)</option>
@@ -899,7 +906,7 @@ const DashboardPage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1">
               Reason
             </label>
             <textarea
@@ -908,11 +915,11 @@ const DashboardPage = () => {
               onChange={(e) => setLeaveForm({ ...leaveForm, reason: e.target.value })}
               required
               placeholder="e.g. Medical appointment / Family event..."
-              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs p-2.5 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="block w-full rounded-lg border border-neutral-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs p-2.5 text-neutral-900 dark:text-slate-100 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-neutral-100 dark:border-slate-800">
             <Button variant="secondary" size="sm" onClick={() => setApplyLeaveModalOpen(false)}>
               Cancel
             </Button>

@@ -21,8 +21,6 @@ import {
   Mail,
   Phone,
   Upload,
-  ArrowUpRight,
-  SlidersHorizontal,
 } from 'lucide-react';
 
 const EmployeeListPage = () => {
@@ -263,7 +261,7 @@ const EmployeeListPage = () => {
     {
       header: 'Employee',
       render: (emp) => (
-        <div className="flex items-center gap-3.5">
+        <div className="flex items-center gap-3">
           <Avatar
             src={emp.profilePicture}
             name={`${emp.firstName} ${emp.lastName}`}
@@ -272,11 +270,11 @@ const EmployeeListPage = () => {
           <div>
             <Link
               to={`/employees/${emp._id}`}
-              className="font-bold text-white hover:text-emerald-400 transition-colors block text-sm"
+              className="font-semibold text-black dark:text-white hover:underline block text-sm"
             >
               {emp.firstName} {emp.lastName}
             </Link>
-            <p className="text-[11px] text-slate-500 font-mono mt-0.5">{emp.empCustomId}</p>
+            <p className="text-[11px] text-neutral-500 font-mono mt-0.5">{emp.empCustomId}</p>
           </div>
         </div>
       ),
@@ -285,8 +283,8 @@ const EmployeeListPage = () => {
       header: 'Department & Role',
       render: (emp) => (
         <div>
-          <p className="font-semibold text-slate-200 text-xs sm:text-sm">{emp.designation}</p>
-          <span className="text-xs text-slate-500">
+          <p className="font-medium text-black dark:text-slate-200 text-xs sm:text-sm">{emp.designation}</p>
+          <span className="text-xs text-neutral-500">
             {emp.department?.name || 'Unassigned'}
           </span>
         </div>
@@ -296,8 +294,8 @@ const EmployeeListPage = () => {
       header: 'Contact',
       render: (emp) => (
         <div className="text-xs space-y-0.5">
-          <p className="text-slate-300 font-medium">{emp.email}</p>
-          {emp.phone && <p className="text-slate-500 font-mono">{emp.phone}</p>}
+          <p className="text-neutral-700 dark:text-slate-300 font-medium">{emp.email}</p>
+          {emp.phone && <p className="text-neutral-500 font-mono">{emp.phone}</p>}
         </div>
       ),
     },
@@ -306,15 +304,15 @@ const EmployeeListPage = () => {
       render: (emp) => (
         <div className="space-y-1">
           <Badge variant={emp.status}>{emp.status}</Badge>
-          <p className="text-[10px] text-slate-500">{emp.employmentType}</p>
+          <p className="text-[10px] text-neutral-500">{emp.employmentType}</p>
         </div>
       ),
     },
     {
-      header: 'Monthly Base',
+      header: 'Monthly Base (CTC)',
       render: (emp) => (
-        <span className="font-bold text-emerald-400 font-mono text-xs sm:text-sm">
-          ${emp.salary ? Number(emp.salary).toLocaleString() : '0'}
+        <span className="font-semibold text-black dark:text-emerald-400 font-mono text-xs sm:text-sm">
+          ₹{emp.salary ? Number(emp.salary).toLocaleString('en-IN') : '0'}
         </span>
       ),
     },
@@ -324,7 +322,7 @@ const EmployeeListPage = () => {
         <div className="flex items-center gap-1.5">
           <Link
             to={`/employees/${emp._id}`}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/10"
+            className="p-1.5 rounded-lg text-neutral-600 hover:text-black hover:bg-neutral-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800"
             title="View Details"
           >
             <Eye className="w-4 h-4" />
@@ -333,14 +331,14 @@ const EmployeeListPage = () => {
             <>
               <button
                 onClick={() => handleOpenEditModal(emp)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/10"
+                className="p-1.5 rounded-lg text-neutral-600 hover:text-black hover:bg-neutral-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 cursor-pointer"
                 title="Edit Employee"
               >
                 <Edit2 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleDeleteClick(emp)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 bg-white/[0.03] hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30"
+                className="p-1.5 rounded-lg text-neutral-600 hover:text-rose-600 hover:bg-rose-50 dark:text-slate-400 dark:hover:text-rose-400 dark:hover:bg-rose-950/40 cursor-pointer"
                 title="Delete Employee"
               >
                 <Trash2 className="w-4 h-4" />
@@ -357,52 +355,54 @@ const EmployeeListPage = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-black dark:text-white tracking-tight">
             Employee Directory
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-neutral-500 dark:text-slate-400 mt-1">
             Manage Indian workforce profiles, organizational divisions, salaries, and user accounts.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <button
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            icon={Download}
             onClick={exportToCSV}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 hover:text-white text-xs font-semibold transition-all"
           >
-            <Download className="w-3.5 h-3.5 text-slate-400" />
-            <span>Export CSV</span>
-          </button>
+            Export CSV
+          </Button>
           {isAdmin && (
-            <button
+            <Button
+              variant="primary"
+              size="sm"
+              icon={UserPlus}
               onClick={handleOpenAddModal}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold shadow-lg shadow-emerald-500/10 transition-all"
             >
-              <UserPlus className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Add Employee</span>
-            </button>
+              Add Employee
+            </Button>
           )}
         </div>
       </div>
 
-      {/* Filter and Search Bento Bar */}
-      <div className="bg-[#121319] p-4 rounded-3xl border border-white/[0.07] shadow-xl flex flex-col md:flex-row items-center gap-3">
+      {/* Filter and Search Bar */}
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-neutral-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row items-center gap-3">
         <div className="flex-1 w-full relative">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, email, designation, or employee ID..."
-            className="w-full pl-9 pr-4 py-2 bg-[#181922] border border-white/10 rounded-full text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+            className="w-full pl-9 pr-4 py-2 bg-neutral-50 dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg text-xs text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
           />
         </div>
 
-        <div className="flex items-center gap-2.5 w-full md:w-auto">
+        <div className="flex items-center gap-2 w-full md:w-auto">
           <select
             value={selectedDept}
             onChange={(e) => setSelectedDept(e.target.value)}
-            className="px-3.5 py-2 bg-[#181922] border border-white/10 rounded-full text-xs text-slate-300 focus:outline-none focus:border-emerald-500/50"
+            className="px-3 py-2 bg-neutral-50 dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg text-xs text-neutral-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
           >
             <option value="all">All Departments</option>
             {departments.map((d) => (
@@ -415,7 +415,7 @@ const EmployeeListPage = () => {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-3.5 py-2 bg-[#181922] border border-white/10 rounded-full text-xs text-slate-300 focus:outline-none focus:border-emerald-500/50"
+            className="px-3 py-2 bg-neutral-50 dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg text-xs text-neutral-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
           >
             <option value="all">All Status</option>
             <option value="Active">Active</option>
@@ -426,15 +426,13 @@ const EmployeeListPage = () => {
         </div>
       </div>
 
-      {/* Employees Table Container */}
-      <div className="bg-[#121319] rounded-3xl border border-white/[0.07] shadow-xl overflow-hidden p-2">
-        <DataTable
-          columns={columns}
-          data={employees}
-          loading={loading}
-          emptyMessage="No employees found matching criteria"
-        />
-      </div>
+      {/* Employees Table */}
+      <DataTable
+        columns={columns}
+        data={employees}
+        loading={loading}
+        emptyMessage="No employees found matching criteria"
+      />
 
       {/* Add / Edit Employee Modal */}
       <Modal
@@ -444,7 +442,7 @@ const EmployeeListPage = () => {
         maxWidth="max-w-2xl"
       >
         <form onSubmit={handleFormSubmit} className="space-y-4">
-          <div className="flex items-center gap-4 pb-3 border-b border-white/10">
+          <div className="flex items-center gap-4 pb-3 border-b border-neutral-200 dark:border-slate-800">
             <Avatar
               src={formData.profilePicture}
               name={`${formData.firstName || 'New'} ${formData.lastName || 'User'}`}
@@ -458,15 +456,18 @@ const EmployeeListPage = () => {
                 accept="image/*"
                 className="hidden"
               />
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="sm"
+                icon={Upload}
                 onClick={() => fileInputRef.current?.click()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white transition-colors"
               >
-                <Upload className="w-3.5 h-3.5 text-slate-400" />
-                <span>Upload Photo</span>
-              </button>
-              <p className="text-[10px] text-slate-400 mt-1">Upload a real Indian portrait (PNG, JPG under 5MB)</p>
+                Upload Photo
+              </Button>
+              <p className="text-[11px] text-neutral-500 dark:text-slate-400 mt-1">
+                Upload authentic Indian portrait photo (PNG, JPG under 5MB)
+              </p>
             </div>
           </div>
 
@@ -479,14 +480,14 @@ const EmployeeListPage = () => {
               placeholder="e.g. EMP-1011"
             />
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
-                Department <span className="text-rose-400">*</span>
+              <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1">
+                Department <span className="text-rose-500">*</span>
               </label>
               <select
                 value={formData.department}
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                 required
-                className="block w-full rounded-xl border border-white/10 bg-[#181922] text-xs py-2.5 px-3 text-white focus:outline-none focus:border-emerald-500/50"
+                className="block w-full rounded-lg border border-neutral-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
               >
                 {departments.map((d) => (
                   <option key={d._id} value={d._id}>
@@ -545,7 +546,7 @@ const EmployeeListPage = () => {
               placeholder="UX/UI Lead"
             />
             <Input
-              label="Monthly Base Salary ($)"
+              label="Monthly Base CTC (₹)"
               name="salary"
               type="number"
               value={formData.salary}
@@ -565,13 +566,13 @@ const EmployeeListPage = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1">
                 Employment Type
               </label>
               <select
                 value={formData.employmentType}
                 onChange={(e) => setFormData({ ...formData, employmentType: e.target.value })}
-                className="block w-full rounded-xl border border-white/10 bg-[#181922] text-xs py-2.5 px-3 text-white focus:outline-none focus:border-emerald-500/50"
+                className="block w-full rounded-lg border border-neutral-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
               >
                 <option value="Full-Time">Full-Time</option>
                 <option value="Part-Time">Part-Time</option>
@@ -581,13 +582,13 @@ const EmployeeListPage = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1">
                 Status
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="block w-full rounded-xl border border-white/10 bg-[#181922] text-xs py-2.5 px-3 text-white focus:outline-none focus:border-emerald-500/50"
+                className="block w-full rounded-lg border border-neutral-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
               >
                 <option value="Active">Active</option>
                 <option value="On Leave">On Leave</option>
@@ -597,13 +598,13 @@ const EmployeeListPage = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1">
                 Gender
               </label>
               <select
                 value={formData.gender}
                 onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                className="block w-full rounded-xl border border-white/10 bg-[#181922] text-xs py-2.5 px-3 text-white focus:outline-none focus:border-emerald-500/50"
+                className="block w-full rounded-lg border border-neutral-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
               >
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
@@ -613,8 +614,8 @@ const EmployeeListPage = () => {
             </div>
           </div>
 
-          <div className="pt-2 border-t border-white/10">
-            <h5 className="text-xs font-bold text-white mb-2 uppercase tracking-wider">
+          <div className="pt-2 border-t border-neutral-200 dark:border-slate-800">
+            <h5 className="text-xs font-bold text-black dark:text-white mb-2 uppercase tracking-wider">
               Banking & Address (India)
             </h5>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -636,22 +637,22 @@ const EmployeeListPage = () => {
           </div>
 
           {!editingEmployee && (
-            <div className="p-3 bg-white/[0.02] rounded-xl border border-white/10">
-              <label className="flex items-center gap-2.5 cursor-pointer">
+            <div className="p-3 bg-neutral-50 dark:bg-slate-800/60 rounded-lg border border-neutral-200 dark:border-slate-700">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={formData.createUserAccount}
                   onChange={(e) => setFormData({ ...formData, createUserAccount: e.target.checked })}
-                  className="rounded border-white/20 text-emerald-500 focus:ring-emerald-500"
+                  className="rounded border-neutral-300 text-black focus:ring-black"
                 />
-                <span className="text-xs font-medium text-slate-300">
+                <span className="text-xs font-medium text-neutral-700 dark:text-slate-300">
                   Provision User Portal Login (Default password: {formData.password})
                 </span>
               </label>
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/10">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-neutral-200 dark:border-slate-800">
             <Button variant="secondary" size="sm" onClick={() => setModalOpen(false)}>
               Cancel
             </Button>

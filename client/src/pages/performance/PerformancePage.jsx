@@ -134,14 +134,14 @@ const PerformancePage = () => {
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-300 text-neutral-800 dark:bg-amber-500/10 dark:border-amber-500/20 dark:text-amber-400 text-xs font-semibold mb-2">
             <Award className="w-3.5 h-3.5" />
             <span>Talent Performance & Key Results</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
             Performance & OKR Appraisals
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-neutral-500 dark:text-slate-400 mt-1">
             Goal tracking, quarterly performance scorecards, 360-degree feedback, and executive leadership ratings.
           </p>
         </div>
@@ -152,7 +152,6 @@ const PerformancePage = () => {
             icon={Plus}
             size="md"
             onClick={() => setCreateModalOpen(true)}
-            className="shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50"
           >
             Create Appraisal Review
           </Button>
@@ -163,62 +162,62 @@ const PerformancePage = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bento-card p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Average Team Score</span>
-            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400">
-              <Star className="w-4 h-4 fill-amber-400" />
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-slate-400">Average Team Score</span>
+            <div className="p-2 rounded-xl bg-neutral-100 text-neutral-900 dark:bg-amber-500/10 dark:text-amber-400">
+              <Star className="w-4 h-4 fill-neutral-900 dark:fill-amber-400" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white font-mono">{avgRating}</span>
-            <span className="text-xs text-amber-400 font-semibold">/ 5.0 Rating</span>
+            <span className="text-3xl font-black text-neutral-900 dark:text-white font-mono">{avgRating}</span>
+            <span className="text-xs text-neutral-600 dark:text-amber-400 font-semibold">/ 5.0 Rating</span>
           </div>
-          <p className="text-[11px] text-emerald-400 mt-1 flex items-center gap-1 font-medium">
+          <p className="text-[11px] text-neutral-600 dark:text-emerald-400 mt-1 flex items-center gap-1 font-medium">
             <Sparkles className="w-3 h-3" /> Top 5% Industry Talent Performance
           </p>
         </div>
 
         <div className="bento-card p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">OKR Delivery Rate</span>
-            <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-slate-400">OKR Delivery Rate</span>
+            <div className="p-2 rounded-xl bg-neutral-100 text-neutral-900 dark:bg-indigo-500/10 dark:text-indigo-400">
               <Target className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white font-mono">94.8%</span>
-            <span className="text-xs text-indigo-300 font-semibold">Milestones Hit</span>
+            <span className="text-3xl font-black text-neutral-900 dark:text-white font-mono">94.8%</span>
+            <span className="text-xs text-neutral-600 dark:text-indigo-300 font-semibold">Milestones Hit</span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">High-velocity product sprint delivery</p>
+          <p className="text-[11px] text-neutral-500 dark:text-slate-400 mt-1">High-velocity product sprint delivery</p>
         </div>
 
         <div className="bento-card p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Completed Appraisals</span>
-            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-slate-400">Completed Appraisals</span>
+            <div className="p-2 rounded-xl bg-neutral-100 text-neutral-900 dark:bg-emerald-500/10 dark:text-emerald-400">
               <FileCheck className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white font-mono">{reviews.length}</span>
-            <span className="text-xs text-emerald-400 font-semibold">Reviews Filed</span>
+            <span className="text-3xl font-black text-neutral-900 dark:text-white font-mono">{reviews.length}</span>
+            <span className="text-xs text-neutral-600 dark:text-emerald-400 font-semibold">Reviews Filed</span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">100% statutory cycle completion</p>
+          <p className="text-[11px] text-neutral-500 dark:text-slate-400 mt-1">100% statutory cycle completion</p>
         </div>
       </div>
 
       {/* Reviews Bento Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {reviews.length === 0 ? (
-          <div className="col-span-2 bento-card p-12 text-center text-slate-400">
-            <Award className="w-12 h-12 mx-auto mb-3 text-slate-600" />
-            <p className="text-sm font-bold text-slate-300">No performance evaluations recorded yet</p>
-            <p className="text-xs text-slate-500 mt-1">Initiate a new appraisal cycle using the button above.</p>
+          <div className="col-span-2 bento-card p-12 text-center text-neutral-400 dark:text-slate-400">
+            <Award className="w-12 h-12 mx-auto mb-3 text-neutral-400 dark:text-slate-600" />
+            <p className="text-sm font-bold text-neutral-900 dark:text-slate-300">No performance evaluations recorded yet</p>
+            <p className="text-xs text-neutral-500 dark:text-slate-500 mt-1">Initiate a new appraisal cycle using the button above.</p>
           </div>
         ) : (
           reviews.map((rev) => (
             <div
               key={rev._id}
-              className="bento-card p-6 flex flex-col justify-between space-y-5 hover:border-white/[0.15] transition-all relative overflow-hidden"
+              className="bento-card p-6 flex flex-col justify-between space-y-5 hover:border-neutral-400 dark:hover:border-white/[0.15] transition-all relative overflow-hidden"
             >
               <div>
                 {/* Card Top Row */}
@@ -228,25 +227,25 @@ const PerformancePage = () => {
                       src={rev.employee?.profilePicture}
                       name={`${rev.employee?.firstName || ''} ${rev.employee?.lastName || ''}`}
                       size="lg"
-                      className="ring-2 ring-white/10"
+                      className="ring-2 ring-neutral-200 dark:ring-white/10"
                     />
                     <div>
-                      <h3 className="text-base font-bold text-white">
+                      <h3 className="text-base font-bold text-neutral-900 dark:text-white">
                         {rev.employee?.firstName} {rev.employee?.lastName}
                       </h3>
-                      <p className="text-xs text-cyan-400 font-medium">
+                      <p className="text-xs text-neutral-600 dark:text-cyan-400 font-medium">
                         {rev.employee?.designation} &bull; {rev.employee?.department?.name || 'Engineering'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-300">
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 dark:bg-amber-500/10 border border-neutral-300 dark:border-amber-500/25 text-neutral-900 dark:text-amber-300">
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
                           className={`w-3.5 h-3.5 ${
-                            i < (rev.rating || 5) ? 'text-amber-400 fill-amber-400' : 'text-slate-700'
+                            i < (rev.rating || 5) ? 'text-black dark:text-amber-400 fill-black dark:fill-amber-400' : 'text-neutral-300 dark:text-slate-700'
                           }`}
                         />
                       ))}
@@ -257,18 +256,18 @@ const PerformancePage = () => {
 
                 {/* Review Cycle Badge */}
                 <div className="mt-3.5">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#181922] border border-white/[0.06] text-[11px] font-semibold text-slate-300 font-mono">
-                    <Sparkles className="w-3 h-3 text-cyan-400" />
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-neutral-100 dark:bg-[#181922] border border-neutral-200 dark:border-white/[0.06] text-[11px] font-semibold text-neutral-700 dark:text-slate-300 font-mono">
+                    <Sparkles className="w-3 h-3 text-neutral-600 dark:text-cyan-400" />
                     {rev.reviewPeriod}
                   </span>
                 </div>
 
                 {/* Manager Feedback */}
-                <div className="mt-4 p-4 rounded-2xl bg-[#181922] border border-white/[0.06] space-y-1.5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                <div className="mt-4 p-4 rounded-2xl bg-neutral-50 dark:bg-[#181922] border border-neutral-200 dark:border-white/[0.06] space-y-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 dark:text-slate-400 block">
                     Manager Review & Key Achievements
                   </span>
-                  <p className="text-xs text-slate-200 leading-relaxed font-normal">
+                  <p className="text-xs text-neutral-700 dark:text-slate-200 leading-relaxed font-normal">
                     {rev.feedback || rev.achievements || 'Exemplary leadership, deep technical ownership, and rapid sprint execution.'}
                   </p>
                 </div>
@@ -276,18 +275,18 @@ const PerformancePage = () => {
                 {/* Goals Progress */}
                 {rev.goals && rev.goals.length > 0 && (
                   <div className="mt-4 space-y-2.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 dark:text-slate-400 block">
                       Target OKR Milestones
                     </span>
                     {rev.goals.map((goal, idx) => (
-                      <div key={idx} className="p-3 rounded-2xl bg-[#181922] border border-white/[0.04] space-y-1.5">
+                      <div key={idx} className="p-3 rounded-2xl bg-neutral-50 dark:bg-[#181922] border border-neutral-200 dark:border-white/[0.04] space-y-1.5">
                         <div className="flex items-center justify-between text-xs">
-                          <span className="text-slate-200 font-medium truncate max-w-[220px]">{goal.title}</span>
-                          <span className="font-mono font-bold text-cyan-400">{goal.progressPercent || 100}%</span>
+                          <span className="text-neutral-800 dark:text-slate-200 font-medium truncate max-w-[220px]">{goal.title}</span>
+                          <span className="font-mono font-bold text-neutral-900 dark:text-cyan-400">{goal.progressPercent || 100}%</span>
                         </div>
-                        <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                        <div className="w-full h-1.5 rounded-full bg-neutral-200 dark:bg-slate-800 overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-indigo-500 to-cyan-400 rounded-full"
+                            className="h-full bg-black dark:bg-gradient-to-r dark:from-indigo-500 dark:to-cyan-400 rounded-full"
                             style={{ width: `${goal.progressPercent || 100}%` }}
                           />
                         </div>
@@ -298,30 +297,29 @@ const PerformancePage = () => {
 
                 {/* Employee Response Note */}
                 {rev.employeeComments && (
-                  <div className="mt-4 p-3.5 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-xs">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-300 block mb-1">
+                  <div className="mt-4 p-3.5 rounded-2xl bg-neutral-100 dark:bg-indigo-500/10 border border-neutral-200 dark:border-indigo-500/20 text-xs">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-700 dark:text-indigo-300 block mb-1">
                       Employee Acknowledgment:
                     </span>
-                    <p className="text-slate-300 italic font-normal">"{rev.employeeComments}"</p>
+                    <p className="text-neutral-700 dark:text-slate-300 italic font-normal">"{rev.employeeComments}"</p>
                   </div>
                 )}
               </div>
 
               {/* Action Bar */}
-              <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between">
-                <span className="text-[11px] text-slate-500">
-                  Reviewed by: <strong className="text-slate-300">{rev.reviewer?.name || 'Chief Technology Officer'}</strong>
+              <div className="pt-4 border-t border-neutral-200 dark:border-white/[0.06] flex items-center justify-between">
+                <span className="text-[11px] text-neutral-500">
+                  Reviewed by: <strong className="text-neutral-900 dark:text-slate-300">{rev.reviewer?.name || 'Chief Technology Officer'}</strong>
                 </span>
                 <Button
-                  variant="outline"
-                  size="xs"
+                  variant="secondary"
+                  size="sm"
                   icon={MessageSquare}
                   onClick={() => {
                     setSelectedReview(rev);
                     setEmployeeComments(rev.employeeComments || '');
                     setCommentModalOpen(true);
                   }}
-                  className="bg-[#181922] border-white/[0.08] text-slate-300 hover:text-white"
                 >
                   {rev.employeeComments ? 'Edit Feedback' : 'Acknowledge & Sign'}
                 </Button>
@@ -340,14 +338,14 @@ const PerformancePage = () => {
       >
         <form onSubmit={handleCreateSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
               Select Indian Personnel
             </label>
             <select
               value={form.employeeId}
               onChange={(e) => setForm({ ...form, employeeId: e.target.value })}
               required
-              className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs py-2.5 px-3 text-slate-100 focus:outline-none focus:border-cyan-500"
+              className="block w-full rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-neutral-50 dark:bg-[#181922] text-xs py-2.5 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:border-black dark:focus:border-cyan-500"
             >
               {employees.map((e) => (
                 <option key={e._id} value={e._id}>
@@ -366,13 +364,13 @@ const PerformancePage = () => {
               placeholder="e.g. Q2 2026 Appraisal"
             />
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                 Overall Rating (1 - 5)
               </label>
               <select
                 value={form.rating}
                 onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })}
-                className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs py-2.5 px-3 text-slate-100 focus:outline-none focus:border-cyan-500"
+                className="block w-full rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-neutral-50 dark:bg-[#181922] text-xs py-2.5 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:border-black dark:focus:border-cyan-500"
               >
                 <option value={5}>⭐⭐⭐⭐⭐ 5 - Outstanding Exceeds</option>
                 <option value={4}>⭐⭐⭐⭐ 4 - Strong Performer</option>
@@ -384,7 +382,7 @@ const PerformancePage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
               Performance Feedback & Highlights
             </label>
             <textarea
@@ -392,25 +390,25 @@ const PerformancePage = () => {
               value={form.feedback}
               onChange={(e) => setForm({ ...form, feedback: e.target.value })}
               required
-              className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs p-3 text-slate-100 focus:outline-none focus:border-cyan-500"
+              className="block w-full rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-neutral-50 dark:bg-[#181922] text-xs p-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:border-black dark:focus:border-cyan-500"
               placeholder="Key contributions, architecture ownership, collaboration..."
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
               Key Achievements & Delivered Deliverables
             </label>
             <textarea
               rows={2}
               value={form.achievements}
               onChange={(e) => setForm({ ...form, achievements: e.target.value })}
-              className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs p-3 text-slate-100 focus:outline-none focus:border-cyan-500"
+              className="block w-full rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-neutral-50 dark:bg-[#181922] text-xs p-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:border-black dark:focus:border-cyan-500"
               placeholder="e.g. Led cloud migration with zero downtime..."
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-white/[0.08]">
+          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-neutral-200 dark:border-white/[0.08]">
             <Button variant="secondary" size="sm" onClick={() => setCreateModalOpen(false)}>
               Cancel
             </Button>
@@ -429,12 +427,12 @@ const PerformancePage = () => {
         maxWidth="max-w-md"
       >
         <form onSubmit={handleCommentSubmit} className="space-y-4">
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs text-neutral-600 dark:text-slate-300 leading-relaxed">
             Record employee feedback, mutual agreement, or performance discussion summary for this review period.
           </p>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
               Employee Comments & Response
             </label>
             <textarea
@@ -442,12 +440,12 @@ const PerformancePage = () => {
               value={employeeComments}
               onChange={(e) => setEmployeeComments(e.target.value)}
               required
-              className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs p-3 text-slate-100 focus:outline-none focus:border-cyan-500"
+              className="block w-full rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-neutral-50 dark:bg-[#181922] text-xs p-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:border-black dark:focus:border-cyan-500"
               placeholder="e.g. Grateful for the mentorship. Looking forward to driving Q3 platform goals."
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-white/[0.08]">
+          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-neutral-200 dark:border-white/[0.08]">
             <Button variant="secondary" size="sm" onClick={() => setCommentModalOpen(false)}>
               Cancel
             </Button>

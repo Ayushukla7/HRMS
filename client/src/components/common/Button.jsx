@@ -12,7 +12,7 @@ const Button = ({
   icon: Icon,
   className = '',
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed select-none';
+  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer';
 
   const sizeStyles = {
     xs: 'px-2.5 py-1 text-xs gap-1.5',
@@ -22,13 +22,13 @@ const Button = ({
   };
 
   const variantStyles = {
-    primary: 'bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white shadow-sm',
-    accent: 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm',
-    secondary: 'bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700',
-    outline: 'bg-transparent border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800',
-    danger: 'bg-rose-600 text-white hover:bg-rose-700 shadow-sm',
-    success: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm',
-    ghost: 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100',
+    primary: 'bg-black text-white hover:bg-neutral-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white shadow-xs',
+    accent: 'bg-black text-white hover:bg-neutral-800 dark:bg-indigo-600 dark:text-white dark:hover:bg-indigo-700 shadow-xs',
+    secondary: 'bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700 border border-neutral-300 dark:border-slate-700',
+    outline: 'bg-transparent border border-neutral-300 dark:border-slate-700 text-neutral-900 dark:text-slate-300 hover:bg-neutral-100 dark:hover:bg-slate-800',
+    danger: 'bg-neutral-900 text-white hover:bg-black dark:bg-rose-600 dark:text-white dark:hover:bg-rose-700 shadow-xs',
+    success: 'bg-black text-white hover:bg-neutral-800 dark:bg-emerald-600 dark:text-white dark:hover:bg-emerald-700 shadow-xs',
+    ghost: 'text-neutral-700 dark:text-slate-400 hover:bg-neutral-100 dark:hover:bg-slate-800 hover:text-black dark:hover:text-slate-100',
   };
 
   return (

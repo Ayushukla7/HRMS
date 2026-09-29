@@ -132,24 +132,24 @@ const ProfilePage = () => {
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
       {/* Page Header */}
       <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold mb-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-300 text-neutral-800 dark:bg-indigo-500/10 dark:border-indigo-500/20 dark:text-indigo-400 text-xs font-semibold mb-2">
           <User className="w-3.5 h-3.5" />
           <span>Personal Account & Security Profile</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
           Account Settings & Profile Photo
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 mt-1">
+        <p className="text-xs sm:text-sm text-neutral-500 dark:text-slate-400 mt-1">
           Update your profile picture (auto-syncs to hero dashboard and header), personal details, and account credentials.
         </p>
       </div>
 
       {/* Hero Profile Bento Card */}
       <div className="bento-card p-6 relative overflow-hidden flex flex-col sm:flex-row items-center gap-6">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none hidden dark:block" />
 
         <div className="relative group">
-          <div className="w-28 h-28 rounded-3xl overflow-hidden ring-4 ring-indigo-500/30 shadow-2xl bg-[#181922] flex items-center justify-center">
+          <div className="w-28 h-28 rounded-3xl overflow-hidden ring-4 ring-neutral-200 dark:ring-indigo-500/30 shadow-xs dark:shadow-2xl bg-neutral-100 dark:bg-[#181922] flex items-center justify-center">
             {currentDisplayAvatar ? (
               <img
                 src={currentDisplayAvatar}
@@ -157,7 +157,7 @@ const ProfilePage = () => {
                 className="w-full h-full object-cover object-top"
               />
             ) : (
-              <User className="w-12 h-12 text-slate-500" />
+              <User className="w-12 h-12 text-neutral-400 dark:text-slate-500" />
             )}
           </div>
           <button
@@ -165,27 +165,27 @@ const ProfilePage = () => {
             onClick={() => fileInputRef.current?.click()}
             className="absolute inset-0 bg-black/60 backdrop-blur-xs text-white rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-xs font-bold gap-1 cursor-pointer"
           >
-            <Camera className="w-5 h-5 text-cyan-400" />
+            <Camera className="w-5 h-5 text-white dark:text-cyan-400" />
             <span>Change Photo</span>
           </button>
         </div>
 
         <div className="text-center sm:text-left flex-1 space-y-2">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 justify-center sm:justify-start">
-            <h2 className="text-xl font-black text-white">{user?.name}</h2>
+            <h2 className="text-xl font-black text-neutral-900 dark:text-white">{user?.name}</h2>
             <span
               className={`px-3 py-0.5 rounded-full text-xs font-bold border inline-block ${
                 user?.role === 'admin'
-                  ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40'
-                  : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                  ? 'bg-neutral-900 text-white border-neutral-900 dark:bg-indigo-500/20 dark:text-indigo-300 dark:border-indigo-500/40'
+                  : 'bg-neutral-100 text-neutral-800 border-neutral-300 dark:bg-cyan-500/20 dark:text-cyan-300 dark:border-cyan-500/40'
               }`}
             >
               {user?.role === 'admin' ? 'HR / Administrator' : 'Staff Employee'}
             </span>
           </div>
 
-          <p className="text-xs text-slate-400 flex items-center justify-center sm:justify-start gap-1.5">
-            <Mail className="w-3.5 h-3.5 text-cyan-400" />
+          <p className="text-xs text-neutral-500 dark:text-slate-400 flex items-center justify-center sm:justify-start gap-1.5">
+            <Mail className="w-3.5 h-3.5 text-neutral-500 dark:text-cyan-400" />
             {user?.email}
           </p>
 
@@ -193,7 +193,7 @@ const ProfilePage = () => {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all flex items-center gap-1.5"
+              className="px-3.5 py-1.5 rounded-xl bg-black hover:bg-neutral-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white text-xs font-bold shadow-xs dark:shadow-md transition-all flex items-center gap-1.5"
             >
               <Upload className="w-3.5 h-3.5" />
               <span>Upload Custom Photo</span>
@@ -203,7 +203,7 @@ const ProfilePage = () => {
               <button
                 type="button"
                 onClick={handleRemovePhoto}
-                className="px-3.5 py-1.5 rounded-xl bg-[#181922] hover:bg-rose-500/10 text-rose-400 border border-white/[0.08] hover:border-rose-500/30 text-xs font-bold transition-all flex items-center gap-1.5"
+                className="px-3.5 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 border border-neutral-300 dark:bg-[#181922] dark:hover:bg-rose-500/10 dark:text-rose-400 dark:border-white/[0.08] dark:hover:border-rose-500/30 text-xs font-bold transition-all flex items-center gap-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Remove</span>
@@ -224,9 +224,9 @@ const ProfilePage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Personal Details Form */}
         <div className="bento-card p-6 space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-white/[0.08]">
-            <User className="w-4 h-4 text-indigo-400" />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">Personal Information</h3>
+          <div className="flex items-center gap-2 pb-3 border-b border-neutral-200 dark:border-white/[0.08]">
+            <User className="w-4 h-4 text-neutral-700 dark:text-indigo-400" />
+            <h3 className="text-sm font-bold text-neutral-900 dark:text-white uppercase tracking-wider">Personal Information</h3>
           </div>
 
           <form onSubmit={handleProfileSubmit} className="space-y-4">
@@ -239,19 +239,19 @@ const ProfilePage = () => {
             />
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                 Work Email (Fixed)
               </label>
               <input
                 type="email"
                 value={user?.email || ''}
                 disabled
-                className="block w-full rounded-xl border border-white/[0.05] bg-[#181922]/50 text-xs py-2.5 px-3 text-slate-500 cursor-not-allowed font-mono"
+                className="block w-full rounded-xl border border-neutral-200 dark:border-white/[0.05] bg-neutral-100 dark:bg-[#181922]/50 text-xs py-2.5 px-3 text-neutral-500 dark:text-slate-500 cursor-not-allowed font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
                 Direct Image URL (Optional)
               </label>
               <input
@@ -262,7 +262,7 @@ const ProfilePage = () => {
                   setImagePreview(e.target.value);
                 }}
                 placeholder="https://images.unsplash.com/..."
-                className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs py-2.5 px-3 text-slate-100 focus:outline-none focus:border-cyan-500 font-mono"
+                className="block w-full rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-neutral-50 dark:bg-[#181922] text-xs py-2.5 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:border-black dark:focus:border-cyan-500 font-mono"
               />
             </div>
 
@@ -271,7 +271,7 @@ const ProfilePage = () => {
               variant="primary"
               size="md"
               loading={profileLoading}
-              className="w-full justify-center shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 mt-2"
+              className="w-full justify-center mt-2"
             >
               Save Profile Changes
             </Button>
@@ -280,9 +280,9 @@ const ProfilePage = () => {
 
         {/* Security / Password Form */}
         <div className="bento-card p-6 space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-white/[0.08]">
-            <KeyRound className="w-4 h-4 text-cyan-400" />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">Security & Credentials</h3>
+          <div className="flex items-center gap-2 pb-3 border-b border-neutral-200 dark:border-white/[0.08]">
+            <KeyRound className="w-4 h-4 text-neutral-700 dark:text-cyan-400" />
+            <h3 className="text-sm font-bold text-neutral-900 dark:text-white uppercase tracking-wider">Security & Credentials</h3>
           </div>
 
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
@@ -318,7 +318,7 @@ const ProfilePage = () => {
               variant="secondary"
               size="md"
               loading={passLoading}
-              className="w-full justify-center bg-[#181922] border-white/[0.08] text-white hover:bg-slate-800 mt-2"
+              className="w-full justify-center mt-2"
             >
               Update Password
             </Button>

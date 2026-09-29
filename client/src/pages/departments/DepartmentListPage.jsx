@@ -155,14 +155,14 @@ const DepartmentListPage = () => {
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-300 text-neutral-800 dark:bg-indigo-500/10 dark:border-indigo-500/20 dark:text-indigo-400 text-xs font-semibold mb-2">
             <Layers className="w-3.5 h-3.5" />
             <span>Organizational Architecture</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
             Departments & Business Units
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-neutral-500 dark:text-slate-400 mt-1">
             Corporate division hierarchy, leadership allocation, regional Indian tech hubs, and annual fiscal budgets.
           </p>
         </div>
@@ -173,7 +173,6 @@ const DepartmentListPage = () => {
             icon={Plus}
             size="md"
             onClick={handleOpenAdd}
-            className="shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50"
           >
             Add Department
           </Button>
@@ -184,42 +183,42 @@ const DepartmentListPage = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bento-card p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Active Divisions</span>
-            <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-slate-400">Active Divisions</span>
+            <div className="p-2 rounded-xl bg-neutral-100 text-neutral-900 dark:bg-indigo-500/10 dark:text-indigo-400">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white font-mono">{departments.length}</span>
-            <span className="text-xs text-indigo-400 font-semibold">Specialized Units</span>
+            <span className="text-3xl font-black text-neutral-900 dark:text-white font-mono">{departments.length}</span>
+            <span className="text-xs text-neutral-600 dark:text-indigo-400 font-semibold">Specialized Units</span>
           </div>
         </div>
 
         <div className="bento-card p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Workforce</span>
-            <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-slate-400">Total Workforce</span>
+            <div className="p-2 rounded-xl bg-neutral-100 text-neutral-900 dark:bg-cyan-500/10 dark:text-cyan-400">
               <Users className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white font-mono">{totalHeadcount}</span>
-            <span className="text-xs text-cyan-400 font-semibold">Active Members</span>
+            <span className="text-3xl font-black text-neutral-900 dark:text-white font-mono">{totalHeadcount}</span>
+            <span className="text-xs text-neutral-600 dark:text-cyan-400 font-semibold">Active Members</span>
           </div>
         </div>
 
         <div className="bento-card p-5 relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Combined Annual Budget</span>
-            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-slate-400">Combined Annual Budget</span>
+            <div className="p-2 rounded-xl bg-neutral-100 text-neutral-900 dark:bg-emerald-500/10 dark:text-emerald-400">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white font-mono">
+            <span className="text-3xl font-black text-neutral-900 dark:text-white font-mono">
               ₹{(totalBudget / 10000000).toFixed(2)} Cr
             </span>
-            <span className="text-xs text-emerald-400 font-semibold">FY 2026-27</span>
+            <span className="text-xs text-neutral-600 dark:text-emerald-400 font-semibold">FY 2026-27</span>
           </div>
         </div>
       </div>
@@ -231,41 +230,41 @@ const DepartmentListPage = () => {
           return (
             <div
               key={dept._id}
-              className="bento-card p-6 flex flex-col justify-between group hover:border-white/[0.15] transition-all relative overflow-hidden"
+              className="bento-card p-6 flex flex-col justify-between group hover:border-neutral-400 dark:hover:border-white/[0.15] transition-all relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none hidden dark:block" />
 
               <div>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div
-                      className={`w-12 h-12 rounded-2xl bg-gradient-to-br border flex items-center justify-center font-black text-sm shadow-md ${colorClass}`}
+                      className={`w-12 h-12 rounded-2xl bg-neutral-100 text-neutral-900 border border-neutral-300 dark:bg-gradient-to-br dark:border flex items-center justify-center font-black text-sm shadow-xs ${colorClass}`}
                     >
                       {dept.code}
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors">
+                      <h3 className="text-base font-bold text-neutral-900 dark:text-white group-hover:text-neutral-700 dark:group-hover:text-cyan-300 transition-colors">
                         {dept.name}
                       </h3>
-                      <span className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
-                        <MapPin className="w-3 h-3 text-cyan-400" />
+                      <span className="text-[11px] text-neutral-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                        <MapPin className="w-3 h-3 text-neutral-400 dark:text-cyan-400" />
                         {dept.location || 'Bengaluru R&D Hub'}
                       </span>
                     </div>
                   </div>
 
                   {isAdmin && (
-                    <div className="flex items-center gap-1 bg-[#181922] p-1 rounded-xl border border-white/[0.06]">
+                    <div className="flex items-center gap-1 bg-neutral-100 dark:bg-[#181922] p-1 rounded-xl border border-neutral-200 dark:border-white/[0.06]">
                       <button
                         onClick={() => handleOpenEdit(dept)}
-                        className="p-1.5 text-slate-400 hover:text-cyan-300 rounded-lg hover:bg-white/[0.05] transition-colors"
+                        className="p-1.5 text-neutral-600 hover:text-black dark:text-slate-400 dark:hover:text-cyan-300 rounded-lg hover:bg-neutral-200 dark:hover:bg-white/[0.05] transition-colors"
                         title="Edit Department"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleDelete(dept)}
-                        className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-rose-500/10 transition-colors"
+                        className="p-1.5 text-neutral-600 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 rounded-lg hover:bg-neutral-200 dark:hover:bg-rose-500/10 transition-colors"
                         title="Delete Department"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -274,17 +273,17 @@ const DepartmentListPage = () => {
                   )}
                 </div>
 
-                <p className="text-xs text-slate-300 mt-3.5 line-clamp-2 leading-relaxed font-normal">
+                <p className="text-xs text-neutral-600 dark:text-slate-300 mt-3.5 line-clamp-2 leading-relaxed font-normal">
                   {dept.description || 'Core strategic business division driving company operations.'}
                 </p>
 
                 {/* Head of Department */}
-                <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                <div className="mt-4 pt-3 border-t border-neutral-200 dark:border-white/[0.06] flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <Crown className="w-4 h-4 text-amber-400" />
-                    <span className="text-slate-400 text-[11px]">Division Head:</span>
+                    <Crown className="w-4 h-4 text-neutral-700 dark:text-amber-400" />
+                    <span className="text-neutral-500 dark:text-slate-400 text-[11px]">Division Head:</span>
                   </div>
-                  <span className="font-semibold text-slate-100 bg-[#181922] px-2.5 py-1 rounded-lg border border-white/[0.05]">
+                  <span className="font-semibold text-neutral-900 dark:text-slate-100 bg-neutral-100 dark:bg-[#181922] px-2.5 py-1 rounded-lg border border-neutral-200 dark:border-white/[0.05]">
                     {dept.headOfDepartment
                       ? `${dept.headOfDepartment.firstName} ${dept.headOfDepartment.lastName}`
                       : 'Unassigned'}
@@ -293,17 +292,17 @@ const DepartmentListPage = () => {
               </div>
 
               {/* Footer Stats Grid */}
-              <div className="mt-5 pt-3 border-t border-white/[0.06] grid grid-cols-2 gap-2.5 text-xs">
-                <div className="bg-[#181922] p-3 rounded-2xl border border-white/[0.05]">
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Headcount</span>
-                  <span className="font-bold text-white flex items-center gap-1.5 mt-1">
-                    <Users className="w-3.5 h-3.5 text-cyan-400" />
+              <div className="mt-5 pt-3 border-t border-neutral-200 dark:border-white/[0.06] grid grid-cols-2 gap-2.5 text-xs">
+                <div className="bg-neutral-50 dark:bg-[#181922] p-3 rounded-2xl border border-neutral-200 dark:border-white/[0.05]">
+                  <span className="text-neutral-500 dark:text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Headcount</span>
+                  <span className="font-bold text-neutral-900 dark:text-white flex items-center gap-1.5 mt-1">
+                    <Users className="w-3.5 h-3.5 text-neutral-500 dark:text-cyan-400" />
                     {dept.employeeCount || 0} Members
                   </span>
                 </div>
-                <div className="bg-[#181922] p-3 rounded-2xl border border-white/[0.05]">
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Fiscal Budget</span>
-                  <span className="font-bold text-emerald-400 flex items-center gap-1 mt-1 font-mono">
+                <div className="bg-neutral-50 dark:bg-[#181922] p-3 rounded-2xl border border-neutral-200 dark:border-white/[0.05]">
+                  <span className="text-neutral-500 dark:text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Fiscal Budget</span>
+                  <span className="font-bold text-neutral-900 dark:text-emerald-400 flex items-center gap-1 mt-1 font-mono">
                     ₹{dept.budget ? (dept.budget / 100000).toFixed(1) + ' Lakhs' : '₹0'}
                   </span>
                 </div>
@@ -338,13 +337,13 @@ const DepartmentListPage = () => {
             placeholder="e.g. AI"
           />
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
               Department Head / Director
             </label>
             <select
               value={formData.headOfDepartment}
               onChange={(e) => setFormData({ ...formData, headOfDepartment: e.target.value })}
-              className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs py-2.5 px-3 text-slate-100 focus:outline-none focus:border-cyan-500"
+              className="block w-full rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-neutral-50 dark:bg-[#181922] text-xs py-2.5 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:border-black dark:focus:border-cyan-500"
             >
               <option value="">-- Select Indian Personnel --</option>
               {employees.map((e) => (
@@ -370,19 +369,19 @@ const DepartmentListPage = () => {
             placeholder="e.g. Bengaluru R&D Hub - Tower 3"
           />
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
               Charter & Responsibilities
             </label>
             <textarea
               rows={3}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs p-3 text-slate-100 focus:outline-none focus:border-cyan-500"
+              className="block w-full rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-neutral-50 dark:bg-[#181922] text-xs p-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:border-black dark:focus:border-cyan-500"
               placeholder="Brief summary of department responsibilities and mission..."
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-white/[0.08]">
+          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-neutral-200 dark:border-white/[0.08]">
             <Button variant="secondary" size="sm" onClick={() => setModalOpen(false)}>
               Cancel
             </Button>
