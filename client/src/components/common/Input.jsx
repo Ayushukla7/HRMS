@@ -17,13 +17,13 @@ const Input = ({
   return (
     <div className={`w-full ${className}`}>
       {label && (
-        <label htmlFor={name} className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-          {label} {required && <span className="text-rose-500">*</span>}
+        <label htmlFor={name} className="block text-xs font-semibold text-neutral-800 mb-1.5">
+          {label} {required && <span className="text-black">*</span>}
         </label>
       )}
-      <div className="relative rounded-lg shadow-sm">
+      <div className="relative rounded-lg shadow-xs">
         {Icon && (
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400">
             <Icon className="w-4 h-4" />
           </div>
         )}
@@ -40,13 +40,13 @@ const Input = ({
             Icon ? 'pl-9' : 'pl-3'
           } pr-3 ${
             error
-              ? 'border-rose-300 dark:border-rose-700 text-rose-900 dark:text-rose-300 placeholder-rose-400 focus:border-rose-500 focus:ring-1 focus:ring-rose-500'
-              : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:border-slate-900 dark:focus:border-slate-100 focus:ring-1 focus:ring-slate-900 dark:focus:ring-slate-100'
-          } disabled:bg-slate-50 dark:disabled:bg-slate-800 disabled:text-slate-500`}
+              ? 'border-neutral-900 text-neutral-900 placeholder-neutral-400 focus:border-black focus:ring-1 focus:ring-black'
+              : 'border-neutral-300 bg-white text-neutral-900 placeholder-neutral-400 focus:border-black focus:ring-1 focus:ring-black'
+          } disabled:bg-neutral-100 disabled:text-neutral-500`}
           {...props}
         />
       </div>
-      {error && <p className="mt-1 text-xs text-rose-600 dark:text-rose-400">{error}</p>}
+      {error && <p className="mt-1 text-xs text-neutral-900 font-medium">{error}</p>}
     </div>
   );
 };

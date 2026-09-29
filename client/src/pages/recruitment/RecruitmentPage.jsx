@@ -5,25 +5,16 @@ import { useNotification } from '../../context/NotificationContext';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import Modal from '../../components/common/Modal';
-import Badge from '../../components/common/Badge';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import {
   Briefcase,
   UserPlus,
   Plus,
   MapPin,
-  Clock,
-  IndianRupee,
   Users,
-  ChevronRight,
   Star,
-  Calendar,
-  Sparkles,
   Layers,
-  Filter,
-  CheckCircle2,
   Mail,
-  Phone,
 } from 'lucide-react';
 
 const RecruitmentPage = () => {
@@ -63,7 +54,7 @@ const RecruitmentPage = () => {
     coverLetter: '',
     status: 'Applied',
     rating: 5,
-    notes: 'Top tier Indian tech talent with deep full-stack architecture background',
+    notes: 'Experienced candidate with deep engineering background',
   });
 
   const stages = ['Applied', 'Screening', 'Interview', 'Offered', 'Hired', 'Rejected'];
@@ -146,19 +137,19 @@ const RecruitmentPage = () => {
   const stageBadgeColor = (stage) => {
     switch (stage) {
       case 'Applied':
-        return 'bg-neutral-100 text-neutral-800 border-neutral-300 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20';
+        return 'bg-neutral-100 text-neutral-800 border-neutral-300';
       case 'Screening':
-        return 'bg-neutral-100 text-neutral-800 border-neutral-300 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20';
+        return 'bg-neutral-100 text-neutral-800 border-neutral-300';
       case 'Interview':
-        return 'bg-neutral-200 text-black border-neutral-300 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20';
+        return 'bg-neutral-200 text-black border-neutral-300';
       case 'Offered':
-        return 'bg-black text-white border-black dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20';
+        return 'bg-black text-white border-black';
       case 'Hired':
-        return 'bg-black text-white border-black dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20';
+        return 'bg-black text-white border-black';
       case 'Rejected':
-        return 'bg-neutral-100 text-neutral-500 border-neutral-300 line-through dark:no-underline dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20';
+        return 'bg-neutral-100 text-neutral-500 border-neutral-300 line-through';
       default:
-        return 'bg-neutral-100 text-neutral-700 border-neutral-300 dark:bg-slate-500/10 dark:text-slate-400 dark:border-slate-500/20';
+        return 'bg-neutral-100 text-neutral-700 border-neutral-300';
     }
   };
 
@@ -167,15 +158,15 @@ const RecruitmentPage = () => {
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-300 text-neutral-800 dark:bg-cyan-500/10 dark:border-cyan-500/20 dark:text-cyan-400 text-xs font-semibold mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-300 text-neutral-800 text-xs font-semibold mb-2">
             <Briefcase className="w-3.5 h-3.5" />
             <span>Applicant Tracking & Talent Acquisition</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900">
             Recruitment & Hiring Pipeline
           </h1>
-          <p className="text-xs sm:text-sm text-neutral-500 dark:text-slate-400 mt-1">
-            Requisition postings, Indian tech candidate stages, Kanban candidate pipeline, and hiring conversion meters.
+          <p className="text-xs sm:text-sm text-neutral-500 mt-1">
+            Requisition postings, candidate stages, Kanban candidate pipeline, and hiring tracking.
           </p>
         </div>
 
@@ -207,13 +198,13 @@ const RecruitmentPage = () => {
       </div>
 
       {/* Tabs Switcher */}
-      <div className="flex items-center gap-2 border-b border-neutral-200 dark:border-white/[0.08] pb-3">
+      <div className="flex items-center gap-2 border-b border-neutral-200 pb-3">
         <button
           onClick={() => setActiveTab('pipeline')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
             activeTab === 'pipeline'
-              ? 'bg-black text-white dark:bg-cyan-500/20 dark:text-cyan-300 dark:border dark:border-cyan-500/40 shadow-xs'
-              : 'text-neutral-600 hover:text-black hover:bg-neutral-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/[0.04]'
+              ? 'bg-black text-white shadow-xs'
+              : 'text-neutral-600 hover:text-black hover:bg-neutral-100'
           }`}
         >
           <Layers className="w-4 h-4" />
@@ -221,10 +212,10 @@ const RecruitmentPage = () => {
         </button>
         <button
           onClick={() => setActiveTab('jobs')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
             activeTab === 'jobs'
-              ? 'bg-black text-white dark:bg-cyan-500/20 dark:text-cyan-300 dark:border dark:border-cyan-500/40 shadow-xs'
-              : 'text-neutral-600 hover:text-black hover:bg-neutral-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/[0.04]'
+              ? 'bg-black text-white shadow-xs'
+              : 'text-neutral-600 hover:text-black hover:bg-neutral-100'
           }`}
         >
           <Briefcase className="w-4 h-4" />
@@ -240,12 +231,12 @@ const RecruitmentPage = () => {
             return (
               <div
                 key={stage}
-                className="bg-white dark:bg-[#121319] rounded-3xl p-4 border border-neutral-200 dark:border-white/[0.07] flex flex-col min-h-[460px] shadow-xs dark:shadow-lg"
+                className="bg-white rounded-3xl p-4 border border-neutral-200 flex flex-col min-h-[460px] shadow-xs"
               >
                 {/* Column Header */}
-                <div className="flex items-center justify-between pb-3 mb-3 border-b border-neutral-200 dark:border-white/[0.08]">
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-neutral-200">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-black uppercase tracking-wider text-neutral-900 dark:text-white">{stage}</span>
+                    <span className="text-xs font-black uppercase tracking-wider text-neutral-900">{stage}</span>
                     <span
                       className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${stageBadgeColor(stage)}`}
                     >
@@ -257,47 +248,47 @@ const RecruitmentPage = () => {
                 {/* Candidate Cards in Stage */}
                 <div className="space-y-3 flex-1 overflow-y-auto pr-0.5">
                   {stageApps.length === 0 ? (
-                    <div className="p-6 rounded-2xl border border-dashed border-neutral-200 dark:border-white/[0.06] text-center text-[11px] text-neutral-400 dark:text-slate-500">
+                    <div className="p-6 rounded-2xl border border-dashed border-neutral-200 text-center text-[11px] text-neutral-400">
                       No candidates in {stage}
                     </div>
                   ) : (
                     stageApps.map((app) => (
                       <div
                         key={app._id}
-                        className="p-3.5 rounded-2xl bg-neutral-50 dark:bg-[#181922] border border-neutral-200 dark:border-white/[0.06] hover:border-black dark:hover:border-cyan-500/30 transition-all shadow-xs space-y-2 group"
+                        className="p-3.5 rounded-2xl bg-neutral-50 border border-neutral-200 hover:border-black transition-all shadow-xs space-y-2 group"
                       >
                         <div className="flex items-start justify-between">
                           <div>
-                            <h4 className="text-xs font-bold text-neutral-900 dark:text-white group-hover:text-neutral-700 dark:group-hover:text-cyan-300 transition-colors">
+                            <h4 className="text-xs font-bold text-neutral-900 group-hover:text-black transition-colors">
                               {app.applicantName}
                             </h4>
-                            <p className="text-[10px] text-neutral-500 dark:text-slate-400 truncate max-w-[140px]">
+                            <p className="text-[10px] text-neutral-500 truncate max-w-[140px]">
                               {app.job?.title || 'Tech Specialist'}
                             </p>
                           </div>
-                          <div className="flex items-center gap-0.5 text-neutral-800 dark:text-amber-400">
-                            <Star className="w-3 h-3 fill-neutral-800 dark:fill-amber-400" />
+                          <div className="flex items-center gap-0.5 text-neutral-800">
+                            <Star className="w-3 h-3 fill-neutral-800" />
                             <span className="text-[10px] font-bold font-mono">{app.rating || 5}</span>
                           </div>
                         </div>
 
-                        <div className="text-[10px] text-neutral-500 dark:text-slate-400 flex flex-col gap-0.5 pt-1 border-t border-neutral-200 dark:border-white/[0.04]">
+                        <div className="text-[10px] text-neutral-500 flex flex-col gap-0.5 pt-1 border-t border-neutral-200">
                           <span className="flex items-center gap-1">
-                            <Mail className="w-2.5 h-2.5 text-neutral-400 dark:text-slate-500" />
+                            <Mail className="w-2.5 h-2.5 text-neutral-400" />
                             {app.email}
                           </span>
                           {app.experienceYears && (
-                            <span className="text-neutral-900 dark:text-cyan-400 font-semibold">{app.experienceYears} yrs experience</span>
+                            <span className="text-neutral-900 font-semibold">{app.experienceYears} yrs experience</span>
                           )}
                         </div>
 
                         {/* Move Stage Selector */}
-                        <div className="pt-2 border-t border-neutral-200 dark:border-white/[0.06] flex items-center justify-between">
-                          <span className="text-[9px] text-neutral-400 dark:text-slate-500 uppercase font-bold">Move:</span>
+                        <div className="pt-2 border-t border-neutral-200 flex items-center justify-between">
+                          <span className="text-[9px] text-neutral-400 uppercase font-bold">Move:</span>
                           <select
                             value={app.status}
                             onChange={(e) => handleUpdateStage(app._id, e.target.value)}
-                            className="bg-white dark:bg-[#121319] border border-neutral-300 dark:border-white/[0.1] rounded-lg text-[10px] px-2 py-0.5 text-neutral-900 dark:text-slate-200 focus:outline-none focus:border-black dark:focus:border-cyan-500 font-medium"
+                            className="bg-white border border-neutral-300 rounded-lg text-[10px] px-2 py-0.5 text-neutral-900 focus:outline-none focus:border-black font-medium"
                           >
                             {stages.map((s) => (
                               <option key={s} value={s}>
@@ -322,46 +313,46 @@ const RecruitmentPage = () => {
           {jobs.map((job) => (
             <div
               key={job._id}
-              className="bento-card p-6 flex flex-col justify-between group hover:border-neutral-400 dark:hover:border-white/[0.15] transition-all relative overflow-hidden"
+              className="bento-card p-6 flex flex-col justify-between group hover:border-black transition-all relative overflow-hidden"
             >
               <div>
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-neutral-100 text-neutral-900 border border-neutral-300 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20 mb-2">
+                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-neutral-100 text-neutral-900 border border-neutral-300 mb-2">
                       {job.department?.name || 'Engineering'}
                     </span>
-                    <h3 className="text-base font-bold text-neutral-900 dark:text-white group-hover:text-neutral-700 dark:group-hover:text-cyan-300 transition-colors">
+                    <h3 className="text-base font-bold text-neutral-900 group-hover:text-black transition-colors">
                       {job.title}
                     </h3>
                   </div>
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
                       job.status === 'Active'
-                        ? 'bg-neutral-900 text-white border-neutral-900 dark:bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/30'
-                        : 'bg-neutral-200 text-neutral-800 border-neutral-300 dark:bg-slate-500/15 dark:text-slate-400 dark:border-slate-500/30'
+                        ? 'bg-black text-white border-black'
+                        : 'bg-neutral-200 text-neutral-800 border-neutral-300'
                     }`}
                   >
                     {job.status}
                   </span>
                 </div>
 
-                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-neutral-500 dark:text-slate-400">
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-neutral-500">
                   <span className="flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-neutral-400 dark:text-cyan-400" />
+                    <MapPin className="w-3 h-3 text-neutral-400" />
                     {job.location || 'Bengaluru / Hybrid'}
                   </span>
                   <span>&bull;</span>
                   <span>{job.experience || '3-6 yrs'}</span>
                 </div>
 
-                <p className="text-xs text-neutral-600 dark:text-slate-300 mt-3 line-clamp-2 leading-relaxed">
-                  {job.description || 'Key opening in our rapid-scaling Indian product engineering team.'}
+                <p className="text-xs text-neutral-600 mt-3 line-clamp-2 leading-relaxed">
+                  {job.description || 'Key opening in our rapid-scaling product engineering team.'}
                 </p>
 
                 {/* Salary Package */}
-                <div className="mt-4 pt-3 border-t border-neutral-200 dark:border-white/[0.06] flex items-center justify-between text-xs">
-                  <span className="text-neutral-500 dark:text-slate-400">Package Range:</span>
-                  <span className="font-bold text-neutral-900 dark:text-emerald-400 font-mono">
+                <div className="mt-4 pt-3 border-t border-neutral-200 flex items-center justify-between text-xs">
+                  <span className="text-neutral-500">Package Range:</span>
+                  <span className="font-bold text-neutral-900 font-mono">
                     ₹{(job.salaryRange?.min / 100000 || 18).toFixed(1)} - ₹
                     {(job.salaryRange?.max / 100000 || 32).toFixed(1)} LPA
                   </span>
@@ -369,11 +360,11 @@ const RecruitmentPage = () => {
               </div>
 
               {/* Card Footer */}
-              <div className="mt-5 pt-3 border-t border-neutral-200 dark:border-white/[0.06] flex items-center justify-between text-xs">
-                <span className="text-neutral-500 dark:text-slate-400">
-                  Openings: <strong className="text-neutral-900 dark:text-white">{job.openings || 1}</strong>
+              <div className="mt-5 pt-3 border-t border-neutral-200 flex items-center justify-between text-xs">
+                <span className="text-neutral-500">
+                  Openings: <strong className="text-neutral-900">{job.openings || 1}</strong>
                 </span>
-                <span className="text-neutral-900 dark:text-cyan-400 font-semibold flex items-center gap-1">
+                <span className="text-neutral-900 font-semibold flex items-center gap-1">
                   <Users className="w-3.5 h-3.5" />
                   {applications.filter((a) => a.job?._id === job._id || a.job === job._id).length} Applicants
                 </span>
@@ -396,19 +387,19 @@ const RecruitmentPage = () => {
             value={jobForm.title}
             onChange={(e) => setJobForm({ ...jobForm, title: e.target.value })}
             required
-            placeholder="e.g. Staff Fullstack / AI Platform Architect"
+            placeholder="e.g. Staff Fullstack / Platform Architect"
           />
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5 uppercase tracking-wider">
                 Department
               </label>
               <select
                 value={jobForm.department}
                 onChange={(e) => setJobForm({ ...jobForm, department: e.target.value })}
                 required
-                className="block w-full rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-neutral-50 dark:bg-[#181922] text-xs py-2.5 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:border-black dark:focus:border-cyan-500"
+                className="block w-full rounded-xl border border-neutral-200 bg-neutral-50 text-xs py-2.5 px-3 text-neutral-900 focus:outline-none focus:border-black"
               >
                 {departments.map((d) => (
                   <option key={d._id} value={d._id}>
@@ -441,19 +432,19 @@ const RecruitmentPage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-neutral-700 mb-1.5 uppercase tracking-wider">
               Role Description & Core Skills
             </label>
             <textarea
               rows={3}
               value={jobForm.description}
               onChange={(e) => setJobForm({ ...jobForm, description: e.target.value })}
-              className="block w-full rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-neutral-50 dark:bg-[#181922] text-xs p-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:border-black dark:focus:border-cyan-500"
+              className="block w-full rounded-xl border border-neutral-200 bg-neutral-50 text-xs p-3 text-neutral-900 focus:outline-none focus:border-black"
               placeholder="Key responsibilities, React/Node skills, performance benchmarks..."
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-neutral-200 dark:border-white/[0.08]">
+          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-neutral-200">
             <Button variant="secondary" size="sm" onClick={() => setJobModalOpen(false)}>
               Cancel
             </Button>
@@ -473,14 +464,14 @@ const RecruitmentPage = () => {
       >
         <form onSubmit={handleCreateCandidate} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-neutral-700 mb-1.5 uppercase tracking-wider">
               Target Requisition
             </label>
             <select
               value={candidateForm.job}
               onChange={(e) => setCandidateForm({ ...candidateForm, job: e.target.value })}
               required
-              className="block w-full rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-neutral-50 dark:bg-[#181922] text-xs py-2.5 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:border-black dark:focus:border-cyan-500"
+              className="block w-full rounded-xl border border-neutral-200 bg-neutral-50 text-xs py-2.5 px-3 text-neutral-900 focus:outline-none focus:border-black"
             >
               {jobs.map((j) => (
                 <option key={j._id} value={j._id}>
@@ -522,7 +513,7 @@ const RecruitmentPage = () => {
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-neutral-200 dark:border-white/[0.08]">
+          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-neutral-200">
             <Button variant="secondary" size="sm" onClick={() => setCandidateModalOpen(false)}>
               Cancel
             </Button>

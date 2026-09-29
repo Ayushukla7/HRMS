@@ -18,8 +18,6 @@ import {
   Edit2,
   Trash2,
   Eye,
-  Mail,
-  Phone,
   Upload,
 } from 'lucide-react';
 
@@ -270,7 +268,7 @@ const EmployeeListPage = () => {
           <div>
             <Link
               to={`/employees/${emp._id}`}
-              className="font-semibold text-black dark:text-white hover:underline block text-sm"
+              className="font-semibold text-black hover:underline block text-sm"
             >
               {emp.firstName} {emp.lastName}
             </Link>
@@ -283,7 +281,7 @@ const EmployeeListPage = () => {
       header: 'Department & Role',
       render: (emp) => (
         <div>
-          <p className="font-medium text-black dark:text-slate-200 text-xs sm:text-sm">{emp.designation}</p>
+          <p className="font-medium text-black text-xs sm:text-sm">{emp.designation}</p>
           <span className="text-xs text-neutral-500">
             {emp.department?.name || 'Unassigned'}
           </span>
@@ -294,7 +292,7 @@ const EmployeeListPage = () => {
       header: 'Contact',
       render: (emp) => (
         <div className="text-xs space-y-0.5">
-          <p className="text-neutral-700 dark:text-slate-300 font-medium">{emp.email}</p>
+          <p className="text-neutral-700 font-medium">{emp.email}</p>
           {emp.phone && <p className="text-neutral-500 font-mono">{emp.phone}</p>}
         </div>
       ),
@@ -311,7 +309,7 @@ const EmployeeListPage = () => {
     {
       header: 'Monthly Base (CTC)',
       render: (emp) => (
-        <span className="font-semibold text-black dark:text-emerald-400 font-mono text-xs sm:text-sm">
+        <span className="font-semibold text-black font-mono text-xs sm:text-sm">
           ₹{emp.salary ? Number(emp.salary).toLocaleString('en-IN') : '0'}
         </span>
       ),
@@ -322,7 +320,7 @@ const EmployeeListPage = () => {
         <div className="flex items-center gap-1.5">
           <Link
             to={`/employees/${emp._id}`}
-            className="p-1.5 rounded-lg text-neutral-600 hover:text-black hover:bg-neutral-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800"
+            className="p-1.5 rounded-lg text-neutral-600 hover:text-black hover:bg-neutral-100"
             title="View Details"
           >
             <Eye className="w-4 h-4" />
@@ -331,14 +329,14 @@ const EmployeeListPage = () => {
             <>
               <button
                 onClick={() => handleOpenEditModal(emp)}
-                className="p-1.5 rounded-lg text-neutral-600 hover:text-black hover:bg-neutral-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 cursor-pointer"
+                className="p-1.5 rounded-lg text-neutral-600 hover:text-black hover:bg-neutral-100 cursor-pointer"
                 title="Edit Employee"
               >
                 <Edit2 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleDeleteClick(emp)}
-                className="p-1.5 rounded-lg text-neutral-600 hover:text-rose-600 hover:bg-rose-50 dark:text-slate-400 dark:hover:text-rose-400 dark:hover:bg-rose-950/40 cursor-pointer"
+                className="p-1.5 rounded-lg text-neutral-600 hover:text-black hover:bg-neutral-100 cursor-pointer"
                 title="Delete Employee"
               >
                 <Trash2 className="w-4 h-4" />
@@ -355,11 +353,11 @@ const EmployeeListPage = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-black dark:text-white tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-black tracking-tight">
             Employee Directory
           </h1>
-          <p className="text-xs text-neutral-500 dark:text-slate-400 mt-1">
-            Manage Indian workforce profiles, organizational divisions, salaries, and user accounts.
+          <p className="text-xs text-neutral-500 mt-1">
+            Manage organizational workforce profiles, divisions, salaries, and user accounts.
           </p>
         </div>
 
@@ -386,7 +384,7 @@ const EmployeeListPage = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-neutral-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row items-center gap-3">
+      <div className="bg-white p-4 rounded-xl border border-neutral-200 shadow-xs flex flex-col md:flex-row items-center gap-3">
         <div className="flex-1 w-full relative">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
           <input
@@ -394,7 +392,7 @@ const EmployeeListPage = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, email, designation, or employee ID..."
-            className="w-full pl-9 pr-4 py-2 bg-neutral-50 dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg text-xs text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
+            className="w-full pl-9 pr-4 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-xs text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-black"
           />
         </div>
 
@@ -402,7 +400,7 @@ const EmployeeListPage = () => {
           <select
             value={selectedDept}
             onChange={(e) => setSelectedDept(e.target.value)}
-            className="px-3 py-2 bg-neutral-50 dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg text-xs text-neutral-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
+            className="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-black"
           >
             <option value="all">All Departments</option>
             {departments.map((d) => (
@@ -415,7 +413,7 @@ const EmployeeListPage = () => {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-3 py-2 bg-neutral-50 dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg text-xs text-neutral-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
+            className="px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-xs text-neutral-800 focus:outline-none focus:ring-2 focus:ring-black"
           >
             <option value="all">All Status</option>
             <option value="Active">Active</option>
@@ -442,7 +440,7 @@ const EmployeeListPage = () => {
         maxWidth="max-w-2xl"
       >
         <form onSubmit={handleFormSubmit} className="space-y-4">
-          <div className="flex items-center gap-4 pb-3 border-b border-neutral-200 dark:border-slate-800">
+          <div className="flex items-center gap-4 pb-3 border-b border-neutral-200">
             <Avatar
               src={formData.profilePicture}
               name={`${formData.firstName || 'New'} ${formData.lastName || 'User'}`}
@@ -465,8 +463,8 @@ const EmployeeListPage = () => {
               >
                 Upload Photo
               </Button>
-              <p className="text-[11px] text-neutral-500 dark:text-slate-400 mt-1">
-                Upload authentic Indian portrait photo (PNG, JPG under 5MB)
+              <p className="text-[11px] text-neutral-500 mt-1">
+                Upload portrait photo (PNG, JPG under 5MB)
               </p>
             </div>
           </div>
@@ -480,14 +478,14 @@ const EmployeeListPage = () => {
               placeholder="e.g. EMP-1011"
             />
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1">
-                Department <span className="text-rose-500">*</span>
+              <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                Department <span className="text-black">*</span>
               </label>
               <select
                 value={formData.department}
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                 required
-                className="block w-full rounded-lg border border-neutral-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
+                className="block w-full rounded-lg border border-neutral-300 bg-white text-xs py-2 px-3 text-neutral-900 focus:outline-none focus:ring-2 focus:ring-black"
               >
                 {departments.map((d) => (
                   <option key={d._id} value={d._id}>
@@ -543,7 +541,7 @@ const EmployeeListPage = () => {
               value={formData.designation}
               onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
               required
-              placeholder="UX/UI Lead"
+              placeholder="Lead Engineer"
             />
             <Input
               label="Monthly Base CTC (₹)"
@@ -566,13 +564,13 @@ const EmployeeListPage = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-neutral-700 mb-1">
                 Employment Type
               </label>
               <select
                 value={formData.employmentType}
                 onChange={(e) => setFormData({ ...formData, employmentType: e.target.value })}
-                className="block w-full rounded-lg border border-neutral-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
+                className="block w-full rounded-lg border border-neutral-300 bg-white text-xs py-2 px-3 text-neutral-900 focus:outline-none focus:ring-2 focus:ring-black"
               >
                 <option value="Full-Time">Full-Time</option>
                 <option value="Part-Time">Part-Time</option>
@@ -582,13 +580,13 @@ const EmployeeListPage = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-neutral-700 mb-1">
                 Status
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="block w-full rounded-lg border border-neutral-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
+                className="block w-full rounded-lg border border-neutral-300 bg-white text-xs py-2 px-3 text-neutral-900 focus:outline-none focus:ring-2 focus:ring-black"
               >
                 <option value="Active">Active</option>
                 <option value="On Leave">On Leave</option>
@@ -598,13 +596,13 @@ const EmployeeListPage = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-neutral-700 mb-1">
                 Gender
               </label>
               <select
                 value={formData.gender}
                 onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                className="block w-full rounded-lg border border-neutral-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-neutral-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-indigo-500"
+                className="block w-full rounded-lg border border-neutral-300 bg-white text-xs py-2 px-3 text-neutral-900 focus:outline-none focus:ring-2 focus:ring-black"
               >
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
@@ -614,9 +612,9 @@ const EmployeeListPage = () => {
             </div>
           </div>
 
-          <div className="pt-2 border-t border-neutral-200 dark:border-slate-800">
-            <h5 className="text-xs font-bold text-black dark:text-white mb-2 uppercase tracking-wider">
-              Banking & Address (India)
+          <div className="pt-2 border-t border-neutral-200">
+            <h5 className="text-xs font-bold text-black mb-2 uppercase tracking-wider">
+              Banking & Address
             </h5>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Input
@@ -637,7 +635,7 @@ const EmployeeListPage = () => {
           </div>
 
           {!editingEmployee && (
-            <div className="p-3 bg-neutral-50 dark:bg-slate-800/60 rounded-lg border border-neutral-200 dark:border-slate-700">
+            <div className="p-3 bg-neutral-50 rounded-lg border border-neutral-200">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -645,14 +643,14 @@ const EmployeeListPage = () => {
                   onChange={(e) => setFormData({ ...formData, createUserAccount: e.target.checked })}
                   className="rounded border-neutral-300 text-black focus:ring-black"
                 />
-                <span className="text-xs font-medium text-neutral-700 dark:text-slate-300">
+                <span className="text-xs font-medium text-neutral-700">
                   Provision User Portal Login (Default password: {formData.password})
                 </span>
               </label>
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-neutral-200 dark:border-slate-800">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-neutral-200">
             <Button variant="secondary" size="sm" onClick={() => setModalOpen(false)}>
               Cancel
             </Button>

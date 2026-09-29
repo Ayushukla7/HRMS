@@ -1,10 +1,8 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 @layer base {
   :root {
-    /* Pure Minimalist Black & White Light Theme */
+    /* Pure Minimalist Black & White Theme */
     --bg-main: #ffffff;
     --bg-surface: #f4f4f5;
     --card-bg: #ffffff;
@@ -14,38 +12,21 @@
     --text-muted: #71717a;
   }
 
-  .dark {
-    /* Deep Modern Dark Theme */
-    --bg-main: #0b0f19;
-    --bg-surface: #1e293b;
-    --card-bg: #111827;
-    --card-border: #1f2937;
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
-    --text-muted: #64748b;
-  }
-
   body {
     background-color: var(--bg-main);
     color: var(--text-primary);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', 'Helvetica Neue', Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Crisp Clean Light B&W / Dark Modern Cards */
+/* Crisp Clean Black & White Cards */
 .app-card {
   background-color: #ffffff;
   border: 1px solid #e4e4e7;
   border-radius: 0.75rem;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
-}
-
-.dark .app-card {
-  background-color: #111827;
-  border: 1px solid #1f2937;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
 }
 
 .bento-card {
@@ -55,12 +36,6 @@
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
 }
 
-.dark .bento-card {
-  background-color: #111827;
-  border: 1px solid #1f2937;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
-}
-
 /* Subtle Card Surface */
 .app-card-subtle {
   background-color: #f4f4f5;
@@ -68,12 +43,7 @@
   border-radius: 0.5rem;
 }
 
-.dark .app-card-subtle {
-  background-color: #1e293b;
-  border: 1px solid #334155;
-}
-
-/* Crisp Clean Scrollbars */
+/* Crisp Clean Minimal Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -88,22 +58,13 @@
   border-radius: 4px;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: #334155;
-}
-
 ::-webkit-scrollbar-thumb:hover {
   background: #a1a1aa;
 }
 
-/* Selection */
+/* High Contrast Selection */
 ::selection {
   background-color: #000000;
-  color: #ffffff;
-}
-
-.dark ::selection {
-  background-color: #6366f1;
   color: #ffffff;
 }
 

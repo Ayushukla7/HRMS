@@ -12,16 +12,13 @@ import {
   LogOut,
   Sparkles,
   BarChart3,
-  UserCheck,
-  Shield,
-  Clock,
   ChevronRight,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Avatar from '../components/common/Avatar';
 
 const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
-  const { user, isAdmin, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -71,32 +68,32 @@ const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
       {/* Mobile Backdrop */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-neutral-900/60 dark:bg-slate-900/60 backdrop-blur-xs lg:hidden"
+          className="fixed inset-0 z-40 bg-neutral-900/60 backdrop-blur-xs lg:hidden"
           onClick={closeMobileSidebar}
         />
       )}
 
       {/* Enterprise Standard Sidebar */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r border-neutral-200 dark:border-slate-800 flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-white border-r border-neutral-200 flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${
           isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
         }`}
       >
         {/* Brand Header */}
-        <div className="h-16 px-5 border-b border-neutral-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="h-16 px-5 border-b border-neutral-200 flex items-center justify-between">
           <Link
             to="/dashboard"
             onClick={closeMobileSidebar}
             className="flex items-center gap-3"
           >
-            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-black dark:bg-indigo-600 text-white shadow-xs">
+            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-black text-white shadow-xs">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold tracking-tight text-black dark:text-white font-sans">
+              <h2 className="text-base font-bold tracking-tight text-black font-sans">
                 HR Pulse
               </h2>
-              <p className="text-[10px] text-neutral-500 dark:text-slate-400 font-medium uppercase tracking-wider">
+              <p className="text-[10px] text-neutral-500 font-medium uppercase tracking-wider">
                 Enterprise HRMS
               </p>
             </div>
@@ -114,7 +111,7 @@ const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
 
             return (
               <div key={idx} className="space-y-1">
-                <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-slate-500">
+                <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
                   {section.title}
                 </p>
 
@@ -129,8 +126,8 @@ const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
                         className={({ isActive }) =>
                           `flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                             isActive
-                              ? 'bg-black text-white dark:bg-indigo-950/60 dark:text-indigo-400 font-semibold shadow-xs'
-                              : 'text-neutral-600 dark:text-slate-400 hover:bg-neutral-100 dark:hover:bg-slate-800/60 hover:text-black dark:hover:text-slate-100'
+                              ? 'bg-black text-white font-semibold shadow-xs'
+                              : 'text-neutral-600 hover:bg-neutral-100 hover:text-black'
                           }`
                         }
                       >
@@ -140,14 +137,14 @@ const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
                               <Icon
                                 className={`w-4 h-4 ${
                                   isActive
-                                    ? 'text-white dark:text-indigo-400'
-                                    : 'text-neutral-400 dark:text-slate-400'
+                                    ? 'text-white'
+                                    : 'text-neutral-400'
                                 }`}
                               />
                               <span>{item.label}</span>
                             </div>
                             {isActive && (
-                              <ChevronRight className="w-4 h-4 text-white/80 dark:text-indigo-400" />
+                              <ChevronRight className="w-4 h-4 text-white/80" />
                             )}
                           </>
                         )}
@@ -161,11 +158,11 @@ const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
         </div>
 
         {/* User Account & Logout Footer */}
-        <div className="p-3.5 border-t border-neutral-200 dark:border-slate-800 bg-neutral-50 dark:bg-slate-900/50 space-y-2">
+        <div className="p-3.5 border-t border-neutral-200 bg-neutral-50 space-y-2">
           <Link
             to="/profile"
             onClick={closeMobileSidebar}
-            className="flex items-center justify-between p-2 rounded-lg bg-white dark:bg-slate-800 border border-neutral-200 dark:border-slate-700/60 hover:border-black dark:hover:border-indigo-500/40 transition-all shadow-xs"
+            className="flex items-center justify-between p-2 rounded-lg bg-white border border-neutral-200 hover:border-black transition-all shadow-xs"
             title="Manage Profile Photo & Account"
           >
             <div className="flex items-center gap-2.5">
@@ -173,23 +170,23 @@ const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
                 src={loggedInAvatar}
                 name={user?.name || 'User'}
                 size="sm"
-                className="ring-1 ring-neutral-200 dark:ring-slate-700"
+                className="ring-1 ring-neutral-200"
               />
               <div className="text-left overflow-hidden">
-                <p className="text-xs font-semibold text-black dark:text-white truncate max-w-[120px]">
+                <p className="text-xs font-semibold text-black truncate max-w-[120px]">
                   {user?.name || 'Ayush Shukla'}
                 </p>
-                <p className="text-[10px] text-neutral-500 dark:text-slate-400 capitalize">
+                <p className="text-[10px] text-neutral-500 capitalize">
                   {user?.role === 'admin' ? 'HR Administrator' : 'Staff Employee'}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-neutral-400 dark:text-slate-400" />
+            <ChevronRight className="w-4 h-4 text-neutral-400" />
           </Link>
 
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-700 hover:text-white hover:bg-black dark:text-rose-400 dark:hover:bg-rose-950/40 border border-neutral-300 dark:border-rose-900/50 transition-colors cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-700 hover:text-white hover:bg-black border border-neutral-300 transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign Out</span>
