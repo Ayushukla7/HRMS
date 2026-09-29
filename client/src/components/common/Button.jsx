@@ -12,31 +12,23 @@ const Button = ({
   icon: Icon,
   className = '',
 }) => {
-  const baseStyles =
-    'inline-flex items-center justify-center font-bold rounded-2xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#A56ABD] focus:ring-offset-2 focus:ring-offset-[#12071a] disabled:opacity-50 disabled:cursor-not-allowed select-none shadow-md';
+  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed select-none';
 
   const sizeStyles = {
-    xs: 'px-3 py-1 text-xs gap-1.5',
-    sm: 'px-3.5 py-1.5 text-xs gap-1.5',
-    md: 'px-4 py-2.5 text-sm gap-2',
-    lg: 'px-6 py-3 text-base gap-2.5',
+    xs: 'px-2.5 py-1 text-xs gap-1.5',
+    sm: 'px-3 py-1.5 text-xs gap-1.5',
+    md: 'px-4 py-2 text-sm gap-2',
+    lg: 'px-5 py-2.5 text-base gap-2',
   };
 
   const variantStyles = {
-    primary:
-      'bg-gradient-to-r from-[#6E3482] to-[#49225B] hover:from-[#7f3d96] hover:to-[#5c2b73] text-[#F5EBFA] border border-[#A56ABD]/40 shadow-lg shadow-[#49225B]/40 hover:shadow-[#6E3482]/50 active:scale-[0.98]',
-    accent:
-      'bg-[#A56ABD] hover:bg-[#b57dce] text-[#12071a] font-black border border-[#E7DBEF]/40 shadow-md shadow-[#A56ABD]/30 active:scale-[0.98]',
-    secondary:
-      'bg-[#271337] hover:bg-[#381a4e] text-[#E7DBEF] border border-[#A56ABD]/30 hover:border-[#A56ABD]/60 active:scale-[0.98]',
-    outline:
-      'bg-transparent border border-[#A56ABD]/40 text-[#E7DBEF] hover:bg-[#6E3482]/20 hover:border-[#A56ABD] hover:text-[#F5EBFA]',
-    danger:
-      'bg-rose-600/90 hover:bg-rose-600 text-white border border-rose-400/30 shadow-md shadow-rose-900/30',
-    success:
-      'bg-emerald-600/90 hover:bg-emerald-600 text-white border border-emerald-400/30 shadow-md shadow-emerald-900/30',
-    ghost:
-      'text-[#E7DBEF] hover:text-[#F5EBFA] hover:bg-[#6E3482]/20',
+    primary: 'bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white shadow-sm',
+    accent: 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm',
+    secondary: 'bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700',
+    outline: 'bg-transparent border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800',
+    danger: 'bg-rose-600 text-white hover:bg-rose-700 shadow-sm',
+    success: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm',
+    ghost: 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100',
   };
 
   return (
@@ -47,7 +39,7 @@ const Button = ({
       className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
     >
       {loading ? (
-        <Loader2 className="w-4 h-4 animate-spin text-[#F5EBFA]" />
+        <Loader2 className="w-4 h-4 animate-spin" />
       ) : (
         Icon && <Icon className="w-4 h-4" />
       )}

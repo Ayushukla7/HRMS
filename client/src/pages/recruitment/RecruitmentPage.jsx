@@ -146,19 +146,19 @@ const RecruitmentPage = () => {
   const stageBadgeColor = (stage) => {
     switch (stage) {
       case 'Applied':
-        return 'bg-[#49225B]/60 text-[#E7DBEF] border-[#A56ABD]/30';
+        return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
       case 'Screening':
-        return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+        return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
       case 'Interview':
-        return 'bg-[#6E3482]/40 text-[#F5EBFA] border-[#A56ABD]/50';
+        return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
       case 'Offered':
-        return 'bg-[#A56ABD]/30 text-[#F5EBFA] border-[#A56ABD]/60';
+        return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
       case 'Hired':
-        return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
       case 'Rejected':
-        return 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+        return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
       default:
-        return 'bg-[#271337] text-[#E7DBEF] border-[#A56ABD]/30';
+        return 'bg-slate-500/10 text-slate-400 border-slate-500/20';
     }
   };
 
@@ -167,20 +167,20 @@ const RecruitmentPage = () => {
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#6E3482]/30 border border-[#A56ABD]/40 text-[#F5EBFA] text-xs font-semibold mb-2 shadow-xs">
-            <Briefcase className="w-3.5 h-3.5 text-[#A56ABD]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold mb-2">
+            <Briefcase className="w-3.5 h-3.5" />
             <span>Applicant Tracking & Talent Acquisition</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#F5EBFA]">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
             Recruitment & Hiring Pipeline
           </h1>
-          <p className="text-xs sm:text-sm text-[#E7DBEF] mt-1">
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Requisition postings, Indian tech candidate stages, Kanban candidate pipeline, and hiring conversion meters.
           </p>
         </div>
 
         {isAdmin && (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <Button
               variant="secondary"
               icon={UserPlus}
@@ -191,6 +191,7 @@ const RecruitmentPage = () => {
                 }
                 setCandidateModalOpen(true);
               }}
+              className="bg-[#181922] border-white/[0.08] text-slate-200 hover:bg-slate-800"
             >
               Add Candidate
             </Button>
@@ -199,6 +200,7 @@ const RecruitmentPage = () => {
               icon={Plus}
               size="md"
               onClick={() => setJobModalOpen(true)}
+              className="shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50"
             >
               Post Job Opening
             </Button>
@@ -207,13 +209,13 @@ const RecruitmentPage = () => {
       </div>
 
       {/* Tabs Switcher */}
-      <div className="flex items-center gap-2 border-b border-[#A56ABD]/20 pb-3">
+      <div className="flex items-center gap-2 border-b border-white/[0.08] pb-3">
         <button
           onClick={() => setActiveTab('pipeline')}
-          className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
             activeTab === 'pipeline'
-              ? 'bg-gradient-to-r from-[#6E3482] to-[#49225B] text-[#F5EBFA] border border-[#A56ABD] shadow-md'
-              : 'text-[#E7DBEF]/80 hover:text-[#F5EBFA] hover:bg-[#271337]'
+              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm shadow-cyan-500/20'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
           }`}
         >
           <Layers className="w-4 h-4" />
@@ -221,10 +223,10 @@ const RecruitmentPage = () => {
         </button>
         <button
           onClick={() => setActiveTab('jobs')}
-          className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 ${
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
             activeTab === 'jobs'
-              ? 'bg-gradient-to-r from-[#6E3482] to-[#49225B] text-[#F5EBFA] border border-[#A56ABD] shadow-md'
-              : 'text-[#E7DBEF]/80 hover:text-[#F5EBFA] hover:bg-[#271337]'
+              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm shadow-cyan-500/20'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
           }`}
         >
           <Briefcase className="w-4 h-4" />
@@ -240,12 +242,12 @@ const RecruitmentPage = () => {
             return (
               <div
                 key={stage}
-                className="bg-[#1c0d28] rounded-3xl p-4 border border-[#A56ABD]/25 flex flex-col min-h-[460px] shadow-xl"
+                className="bg-[#121319] rounded-3xl p-4 border border-white/[0.07] flex flex-col min-h-[460px] shadow-lg"
               >
                 {/* Column Header */}
-                <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#A56ABD]/20">
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.08]">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-black uppercase tracking-wider text-[#F5EBFA]">{stage}</span>
+                    <span className="text-xs font-black uppercase tracking-wider text-white">{stage}</span>
                     <span
                       className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${stageBadgeColor(stage)}`}
                     >
@@ -257,47 +259,47 @@ const RecruitmentPage = () => {
                 {/* Candidate Cards in Stage */}
                 <div className="space-y-3 flex-1 overflow-y-auto pr-0.5">
                   {stageApps.length === 0 ? (
-                    <div className="p-6 rounded-2xl border border-dashed border-[#A56ABD]/20 text-center text-xs text-[#A56ABD]/70">
+                    <div className="p-6 rounded-2xl border border-dashed border-white/[0.06] text-center text-[11px] text-slate-500">
                       No candidates in {stage}
                     </div>
                   ) : (
                     stageApps.map((app) => (
                       <div
                         key={app._id}
-                        className="p-3.5 rounded-2xl bg-[#271337] border border-[#A56ABD]/20 hover:border-[#A56ABD] transition-all shadow-sm space-y-2 group"
+                        className="p-3.5 rounded-2xl bg-[#181922] border border-white/[0.06] hover:border-cyan-500/30 transition-all shadow-sm space-y-2 group"
                       >
                         <div className="flex items-start justify-between">
                           <div>
-                            <h4 className="text-xs sm:text-sm font-bold text-[#F5EBFA] group-hover:text-[#A56ABD] transition-colors">
+                            <h4 className="text-xs font-bold text-white group-hover:text-cyan-300 transition-colors">
                               {app.applicantName}
                             </h4>
-                            <p className="text-xs text-[#E7DBEF]/80 truncate max-w-[140px]">
+                            <p className="text-[10px] text-slate-400 truncate max-w-[140px]">
                               {app.job?.title || 'Tech Specialist'}
                             </p>
                           </div>
-                          <div className="flex items-center gap-0.5 text-amber-300">
-                            <Star className="w-3.5 h-3.5 fill-amber-300" />
-                            <span className="text-xs font-bold font-mono">{app.rating || 5}</span>
+                          <div className="flex items-center gap-0.5 text-amber-400">
+                            <Star className="w-3 h-3 fill-amber-400" />
+                            <span className="text-[10px] font-bold font-mono">{app.rating || 5}</span>
                           </div>
                         </div>
 
-                        <div className="text-xs text-[#E7DBEF] flex flex-col gap-0.5 pt-1 border-t border-[#A56ABD]/15">
+                        <div className="text-[10px] text-slate-400 flex flex-col gap-0.5 pt-1 border-t border-white/[0.04]">
                           <span className="flex items-center gap-1">
-                            <Mail className="w-3 h-3 text-[#A56ABD]" />
+                            <Mail className="w-2.5 h-2.5 text-slate-500" />
                             {app.email}
                           </span>
                           {app.experienceYears && (
-                            <span className="text-[#A56ABD] font-semibold">{app.experienceYears} yrs experience</span>
+                            <span className="text-cyan-400 font-semibold">{app.experienceYears} yrs experience</span>
                           )}
                         </div>
 
                         {/* Move Stage Selector */}
-                        <div className="pt-2 border-t border-[#A56ABD]/20 flex items-center justify-between">
-                          <span className="text-[10px] text-[#A56ABD] uppercase font-bold">Stage:</span>
+                        <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between">
+                          <span className="text-[9px] text-slate-500 uppercase font-bold">Move Stage:</span>
                           <select
                             value={app.status}
                             onChange={(e) => handleUpdateStage(app._id, e.target.value)}
-                            className="bg-[#1c0d28] border border-[#A56ABD]/30 rounded-xl text-xs px-2 py-1 text-[#F5EBFA] focus:outline-none focus:border-[#A56ABD] font-medium"
+                            className="bg-[#121319] border border-white/[0.1] rounded-lg text-[10px] px-2 py-0.5 text-slate-200 focus:outline-none focus:border-cyan-500 font-medium"
                           >
                             {stages.map((s) => (
                               <option key={s} value={s}>
@@ -322,46 +324,46 @@ const RecruitmentPage = () => {
           {jobs.map((job) => (
             <div
               key={job._id}
-              className="bento-card p-6 flex flex-col justify-between group relative overflow-hidden shadow-xl"
+              className="bento-card p-6 flex flex-col justify-between group hover:border-white/[0.15] transition-all relative overflow-hidden"
             >
               <div>
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="inline-block px-3 py-0.5 rounded-full text-xs font-bold bg-[#6E3482]/40 text-[#F5EBFA] border border-[#A56ABD]/40 mb-2 shadow-xs">
+                    <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-2">
                       {job.department?.name || 'Engineering'}
                     </span>
-                    <h3 className="text-base font-bold text-[#F5EBFA] group-hover:text-[#A56ABD] transition-colors">
+                    <h3 className="text-base font-bold text-white group-hover:text-cyan-300 transition-colors">
                       {job.title}
                     </h3>
                   </div>
                   <span
-                    className={`px-3 py-0.5 rounded-full text-xs font-bold border ${
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
                       job.status === 'Active'
-                        ? 'bg-[#A56ABD]/20 text-[#F5EBFA] border-[#A56ABD]/50'
-                        : 'bg-[#271337] text-[#E7DBEF] border-[#A56ABD]/30'
+                        ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                        : 'bg-slate-500/15 text-slate-400 border-slate-500/30'
                     }`}
                   >
                     {job.status}
                   </span>
                 </div>
 
-                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-[#E7DBEF]">
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-400">
                   <span className="flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-[#A56ABD]" />
+                    <MapPin className="w-3 h-3 text-cyan-400" />
                     {job.location || 'Bengaluru / Hybrid'}
                   </span>
                   <span>&bull;</span>
                   <span>{job.experience || '3-6 yrs'}</span>
                 </div>
 
-                <p className="text-xs sm:text-sm text-[#E7DBEF]/90 mt-3 line-clamp-2 leading-relaxed font-normal">
+                <p className="text-xs text-slate-300 mt-3 line-clamp-2 leading-relaxed">
                   {job.description || 'Key opening in our rapid-scaling Indian product engineering team.'}
                 </p>
 
                 {/* Salary Package */}
-                <div className="mt-4 pt-3 border-t border-[#A56ABD]/20 flex items-center justify-between text-xs">
-                  <span className="text-[#E7DBEF]">Package Range:</span>
-                  <span className="font-bold text-[#F5EBFA] font-mono text-xs sm:text-sm bg-[#271337] px-2.5 py-1 rounded-xl border border-[#A56ABD]/30">
+                <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                  <span className="text-slate-400">Package Range:</span>
+                  <span className="font-bold text-emerald-400 font-mono">
                     ₹{(job.salaryRange?.min / 100000 || 18).toFixed(1)} - ₹
                     {(job.salaryRange?.max / 100000 || 32).toFixed(1)} LPA
                   </span>
@@ -369,12 +371,12 @@ const RecruitmentPage = () => {
               </div>
 
               {/* Card Footer */}
-              <div className="mt-5 pt-3 border-t border-[#A56ABD]/20 flex items-center justify-between text-xs">
-                <span className="text-[#E7DBEF]">
-                  Openings: <strong className="text-[#F5EBFA] font-mono">{job.openings || 1}</strong>
+              <div className="mt-5 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                <span className="text-slate-400">
+                  Openings: <strong className="text-white">{job.openings || 1}</strong>
                 </span>
-                <span className="text-[#A56ABD] font-semibold flex items-center gap-1 text-xs">
-                  <Users className="w-4 h-4" />
+                <span className="text-cyan-400 font-semibold flex items-center gap-1">
+                  <Users className="w-3.5 h-3.5" />
                   {applications.filter((a) => a.job?._id === job._id || a.job === job._id).length} Applicants
                 </span>
               </div>
@@ -401,14 +403,14 @@ const RecruitmentPage = () => {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-[#E7DBEF] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Department
               </label>
               <select
                 value={jobForm.department}
                 onChange={(e) => setJobForm({ ...jobForm, department: e.target.value })}
                 required
-                className="block w-full rounded-2xl border border-[#A56ABD]/30 bg-[#271337] text-xs py-2.5 px-3.5 text-[#F5EBFA] focus:outline-none focus:border-[#A56ABD]"
+                className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs py-2.5 px-3 text-slate-100 focus:outline-none focus:border-cyan-500"
               >
                 {departments.map((d) => (
                   <option key={d._id} value={d._id}>
@@ -441,19 +443,19 @@ const RecruitmentPage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-[#E7DBEF] mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
               Role Description & Core Skills
             </label>
             <textarea
               rows={3}
               value={jobForm.description}
               onChange={(e) => setJobForm({ ...jobForm, description: e.target.value })}
-              className="block w-full rounded-2xl border border-[#A56ABD]/30 bg-[#271337] text-xs p-3 text-[#F5EBFA] focus:outline-none focus:border-[#A56ABD]"
+              className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs p-3 text-slate-100 focus:outline-none focus:border-cyan-500"
               placeholder="Key responsibilities, React/Node skills, performance benchmarks..."
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[#A56ABD]/20">
+          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-white/[0.08]">
             <Button variant="secondary" size="sm" onClick={() => setJobModalOpen(false)}>
               Cancel
             </Button>
@@ -473,14 +475,14 @@ const RecruitmentPage = () => {
       >
         <form onSubmit={handleCreateCandidate} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-[#E7DBEF] mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
               Target Requisition
             </label>
             <select
               value={candidateForm.job}
               onChange={(e) => setCandidateForm({ ...candidateForm, job: e.target.value })}
               required
-              className="block w-full rounded-2xl border border-[#A56ABD]/30 bg-[#271337] text-xs py-2.5 px-3.5 text-[#F5EBFA] focus:outline-none focus:border-[#A56ABD]"
+              className="block w-full rounded-xl border border-white/[0.08] bg-[#181922] text-xs py-2.5 px-3 text-slate-100 focus:outline-none focus:border-cyan-500"
             >
               {jobs.map((j) => (
                 <option key={j._id} value={j._id}>
@@ -522,7 +524,7 @@ const RecruitmentPage = () => {
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[#A56ABD]/20">
+          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-white/[0.08]">
             <Button variant="secondary" size="sm" onClick={() => setCandidateModalOpen(false)}>
               Cancel
             </Button>

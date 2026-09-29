@@ -16,13 +16,13 @@ const ConfirmModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} maxWidth="max-w-md">
       <div className="flex items-start gap-4">
-        <div className="p-3 bg-rose-500/15 text-rose-300 border border-rose-500/30 rounded-2xl shrink-0">
+        <div className="p-3 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-2xl shrink-0">
           <AlertTriangle className="w-6 h-6" />
         </div>
         <div className="flex-1">
-          <p className="text-xs sm:text-sm text-[#E7DBEF] mb-6 leading-relaxed">{message}</p>
+          <p className="text-xs sm:text-sm text-slate-300 mb-6 leading-relaxed">{message}</p>
           <div className="flex items-center justify-end gap-2.5">
-            <Button variant="secondary" size="sm" onClick={onClose} disabled={loading}>
+            <Button variant="secondary" size="sm" onClick={onClose} disabled={loading} className="bg-[#181922] text-slate-300">
               Cancel
             </Button>
             <Button variant={confirmVariant} size="sm" onClick={onConfirm} loading={loading}>

@@ -75,23 +75,23 @@ export const NotificationProvider = ({ children }) => {
       {children}
       {/* Toast Notification Popup */}
       {toast && (
-        <div className="fixed bottom-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-2xl bg-[#1c0d28]/95 backdrop-blur-xl text-[#F5EBFA] border border-[#A56ABD]/40 animate-slide-up">
+        <div className="fixed bottom-5 right-5 z-50 flex items-center gap-3 px-3.5 py-2.5 rounded-lg shadow-lg bg-slate-900 text-white border border-slate-700 animate-slide-up">
           <div
-            className={`w-2.5 h-2.5 rounded-full ${
+            className={`w-2 h-2 rounded-full ${
               toast.type === 'success'
-                ? 'bg-emerald-400 ring-2 ring-emerald-400/20'
+                ? 'bg-emerald-400'
                 : toast.type === 'error'
-                ? 'bg-rose-400 ring-2 ring-rose-400/20'
-                : 'bg-[#A56ABD] ring-2 ring-[#A56ABD]/20'
+                ? 'bg-rose-400'
+                : 'bg-blue-400'
             }`}
           />
-          <span className="text-xs font-semibold text-[#F5EBFA]">{toast.message}</span>
+          <span className="text-xs font-medium">{toast.message}</span>
           <button
             onClick={() => setToast(null)}
-            className="ml-2 text-[#E7DBEF]/60 hover:text-white p-1 rounded-xl hover:bg-white/10 transition-colors"
+            className="ml-2 text-slate-400 hover:text-white p-0.5 rounded"
             aria-label="Close toast"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
       )}

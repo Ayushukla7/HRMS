@@ -71,7 +71,7 @@ const EmployeeDetailPage = () => {
   if (!employee) {
     return (
       <div className="p-12 text-center bento-card">
-        <p className="text-[#E7DBEF]/70 mb-4 font-semibold">Employee record not found.</p>
+        <p className="text-slate-400 mb-4 font-semibold">Employee record not found.</p>
         <Link to="/employees">
           <Button variant="primary" size="sm">
             Back to Directory
@@ -85,7 +85,7 @@ const EmployeeDetailPage = () => {
     <div className="space-y-6 animate-fade-in">
       <Link
         to="/employees"
-        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#A56ABD] hover:text-[#E7DBEF] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Personnel Directory</span>
@@ -93,7 +93,7 @@ const EmployeeDetailPage = () => {
 
       {/* Hero Dossier Card */}
       <div className="bento-card p-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#6E3482]/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
@@ -102,14 +102,14 @@ const EmployeeDetailPage = () => {
                 src={employee.profilePicture}
                 name={`${employee.firstName} ${employee.lastName}`}
                 size="2xl"
-                className="w-24 h-24 ring-4 ring-[#A56ABD]/40 rounded-3xl"
+                className="w-24 h-24 ring-4 ring-indigo-500/30 rounded-3xl"
               />
-              <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 ring-2 ring-[#1c0d28]" />
+              <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 ring-2 ring-[#121319]" />
             </div>
 
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2.5">
-                <h1 className="text-2xl font-black text-[#F5EBFA]">
+                <h1 className="text-2xl font-black text-white">
                   {employee.firstName} {employee.lastName}
                 </h1>
                 <span
@@ -123,21 +123,21 @@ const EmployeeDetailPage = () => {
                 </span>
               </div>
 
-              <p className="text-xs font-semibold text-[#A56ABD]">
+              <p className="text-xs font-semibold text-cyan-400">
                 {employee.designation} &bull; {employee.department?.name || 'Technology Division'}
               </p>
 
-              <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-[#E7DBEF]/70">
-                <span className="font-mono bg-[#271337] px-2.5 py-0.5 rounded-xl border border-[#A56ABD]/20 font-bold text-[#A56ABD]">
+              <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-slate-400">
+                <span className="font-mono bg-[#181922] px-2.5 py-0.5 rounded-lg border border-white/[0.08] font-bold text-indigo-300">
                   {employee.empCustomId}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Mail className="w-3.5 h-3.5 text-[#A56ABD]" />
+                  <Mail className="w-3.5 h-3.5 text-slate-500" />
                   {employee.email}
                 </span>
                 {employee.phone && (
                   <span className="flex items-center gap-1">
-                    <Phone className="w-3.5 h-3.5 text-[#A56ABD]" />
+                    <Phone className="w-3.5 h-3.5 text-slate-500" />
                     {employee.phone}
                   </span>
                 )}
@@ -145,11 +145,11 @@ const EmployeeDetailPage = () => {
             </div>
           </div>
 
-          <div className="bg-[#271337] p-5 rounded-3xl border border-[#A56ABD]/20 text-right w-full sm:w-auto">
-            <span className="text-[10px] text-[#E7DBEF]/60 uppercase font-bold tracking-wider block">Compensation</span>
-            <p className="text-2xl font-black text-[#F5EBFA] font-mono mt-0.5">
+          <div className="bg-[#181922] p-5 rounded-3xl border border-white/[0.06] text-right w-full sm:w-auto">
+            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">Compensation</span>
+            <p className="text-2xl font-black text-white font-mono mt-0.5">
               ₹{employee.salary ? Number(employee.salary).toLocaleString('en-IN') : '0'}
-              <span className="text-xs font-normal text-[#E7DBEF]/60"> /mo</span>
+              <span className="text-xs font-normal text-slate-400"> /mo</span>
             </p>
             <p className="text-[11px] text-emerald-400 mt-1 flex items-center gap-1 justify-end font-medium">
               <CheckCircle2 className="w-3 h-3" />
@@ -160,7 +160,7 @@ const EmployeeDetailPage = () => {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-[#A56ABD]/20 pb-3 overflow-x-auto">
+      <div className="flex items-center gap-2 border-b border-white/[0.08] pb-3 overflow-x-auto">
         {[
           { id: 'overview', label: 'Overview & Profile' },
           { id: 'attendance', label: `Attendance (${attendance.length})` },
@@ -171,10 +171,10 @@ const EmployeeDetailPage = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
               activeTab === tab.id
-                ? 'bg-gradient-to-r from-[#6E3482] to-[#49225B] text-[#F5EBFA] border border-[#A56ABD]/40 shadow-sm shadow-[#6E3482]/30'
-                : 'text-[#E7DBEF]/60 hover:text-[#F5EBFA] hover:bg-[#271337]'
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm shadow-cyan-500/20'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
             }`}
           >
             {tab.label}
@@ -186,33 +186,33 @@ const EmployeeDetailPage = () => {
       {activeTab === 'overview' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="bento-card p-6 space-y-4">
-            <h3 className="text-sm font-bold text-[#F5EBFA] uppercase tracking-wider pb-3 border-b border-[#A56ABD]/20">
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider pb-3 border-b border-white/[0.08]">
               Employment Dossier
             </h3>
 
             <div className="space-y-3 text-xs">
-              <div className="flex justify-between py-1.5 border-b border-[#A56ABD]/10">
-                <span className="text-[#E7DBEF]/60">Department</span>
-                <span className="font-semibold text-[#F5EBFA]">{employee.department?.name || 'Engineering'}</span>
+              <div className="flex justify-between py-1.5 border-b border-white/[0.04]">
+                <span className="text-slate-400">Department</span>
+                <span className="font-semibold text-white">{employee.department?.name || 'Engineering'}</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-[#A56ABD]/10">
-                <span className="text-[#E7DBEF]/60">Designation</span>
-                <span className="font-semibold text-[#A56ABD]">{employee.designation}</span>
+              <div className="flex justify-between py-1.5 border-b border-white/[0.04]">
+                <span className="text-slate-400">Designation</span>
+                <span className="font-semibold text-cyan-400">{employee.designation}</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-[#A56ABD]/10">
-                <span className="text-[#E7DBEF]/60">Base Tech Hub</span>
-                <span className="font-semibold text-[#F5EBFA] flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-[#A56ABD]" />
+              <div className="flex justify-between py-1.5 border-b border-white/[0.04]">
+                <span className="text-slate-400">Base Tech Hub</span>
+                <span className="font-semibold text-slate-200 flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5 text-cyan-400" />
                   Bengaluru R&D Hub (Tower 3)
                 </span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-[#A56ABD]/10">
-                <span className="text-[#E7DBEF]/60">Employment Type</span>
-                <span className="font-semibold text-[#F5EBFA]">Full-Time (Permanent)</span>
+              <div className="flex justify-between py-1.5 border-b border-white/[0.04]">
+                <span className="text-slate-400">Employment Type</span>
+                <span className="font-semibold text-slate-200">Full-Time (Permanent)</span>
               </div>
               <div className="flex justify-between py-1.5">
-                <span className="text-[#E7DBEF]/60">Joining Date</span>
-                <span className="font-semibold text-[#F5EBFA]">
+                <span className="text-slate-400">Joining Date</span>
+                <span className="font-semibold text-slate-200">
                   {new Date(employee.joiningDate).toLocaleDateString('en-IN', {
                     day: 'numeric',
                     month: 'long',
@@ -224,28 +224,28 @@ const EmployeeDetailPage = () => {
           </div>
 
           <div className="bento-card p-6 space-y-4">
-            <h3 className="text-sm font-bold text-[#F5EBFA] uppercase tracking-wider pb-3 border-b border-[#A56ABD]/20">
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider pb-3 border-b border-white/[0.08]">
               Statutory & Bank Information
             </h3>
 
             <div className="space-y-3 text-xs">
-              <div className="flex justify-between py-1.5 border-b border-[#A56ABD]/10">
-                <span className="text-[#E7DBEF]/60">Monthly CTC</span>
+              <div className="flex justify-between py-1.5 border-b border-white/[0.04]">
+                <span className="text-slate-400">Monthly CTC</span>
                 <span className="font-mono font-bold text-emerald-400">
                   ₹{employee.salary ? Number(employee.salary).toLocaleString('en-IN') : '0'}
                 </span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-[#A56ABD]/10">
-                <span className="text-[#E7DBEF]/60">Statutory EPFO</span>
-                <span className="font-semibold text-[#A56ABD]">Active & Registered</span>
+              <div className="flex justify-between py-1.5 border-b border-white/[0.04]">
+                <span className="text-slate-400">Statutory EPFO</span>
+                <span className="font-semibold text-indigo-300">Active & Registered</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-[#A56ABD]/10">
-                <span className="text-[#E7DBEF]/60">TDS Tax Bracket</span>
-                <span className="font-semibold text-[#F5EBFA]">10% Standard Rate</span>
+              <div className="flex justify-between py-1.5 border-b border-white/[0.04]">
+                <span className="text-slate-400">TDS Tax Bracket</span>
+                <span className="font-semibold text-slate-200">10% Standard Rate</span>
               </div>
               <div className="flex justify-between py-1.5">
-                <span className="text-[#E7DBEF]/60">Disbursement Method</span>
-                <span className="font-semibold text-[#A56ABD]">UPI / Direct IMPS</span>
+                <span className="text-slate-400">Disbursement Method</span>
+                <span className="font-semibold text-cyan-400">UPI / Direct IMPS</span>
               </div>
             </div>
           </div>
@@ -257,17 +257,17 @@ const EmployeeDetailPage = () => {
         <div className="bento-card p-6">
           <div className="space-y-3">
             {attendance.length === 0 ? (
-              <p className="text-xs text-[#E7DBEF]/60 py-6 text-center">No attendance punches recorded</p>
+              <p className="text-xs text-slate-500 py-6 text-center">No attendance punches recorded</p>
             ) : (
               attendance.map((att) => (
                 <div
                   key={att._id}
-                  className="p-3.5 rounded-2xl bg-[#271337] border border-[#A56ABD]/20 flex items-center justify-between text-xs"
+                  className="p-3.5 rounded-2xl bg-[#181922] border border-white/[0.05] flex items-center justify-between text-xs"
                 >
                   <div className="flex items-center gap-3">
-                    <Calendar className="w-4 h-4 text-[#A56ABD]" />
-                    <span className="font-semibold text-[#F5EBFA]">{att.date}</span>
-                    <span className="text-[#E7DBEF]/60 font-mono">
+                    <Calendar className="w-4 h-4 text-cyan-400" />
+                    <span className="font-semibold text-white">{att.date}</span>
+                    <span className="text-slate-400 font-mono">
                       {att.workHours ? `${att.workHours} hrs` : '--'}
                     </span>
                   </div>
@@ -292,16 +292,16 @@ const EmployeeDetailPage = () => {
         <div className="bento-card p-6">
           <div className="space-y-3">
             {leaves.length === 0 ? (
-              <p className="text-xs text-[#E7DBEF]/60 py-6 text-center">No leave requests filed</p>
+              <p className="text-xs text-slate-500 py-6 text-center">No leave requests filed</p>
             ) : (
               leaves.map((l) => (
                 <div
                   key={l._id}
-                  className="p-3.5 rounded-2xl bg-[#271337] border border-[#A56ABD]/20 flex items-center justify-between text-xs"
+                  className="p-3.5 rounded-2xl bg-[#181922] border border-white/[0.05] flex items-center justify-between text-xs"
                 >
                   <div>
-                    <span className="font-bold text-[#F5EBFA] block">{l.leaveType}</span>
-                    <span className="text-[#E7DBEF]/60 text-[11px]">
+                    <span className="font-bold text-white block">{l.leaveType}</span>
+                    <span className="text-slate-400 text-[11px]">
                       {new Date(l.startDate).toLocaleDateString('en-IN')} -{' '}
                       {new Date(l.endDate).toLocaleDateString('en-IN')} ({l.daysCount || 1} days)
                     </span>
@@ -329,18 +329,18 @@ const EmployeeDetailPage = () => {
         <div className="bento-card p-6">
           <div className="space-y-3">
             {payrolls.length === 0 ? (
-              <p className="text-xs text-[#E7DBEF]/60 py-6 text-center">No payroll vouchers generated</p>
+              <p className="text-xs text-slate-500 py-6 text-center">No payroll vouchers generated</p>
             ) : (
               payrolls.map((p) => (
                 <div
                   key={p._id}
-                  className="p-3.5 rounded-2xl bg-[#271337] border border-[#A56ABD]/20 flex items-center justify-between text-xs"
+                  className="p-3.5 rounded-2xl bg-[#181922] border border-white/[0.05] flex items-center justify-between text-xs"
                 >
                   <div>
-                    <span className="font-bold text-[#F5EBFA] block">
+                    <span className="font-bold text-white block">
                       {p.month} {p.year} Pay Cycle
                     </span>
-                    <span className="text-[#E7DBEF]/60 text-[11px] font-mono">
+                    <span className="text-slate-400 text-[11px] font-mono">
                       Gross: ₹{p.grossSalary?.toLocaleString('en-IN')} &bull; Deductions: -₹
                       {p.totalDeductions?.toLocaleString('en-IN')}
                     </span>
@@ -363,15 +363,15 @@ const EmployeeDetailPage = () => {
         <div className="bento-card p-6">
           <div className="space-y-4">
             {reviews.length === 0 ? (
-              <p className="text-xs text-[#E7DBEF]/60 py-6 text-center">No appraisals recorded for this employee</p>
+              <p className="text-xs text-slate-500 py-6 text-center">No appraisals recorded for this employee</p>
             ) : (
               reviews.map((r) => (
-                <div key={r._id} className="p-4 rounded-2xl bg-[#271337] border border-[#A56ABD]/20 space-y-2">
+                <div key={r._id} className="p-4 rounded-2xl bg-[#181922] border border-white/[0.05] space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#F5EBFA] text-xs">{r.reviewPeriod}</span>
-                    <span className="font-mono font-bold text-amber-300 text-xs">⭐ {r.rating || 5}.0</span>
+                    <span className="font-bold text-white text-xs">{r.reviewPeriod}</span>
+                    <span className="font-mono font-bold text-amber-400 text-xs">⭐ {r.rating || 5}.0</span>
                   </div>
-                  <p className="text-xs text-[#E7DBEF] leading-relaxed font-normal">{r.feedback}</p>
+                  <p className="text-xs text-slate-300 leading-relaxed font-normal">{r.feedback}</p>
                 </div>
               ))
             )}

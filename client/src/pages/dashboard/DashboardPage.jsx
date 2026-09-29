@@ -144,36 +144,36 @@ const DashboardPage = () => {
           <div className="bento-card p-5 relative overflow-hidden group">
             {/* Top Status Badges */}
             <div className="flex items-center justify-between z-10 relative mb-4">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#A56ABD]/20 border border-[#A56ABD]/50 text-[#F5EBFA] text-xs font-bold shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-[#A56ABD] animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 ONLINE
               </span>
-              <span className="px-3 py-1 rounded-full bg-[#271337] border border-[#A56ABD]/30 text-[#E7DBEF] text-xs font-medium">
+              <span className="px-3 py-1 rounded-full bg-white/[0.06] border border-white/10 text-slate-200 text-xs font-medium">
                 1.4 years of work
               </span>
             </div>
 
             {/* Profile Image with smooth vignette - Dynamic logged in photo! */}
-            <div className="relative rounded-2xl overflow-hidden mb-4 bg-gradient-to-b from-transparent to-[#1c0d28]">
+            <div className="relative rounded-2xl overflow-hidden mb-4 bg-gradient-to-b from-transparent to-[#0d1017]">
               <img
                 src={loggedInAvatar}
                 alt={loggedInName}
                 className="w-full h-60 object-cover object-top rounded-2xl group-hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1c0d28] via-transparent to-transparent opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d1017] via-transparent to-transparent opacity-80" />
             </div>
 
             {/* Name & Title with Profile Link */}
             <div className="flex items-center justify-between pt-1">
               <div>
-                <h3 className="text-xl font-bold text-[#F5EBFA] tracking-tight font-sans">
+                <h3 className="text-xl font-bold text-white tracking-tight font-sans">
                   {loggedInName}
                 </h3>
-                <p className="text-xs text-[#A56ABD] font-semibold mt-0.5">{loggedInRole}</p>
+                <p className="text-xs text-cyan-400 font-semibold mt-0.5">{loggedInRole}</p>
               </div>
               <Link
                 to="/profile"
-                className="w-9 h-9 rounded-2xl bg-[#271337] hover:bg-[#6E3482] border border-[#A56ABD]/40 flex items-center justify-center text-[#E7DBEF] hover:text-[#F5EBFA] transition-all shadow-sm"
+                className="w-9 h-9 rounded-2xl bg-white/5 hover:bg-indigo-600 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white transition-all shadow-sm"
                 title="Manage My Profile"
               >
                 <ArrowUpRight className="w-4 h-4" />
@@ -184,18 +184,18 @@ const DashboardPage = () => {
           {/* Sub Stats Twin Cards: Days in Company & Done Projects */}
           <div className="grid grid-cols-2 gap-3.5">
             <div className="bento-card p-4">
-              <h4 className="text-3xl font-black text-[#F5EBFA] tracking-tight font-mono">456</h4>
-              <p className="text-xs text-[#E7DBEF] mt-1 font-medium">Days in company</p>
+              <h4 className="text-3xl font-black text-white tracking-tight font-mono">456</h4>
+              <p className="text-xs text-slate-400 mt-1 font-medium">Days in company</p>
             </div>
             <div className="bento-card p-4">
-              <h4 className="text-3xl font-black text-[#F5EBFA] tracking-tight font-mono">11</h4>
-              <p className="text-xs text-[#E7DBEF] mt-1 font-medium">Done projects</p>
+              <h4 className="text-3xl font-black text-white tracking-tight font-mono">11</h4>
+              <p className="text-xs text-slate-400 mt-1 font-medium">Done projects</p>
             </div>
           </div>
 
           {/* Interactive Skills Cloud Floating Bento Bubble */}
           <div className="bento-card p-5 h-52 relative overflow-hidden flex items-center justify-center">
-            <div className="absolute top-3.5 right-3.5 text-[#A56ABD] hover:text-[#F5EBFA] cursor-pointer">
+            <div className="absolute top-3.5 right-3.5 text-slate-500 hover:text-slate-300 cursor-pointer">
               <ArrowUpRight className="w-4 h-4 rotate-90" />
             </div>
 
@@ -211,7 +211,7 @@ const DashboardPage = () => {
                     right: tag.right,
                     transform: `rotate(${tag.rot})`,
                   }}
-                  className="px-3 py-1 rounded-full bg-[#271337] hover:bg-[#6E3482] text-[#E7DBEF] hover:text-[#F5EBFA] border border-[#A56ABD]/35 hover:border-[#A56ABD] text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer shadow-sm select-none"
+                  className="px-3 py-1 rounded-full bg-[#161b28] hover:bg-emerald-500/20 text-slate-200 hover:text-emerald-300 border border-white/[0.08] hover:border-emerald-500/40 text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer shadow-sm select-none"
                 >
                   {tag.name}
                 </span>
@@ -226,9 +226,9 @@ const DashboardPage = () => {
         <div className="space-y-5 flex flex-col justify-between">
           {/* Progress Activity Card */}
           <div className="bento-card p-5 flex-1 flex flex-col justify-between">
-            <div className="flex items-center justify-between pb-3 border-b border-[#A56ABD]/20 mb-2">
-              <h3 className="text-base font-bold text-[#F5EBFA] tracking-tight">Workstream Progress</h3>
-              <button className="text-[#A56ABD] hover:text-[#F5EBFA]">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.07] mb-2">
+              <h3 className="text-base font-bold text-white tracking-tight">Workstream Progress</h3>
+              <button className="text-slate-400 hover:text-white">
                 <MoreHorizontal className="w-4 h-4" />
               </button>
             </div>
@@ -239,18 +239,18 @@ const DashboardPage = () => {
                 return (
                   <div
                     key={idx}
-                    className="flex items-center justify-between p-2.5 rounded-2xl hover:bg-[#271337] transition-colors"
+                    className="flex items-center justify-between p-2.5 rounded-2xl hover:bg-white/[0.04] transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-2xl bg-[#271337] border border-[#A56ABD]/30 flex items-center justify-center text-[#A56ABD] shadow-xs">
+                      <div className="w-9 h-9 rounded-2xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-cyan-400 shadow-xs">
                         <Icon className="w-4 h-4" />
                       </div>
                       <div>
-                        <p className="text-xs sm:text-sm font-semibold text-[#F5EBFA] leading-tight">{item.title}</p>
-                        <p className="text-xs text-[#A56ABD] mt-0.5">{item.hours}</p>
+                        <p className="text-xs sm:text-sm font-semibold text-white leading-tight">{item.title}</p>
+                        <p className="text-xs text-slate-400 mt-0.5">{item.hours}</p>
                       </div>
                     </div>
-                    <span className="text-xs sm:text-sm font-mono font-bold text-[#E7DBEF]">
+                    <span className="text-xs sm:text-sm font-mono font-bold text-emerald-400">
                       {item.reward}
                     </span>
                   </div>
@@ -263,23 +263,23 @@ const DashboardPage = () => {
           <div className="bento-card p-5">
             <div className="flex items-center justify-between mb-2">
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#A56ABD]">Disbursed Salary</h4>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Disbursed Salary</h4>
                 <div className="flex items-baseline gap-2 mt-0.5">
-                  <span className="text-base font-black text-[#F5EBFA] font-mono">Jan-Dec ₹1.18 Cr</span>
-                  <span className="text-xs font-bold text-[#A56ABD]">+14.2%</span>
+                  <span className="text-base font-black text-white font-mono">Jan-Dec ₹1.18 Cr</span>
+                  <span className="text-xs font-bold text-emerald-400">+14.2%</span>
                 </div>
               </div>
 
               {/* Time Filter Pills */}
-              <div className="flex items-center gap-1 bg-[#271337] p-1 rounded-full border border-[#A56ABD]/30">
+              <div className="flex items-center gap-1 bg-[#141824] p-1 rounded-full border border-white/10">
                 {['7D', '1D', '1M', '1Y', 'All'].map((t) => (
                   <button
                     key={t}
                     onClick={() => setTimeFilter(t)}
                     className={`px-2.5 py-0.5 rounded-full text-xs font-bold transition-colors ${
                       timeFilter === t
-                        ? 'bg-gradient-to-r from-[#6E3482] to-[#49225B] text-[#F5EBFA] border border-[#A56ABD]/50 shadow-sm'
-                        : 'text-[#E7DBEF]/70 hover:text-[#F5EBFA]'
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-white'
                     }`}
                   >
                     {t}
@@ -292,14 +292,14 @@ const DashboardPage = () => {
             <div className="h-40 pt-2">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={salaryData} margin={{ top: 15, right: 0, left: 0, bottom: 0 }}>
-                  <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#E7DBEF' }} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                   <Tooltip
-                    cursor={{ fill: 'rgba(165, 106, 189, 0.12)' }}
+                    cursor={{ fill: 'rgba(255,255,255,0.04)' }}
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="bg-[#1c0d28] border border-[#A56ABD] px-3 py-1.5 rounded-xl text-xs font-bold text-[#F5EBFA] shadow-2xl">
-                            <span className="text-[#F5EBFA] font-mono">₹{payload[0].value},000</span>
+                          <div className="bg-[#08090d] border border-emerald-500/50 px-3 py-1.5 rounded-xl text-xs font-bold text-white shadow-2xl">
+                            <span className="text-emerald-400 font-mono">₹{payload[0].value},000</span>
                           </div>
                         );
                       }
@@ -319,15 +319,15 @@ const DashboardPage = () => {
                             y={y}
                             width={width}
                             height={height}
-                            fill={isHighlighted ? '#A56ABD' : '#49225B'}
+                            fill={isHighlighted ? '#10b981' : '#1e2433'}
                             rx={4}
-                            className="transition-all duration-300 hover:fill-[#6E3482]"
+                            className="transition-all duration-300 hover:fill-emerald-400"
                           />
                           {isHighlighted && (
                             <text
                               x={x + width / 2}
                               y={y - 6}
-                              fill="#F5EBFA"
+                              fill="#10b981"
                               textAnchor="middle"
                               fontSize="9"
                               fontWeight="bold"
@@ -351,14 +351,14 @@ const DashboardPage = () => {
         <div className="space-y-5 flex flex-col justify-between">
           {/* Working Format Card */}
           <div className="bento-card p-5 h-full flex flex-col justify-between">
-            <div className="flex items-center justify-between pb-3 border-b border-[#A56ABD]/20">
-              <h3 className="text-base font-bold text-[#F5EBFA] tracking-tight">Working format</h3>
-              <button className="text-[#A56ABD] hover:text-[#F5EBFA]">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.07]">
+              <h3 className="text-base font-bold text-white tracking-tight">Working format</h3>
+              <button className="text-slate-400 hover:text-white">
                 <MoreHorizontal className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Custom Multi-Ray Sunburst SVG Donut Gauge matching Uxintace 5-color palette */}
+            {/* Custom Multi-Ray Sunburst SVG Donut Gauge */}
             <div className="relative py-5 flex flex-col items-center justify-center my-auto">
               <svg viewBox="0 0 200 200" className="w-52 h-52 drop-shadow-2xl animate-pulse-slow">
                 {/* 52 radiating rays */}
@@ -372,10 +372,10 @@ const DashboardPage = () => {
                   const x2 = 100 + rOuter * Math.cos(rad);
                   const y2 = 100 + rOuter * Math.sin(rad);
 
-                  let strokeColor = '#49225B';
-                  if (i < 30) strokeColor = '#6E3482'; // Office 60% in Royal Purple
-                  else if (i < 46) strokeColor = '#A56ABD'; // Remote 32% in Radiant Lavender
-                  else strokeColor = '#E7DBEF'; // Hybrid 8% in Soft Lilac
+                  let strokeColor = '#2d3345';
+                  if (i < 30) strokeColor = '#10b981'; // Office 60%
+                  else if (i < 46) strokeColor = '#06b6d4'; // Remote 32%
+                  else strokeColor = '#f59e0b'; // Hybrid 8%
 
                   return (
                     <line
@@ -385,7 +385,7 @@ const DashboardPage = () => {
                       x2={x2}
                       y2={y2}
                       stroke={strokeColor}
-                      strokeWidth="3"
+                      strokeWidth="2.8"
                       strokeLinecap="round"
                     />
                   );
@@ -394,43 +394,43 @@ const DashboardPage = () => {
 
               {/* Counter Badge at bottom-right of gauge */}
               <div className="absolute bottom-1 right-3 text-right">
-                <p className="text-2xl font-black text-[#F5EBFA] font-mono leading-none">456</p>
-                <p className="text-xs text-[#A56ABD] font-semibold uppercase tracking-wider">Total Days</p>
+                <p className="text-2xl font-black text-white font-mono leading-none">456</p>
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Total Days</p>
               </div>
             </div>
 
-            {/* Breakdown Status Indicators with matching Uxintace color pills */}
-            <div className="space-y-2.5 pt-3 border-t border-[#A56ABD]/20 text-xs sm:text-sm">
-              <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#271337]">
+            {/* Breakdown Status Indicators with matching color pills */}
+            <div className="space-y-2.5 pt-3 border-t border-white/[0.07] text-xs sm:text-sm">
+              <div className="flex items-center justify-between p-2.5 rounded-2xl bg-white/[0.03]">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-3 h-3 rounded-full bg-[#6E3482] shadow-[0_0_8px_#6E3482]" />
-                  <span className="text-[#E7DBEF] font-medium">In the office</span>
+                  <span className="w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+                  <span className="text-slate-200 font-medium">In the office</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[#A56ABD] font-mono">274 d</span>
-                  <span className="font-bold text-[#F5EBFA] font-mono">60%</span>
+                  <span className="text-slate-400 font-mono">274 d</span>
+                  <span className="font-bold text-white font-mono">60%</span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#271337]">
+              <div className="flex items-center justify-between p-2.5 rounded-2xl bg-white/[0.03]">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-3 h-3 rounded-full bg-[#A56ABD] shadow-[0_0_8px_#A56ABD]" />
-                  <span className="text-[#E7DBEF] font-medium">Remotely</span>
+                  <span className="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]" />
+                  <span className="text-slate-200 font-medium">Remotely</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[#A56ABD] font-mono">146 d</span>
-                  <span className="font-bold text-[#F5EBFA] font-mono">32%</span>
+                  <span className="text-slate-400 font-mono">146 d</span>
+                  <span className="font-bold text-white font-mono">32%</span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#271337]">
+              <div className="flex items-center justify-between p-2.5 rounded-2xl bg-white/[0.03]">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-3 h-3 rounded-full bg-[#E7DBEF] shadow-[0_0_8px_#E7DBEF]" />
-                  <span className="text-[#E7DBEF] font-medium">Hybrid Mode</span>
+                  <span className="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]" />
+                  <span className="text-slate-200 font-medium">Hybrid Mode</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[#A56ABD] font-mono">36 d</span>
-                  <span className="font-bold text-[#F5EBFA] font-mono">8%</span>
+                  <span className="text-slate-400 font-mono">36 d</span>
+                  <span className="font-bold text-white font-mono">8%</span>
                 </div>
               </div>
             </div>
@@ -438,17 +438,17 @@ const DashboardPage = () => {
         </div>
 
         {/* ========================================================= */}
-        {/* COLUMN 4: TASKS CHECKLIST & ENTERPRISE PLUM CARD */}
+        {/* COLUMN 4: TASKS CHECKLIST & BRONZE ENTERPRISE CARD */}
         {/* ========================================================= */}
         <div className="space-y-5 flex flex-col justify-between">
           {/* Tasks Checklist Card with Mini Sparkline Chart */}
           <div className="bento-card p-5 flex-1 flex flex-col justify-between">
             <div>
               {/* Header with Sparkline Line */}
-              <div className="flex items-center justify-between pb-3 border-b border-[#A56ABD]/20">
+              <div className="flex items-center justify-between pb-3 border-b border-white/[0.07]">
                 <div>
-                  <h3 className="text-base font-bold text-[#F5EBFA] tracking-tight">Milestones</h3>
-                  <p className="text-xs text-[#A56ABD] mt-0.5">8 completed this cycle</p>
+                  <h3 className="text-base font-bold text-white tracking-tight">Milestones</h3>
+                  <p className="text-xs text-slate-400 mt-0.5">8 completed this cycle</p>
                 </div>
                 <div className="w-20 h-9">
                   <ResponsiveContainer width="100%" height="100%">
@@ -456,7 +456,7 @@ const DashboardPage = () => {
                       <Line
                         type="monotone"
                         dataKey="count"
-                        stroke="#A56ABD"
+                        stroke="#06b6d4"
                         strokeWidth={2.5}
                         dot={false}
                       />
@@ -473,39 +473,39 @@ const DashboardPage = () => {
                     onClick={() => toggleTask(task.id)}
                     className={`flex items-center justify-between p-2.5 rounded-2xl transition-all cursor-pointer border ${
                       task.completed
-                        ? 'bg-[#271337]/40 border-[#A56ABD]/15 opacity-60'
+                        ? 'bg-white/[0.02] border-white/[0.04] opacity-60'
                         : task.inProgress
-                        ? 'bg-[#6E3482]/25 border-[#A56ABD]/50 shadow-xs'
-                        : 'bg-[#271337] border-[#A56ABD]/25 hover:border-[#A56ABD]/60'
+                        ? 'bg-cyan-500/10 border-cyan-500/30'
+                        : 'bg-white/[0.03] border-white/[0.06] hover:border-white/20'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0 pr-2">
                       <div
                         className={`w-5 h-5 rounded-full flex items-center justify-center border transition-all ${
                           task.completed
-                            ? 'bg-[#6E3482] border-[#A56ABD] text-[#F5EBFA]'
+                            ? 'bg-emerald-500 border-emerald-500 text-white'
                             : task.inProgress
-                            ? 'border-[#A56ABD] text-[#A56ABD]'
-                            : 'border-[#A56ABD]/50 hover:border-[#A56ABD]'
+                            ? 'border-cyan-400 text-cyan-400'
+                            : 'border-slate-500 hover:border-slate-300'
                         }`}
                       >
                         {task.completed ? (
                           <Check className="w-3 h-3 stroke-[3]" />
                         ) : task.inProgress ? (
-                          <span className="w-2 h-2 rounded-full bg-[#A56ABD] animate-ping" />
+                          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
                         ) : null}
                       </div>
 
                       <span
                         className={`text-xs sm:text-sm font-semibold truncate ${
-                          task.completed ? 'line-through text-[#A56ABD]' : 'text-[#F5EBFA]'
+                          task.completed ? 'line-through text-slate-400' : 'text-slate-100'
                         }`}
                       >
                         {task.title}
                       </span>
                     </div>
 
-                    <span className="text-xs text-[#A56ABD] font-mono whitespace-nowrap">
+                    <span className="text-xs text-slate-400 font-mono whitespace-nowrap">
                       {task.time}
                     </span>
                   </div>
@@ -513,33 +513,33 @@ const DashboardPage = () => {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#A56ABD]/20 flex items-center justify-between text-xs text-[#E7DBEF]">
+            <div className="pt-3 border-t border-white/[0.07] flex items-center justify-between text-xs text-slate-400">
               <span>Task Velocity: 98%</span>
-              <span className="text-[#A56ABD] font-bold">On Schedule</span>
+              <span className="text-cyan-400 font-bold">On Schedule</span>
             </div>
           </div>
 
-          {/* Imperial Plum Enterprise Card matching Uxintace Palette */}
-          <div className="rounded-3xl p-5 bg-gradient-to-br from-[#49225B] via-[#6E3482] to-[#271337] border border-[#A56ABD]/40 shadow-2xl relative overflow-hidden flex flex-col justify-between min-h-[170px]">
-            <div className="absolute top-0 right-0 w-36 h-36 bg-[#A56ABD]/20 rounded-full blur-2xl pointer-events-none" />
+          {/* Bronze Enterprise Architecture Card matching reference bottom right */}
+          <div className="rounded-3xl p-5 bg-gradient-to-br from-[#6b4728] via-[#4d321c] to-[#1f150c] border border-amber-500/30 shadow-2xl relative overflow-hidden flex flex-col justify-between min-h-[170px]">
+            <div className="absolute top-0 right-0 w-36 h-36 bg-amber-400/10 rounded-full blur-2xl pointer-events-none" />
 
             <div className="flex items-start justify-between z-10 relative">
-              <span className="px-3 py-1 rounded-full bg-[#12071a]/50 border border-[#A56ABD]/40 text-[#F5EBFA] text-xs font-bold tracking-wider uppercase shadow-xs">
+              <span className="px-3 py-1 rounded-full bg-black/40 border border-amber-400/30 text-amber-300 text-xs font-bold tracking-wider uppercase">
                 Enterprise Hub
               </span>
               <Link
                 to="/employees"
-                className="w-8 h-8 rounded-full bg-[#12071a]/40 hover:bg-[#12071a]/70 border border-[#A56ABD]/40 flex items-center justify-center text-[#F5EBFA] hover:scale-110 transition-all"
+                className="w-8 h-8 rounded-full bg-black/30 hover:bg-black/60 border border-amber-400/40 flex items-center justify-center text-amber-200 hover:text-white transition-colors"
               >
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
             <div className="z-10 relative mt-4">
-              <h4 className="text-xl font-black text-[#F5EBFA] tracking-tight leading-tight">
+              <h4 className="text-xl font-black text-amber-100 tracking-tight leading-tight">
                 India Tech Ecosystem
               </h4>
-              <p className="text-xs text-[#E7DBEF] mt-1 font-medium">
+              <p className="text-xs text-amber-200/80 mt-1 font-medium">
                 100% compliant Indian payroll, biometric attendance & hiring pipeline.
               </p>
             </div>

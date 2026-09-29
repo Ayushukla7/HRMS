@@ -17,13 +17,13 @@ const Input = ({
   return (
     <div className={`w-full ${className}`}>
       {label && (
-        <label htmlFor={name} className="block text-xs font-bold uppercase tracking-wider text-[#E7DBEF] mb-1.5">
-          {label} {required && <span className="text-[#A56ABD]">*</span>}
+        <label htmlFor={name} className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+          {label} {required && <span className="text-rose-500">*</span>}
         </label>
       )}
-      <div className="relative rounded-2xl shadow-sm">
+      <div className="relative rounded-lg shadow-sm">
         {Icon && (
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#A56ABD]">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
             <Icon className="w-4 h-4" />
           </div>
         )}
@@ -36,17 +36,17 @@ const Input = ({
           placeholder={placeholder}
           disabled={disabled}
           required={required}
-          className={`block w-full rounded-2xl border text-xs sm:text-sm transition-all duration-150 py-2.5 ${
-            Icon ? 'pl-10' : 'pl-3.5'
-          } pr-3.5 ${
+          className={`block w-full rounded-lg border text-sm transition-colors duration-150 py-2 ${
+            Icon ? 'pl-9' : 'pl-3'
+          } pr-3 ${
             error
-              ? 'border-rose-400 bg-rose-950/20 text-rose-200 placeholder-rose-400/60 focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500'
-              : 'border-[#A56ABD]/30 bg-[#271337] text-[#F5EBFA] placeholder-[#A56ABD]/50 focus:border-[#A56ABD] focus:bg-[#341a49] focus:outline-none focus:ring-1 focus:ring-[#A56ABD]'
-          } disabled:bg-[#1c0d28]/60 disabled:text-[#A56ABD]/50`}
+              ? 'border-rose-300 dark:border-rose-700 text-rose-900 dark:text-rose-300 placeholder-rose-400 focus:border-rose-500 focus:ring-1 focus:ring-rose-500'
+              : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:border-slate-900 dark:focus:border-slate-100 focus:ring-1 focus:ring-slate-900 dark:focus:ring-slate-100'
+          } disabled:bg-slate-50 dark:disabled:bg-slate-800 disabled:text-slate-500`}
           {...props}
         />
       </div>
-      {error && <p className="mt-1 text-xs text-rose-400">{error}</p>}
+      {error && <p className="mt-1 text-xs text-rose-600 dark:text-rose-400">{error}</p>}
     </div>
   );
 };

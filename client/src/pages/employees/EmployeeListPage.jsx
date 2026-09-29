@@ -23,7 +23,6 @@ import {
   Upload,
   ArrowUpRight,
   SlidersHorizontal,
-  Plus,
 } from 'lucide-react';
 
 const EmployeeListPage = () => {
@@ -60,18 +59,18 @@ const EmployeeListPage = () => {
     phone: '',
     department: '',
     designation: '',
-    salary: '95000',
+    salary: '',
     joiningDate: new Date().toISOString().split('T')[0],
     employmentType: 'Full-Time',
     status: 'Active',
     gender: 'Prefer not to say',
     profilePicture: '',
-    street: 'Outer Ring Road, Bellandur',
-    city: 'Bengaluru',
-    state: 'Karnataka',
-    zipCode: '560103',
-    bankName: 'HDFC Bank',
-    accountNumber: '50100456789012',
+    street: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    bankName: '',
+    accountNumber: '',
     createUserAccount: true,
     password: 'Password123!',
   };
@@ -101,9 +100,6 @@ const EmployeeListPage = () => {
       const res = await departmentApi.getAll();
       if (res.data.success) {
         setDepartments(res.data.data);
-        if (res.data.data.length > 0 && !formData.department) {
-          setFormData((prev) => ({ ...prev, department: res.data.data[0]._id }));
-        }
       }
     } catch (err) {
       console.error('Failed to load departments:', err);
@@ -115,10 +111,10 @@ const EmployeeListPage = () => {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const delayDebounce = setTimeout(() => {
       fetchEmployees();
-    }, 200);
-    return () => clearTimeout(timer);
+    }, 300);
+    return () => clearTimeout(delayDebounce);
   }, [search, selectedDept, selectedStatus]);
 
   const handleOpenAddModal = () => {
@@ -126,7 +122,6 @@ const EmployeeListPage = () => {
     setFormData({
       ...initialFormState,
       department: departments[0]?._id || '',
-      empCustomId: `EMP-${Math.floor(1000 + Math.random() * 9000)}`,
     });
     setModalOpen(true);
   };
@@ -159,23 +154,9 @@ const EmployeeListPage = () => {
     setModalOpen(true);
   };
 
-  const handleFormChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-  };
-
-  const handleImageFileChange = (e) => {
+  const handleAvatarFile = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      showToast('Image size should be less than 5MB', 'error');
-      return;
-    }
-
     const reader = new FileReader();
     reader.onloadend = () => {
       setFormData((prev) => ({ ...prev, profilePicture: reader.result }));
@@ -195,7 +176,7 @@ const EmployeeListPage = () => {
         phone: formData.phone,
         department: formData.department,
         designation: formData.designation,
-        salary: Number(formData.salary) || 0,
+        salary: Number(formData.salary),
         joiningDate: formData.joiningDate,
         employmentType: formData.employmentType,
         status: formData.status,
@@ -206,7 +187,6 @@ const EmployeeListPage = () => {
           city: formData.city,
           state: formData.state,
           zipCode: formData.zipCode,
-          country: 'India',
         },
         bankDetails: {
           bankName: formData.bankName,
@@ -281,61 +261,60 @@ const EmployeeListPage = () => {
 
   const columns = [
     {
-      header: 'Employee Details',
+      header: 'Employee',
       render: (emp) => (
         <div className="flex items-center gap-3.5">
           <Avatar
             src={emp.profilePicture}
             name={`${emp.firstName} ${emp.lastName}`}
             size="md"
-            className="ring-1 ring-[#A56ABD]/40"
           />
           <div>
             <Link
               to={`/employees/${emp._id}`}
-              className="font-bold text-[#F5EBFA] hover:text-[#A56ABD] transition-colors block text-sm"
+              className="font-bold text-white hover:text-emerald-400 transition-colors block text-sm"
             >
               {emp.firstName} {emp.lastName}
             </Link>
-            <p className="text-xs text-[#A56ABD] font-mono mt-0.5">{emp.empCustomId}</p>
+            <p className="text-[11px] text-slate-500 font-mono mt-0.5">{emp.empCustomId}</p>
           </div>
         </div>
       ),
     },
     {
-      header: 'Division & Role',
+      header: 'Department & Role',
       render: (emp) => (
         <div>
-          <p className="font-semibold text-[#F5EBFA] text-xs sm:text-sm">{emp.designation}</p>
-          <span className="text-xs text-[#E7DBEF]/80">
+          <p className="font-semibold text-slate-200 text-xs sm:text-sm">{emp.designation}</p>
+          <span className="text-xs text-slate-500">
             {emp.department?.name || 'Unassigned'}
           </span>
         </div>
       ),
     },
     {
-      header: 'Contact Info',
+      header: 'Contact',
       render: (emp) => (
         <div className="text-xs space-y-0.5">
-          <p className="text-[#E7DBEF] font-medium">{emp.email}</p>
-          {emp.phone && <p className="text-[#A56ABD] font-mono">{emp.phone}</p>}
+          <p className="text-slate-300 font-medium">{emp.email}</p>
+          {emp.phone && <p className="text-slate-500 font-mono">{emp.phone}</p>}
         </div>
       ),
     },
     {
-      header: 'Employment Status',
+      header: 'Status',
       render: (emp) => (
         <div className="space-y-1">
           <Badge variant={emp.status}>{emp.status}</Badge>
-          <p className="text-xs text-[#E7DBEF]/70">{emp.employmentType}</p>
+          <p className="text-[10px] text-slate-500">{emp.employmentType}</p>
         </div>
       ),
     },
     {
-      header: 'Monthly Compensation',
+      header: 'Monthly Base',
       render: (emp) => (
-        <span className="font-bold text-[#F5EBFA] font-mono text-xs sm:text-sm bg-[#271337] px-2.5 py-1 rounded-xl border border-[#A56ABD]/30 inline-block">
-          ₹{emp.salary ? Number(emp.salary).toLocaleString('en-IN') : '0'}
+        <span className="font-bold text-emerald-400 font-mono text-xs sm:text-sm">
+          ${emp.salary ? Number(emp.salary).toLocaleString() : '0'}
         </span>
       ),
     },
@@ -345,7 +324,7 @@ const EmployeeListPage = () => {
         <div className="flex items-center gap-1.5">
           <Link
             to={`/employees/${emp._id}`}
-            className="p-2 rounded-xl text-[#E7DBEF] hover:text-[#F5EBFA] bg-[#271337] hover:bg-[#6E3482]/40 border border-[#A56ABD]/25"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/10"
             title="View Details"
           >
             <Eye className="w-4 h-4" />
@@ -354,14 +333,14 @@ const EmployeeListPage = () => {
             <>
               <button
                 onClick={() => handleOpenEditModal(emp)}
-                className="p-2 rounded-xl text-[#E7DBEF] hover:text-[#F5EBFA] bg-[#271337] hover:bg-[#6E3482]/40 border border-[#A56ABD]/25"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/10"
                 title="Edit Employee"
               >
                 <Edit2 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleDeleteClick(emp)}
-                className="p-2 rounded-xl text-[#A56ABD] hover:text-rose-300 bg-[#271337] hover:bg-rose-500/20 border border-[#A56ABD]/25"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 bg-white/[0.03] hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30"
                 title="Delete Employee"
               >
                 <Trash2 className="w-4 h-4" />
@@ -375,148 +354,139 @@ const EmployeeListPage = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#6E3482]/30 border border-[#A56ABD]/40 text-[#F5EBFA] text-xs font-semibold mb-2 shadow-xs">
-            <Users className="w-3.5 h-3.5 text-[#A56ABD]" />
-            <span>Personnel Directory</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#F5EBFA]">
-            Employees & Talent Directory
+          <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+            Employee Directory
           </h1>
-          <p className="text-xs sm:text-sm text-[#E7DBEF] mt-1">
-            Manage Indian workforce profiles, roles, divisions, salary allocations, and corporate credentials.
+          <p className="text-xs text-slate-400 mt-1">
+            Manage Indian workforce profiles, organizational divisions, salaries, and user accounts.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Button variant="secondary" icon={Download} size="md" onClick={exportToCSV}>
-            Export CSV
-          </Button>
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={exportToCSV}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 hover:text-white text-xs font-semibold transition-all"
+          >
+            <Download className="w-3.5 h-3.5 text-slate-400" />
+            <span>Export CSV</span>
+          </button>
           {isAdmin && (
-            <Button variant="primary" icon={UserPlus} size="md" onClick={handleOpenAddModal}>
-              Add Employee
-            </Button>
+            <button
+              onClick={handleOpenAddModal}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold shadow-lg shadow-emerald-500/10 transition-all"
+            >
+              <UserPlus className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Add Employee</span>
+            </button>
           )}
         </div>
       </div>
 
-      {/* Filter & Search Bar Bento */}
-      <div className="bento-card p-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative w-64">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#A56ABD]" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name, email, ID..."
-              className="w-full pl-10 pr-3.5 py-2 bg-[#271337] border border-[#A56ABD]/30 rounded-2xl text-xs text-[#F5EBFA] placeholder-[#A56ABD]/50 focus:outline-none focus:border-[#A56ABD]"
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-[#E7DBEF] uppercase tracking-wider">Division:</span>
-            <select
-              value={selectedDept}
-              onChange={(e) => setSelectedDept(e.target.value)}
-              className="px-3 py-2 bg-[#271337] border border-[#A56ABD]/30 rounded-2xl text-xs text-[#F5EBFA] focus:outline-none focus:border-[#A56ABD]"
-            >
-              <option value="all">All Divisions</option>
-              {departments.map((d) => (
-                <option key={d._id} value={d._id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-[#E7DBEF] uppercase tracking-wider">Status:</span>
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-3 py-2 bg-[#271337] border border-[#A56ABD]/30 rounded-2xl text-xs text-[#F5EBFA] focus:outline-none focus:border-[#A56ABD]"
-            >
-              <option value="all">All Statuses</option>
-              <option value="Active">Active</option>
-              <option value="On Leave">On Leave</option>
-              <option value="Terminated">Terminated</option>
-            </select>
-          </div>
+      {/* Filter and Search Bento Bar */}
+      <div className="bg-[#121319] p-4 rounded-3xl border border-white/[0.07] shadow-xl flex flex-col md:flex-row items-center gap-3">
+        <div className="flex-1 w-full relative">
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name, email, designation, or employee ID..."
+            className="w-full pl-9 pr-4 py-2 bg-[#181922] border border-white/10 rounded-full text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+          />
         </div>
 
-        <div className="text-xs text-[#E7DBEF] font-mono">
-          Total: <span className="text-[#F5EBFA] font-bold">{employees.length}</span> personnel
+        <div className="flex items-center gap-2.5 w-full md:w-auto">
+          <select
+            value={selectedDept}
+            onChange={(e) => setSelectedDept(e.target.value)}
+            className="px-3.5 py-2 bg-[#181922] border border-white/10 rounded-full text-xs text-slate-300 focus:outline-none focus:border-emerald-500/50"
+          >
+            <option value="all">All Departments</option>
+            {departments.map((d) => (
+              <option key={d._id} value={d._id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="px-3.5 py-2 bg-[#181922] border border-white/10 rounded-full text-xs text-slate-300 focus:outline-none focus:border-emerald-500/50"
+          >
+            <option value="all">All Status</option>
+            <option value="Active">Active</option>
+            <option value="On Leave">On Leave</option>
+            <option value="Resigned">Resigned</option>
+            <option value="Terminated">Terminated</option>
+          </select>
         </div>
       </div>
 
-      {/* Employees Table */}
-      <DataTable
-        columns={columns}
-        data={employees}
-        loading={loading}
-        emptyMessage="No employees found matching the search criteria"
-      />
+      {/* Employees Table Container */}
+      <div className="bg-[#121319] rounded-3xl border border-white/[0.07] shadow-xl overflow-hidden p-2">
+        <DataTable
+          columns={columns}
+          data={employees}
+          loading={loading}
+          emptyMessage="No employees found matching criteria"
+        />
+      </div>
 
       {/* Add / Edit Employee Modal */}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editingEmployee ? 'Edit Employee Dossier' : 'Register New Employee'}
+        title={editingEmployee ? 'Edit Employee Profile' : 'Add New Employee'}
         maxWidth="max-w-2xl"
       >
         <form onSubmit={handleFormSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <Input
-              label="First Name"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleFormChange}
-              required
-              placeholder="e.g. Aarav"
+          <div className="flex items-center gap-4 pb-3 border-b border-white/10">
+            <Avatar
+              src={formData.profilePicture}
+              name={`${formData.firstName || 'New'} ${formData.lastName || 'User'}`}
+              size="lg"
             />
-            <Input
-              label="Last Name"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleFormChange}
-              required
-              placeholder="e.g. Sharma"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <Input
-              label="Work Email"
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleFormChange}
-              required
-              placeholder="aarav.s@company.com"
-            />
-            <Input
-              label="Phone Number"
-              name="phone"
-              value={formData.phone}
-              onChange={handleFormChange}
-              placeholder="+91 98765 43210"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-[#E7DBEF] mb-1.5 uppercase tracking-wider">
-                Department
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleAvatarFile}
+                accept="image/*"
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white transition-colors"
+              >
+                <Upload className="w-3.5 h-3.5 text-slate-400" />
+                <span>Upload Photo</span>
+              </button>
+              <p className="text-[10px] text-slate-400 mt-1">Upload a real Indian portrait (PNG, JPG under 5MB)</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Input
+              label="Employee ID (Optional)"
+              name="empCustomId"
+              value={formData.empCustomId}
+              onChange={(e) => setFormData({ ...formData, empCustomId: e.target.value })}
+              placeholder="e.g. EMP-1011"
+            />
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+                Department <span className="text-rose-400">*</span>
               </label>
               <select
-                name="department"
                 value={formData.department}
-                onChange={handleFormChange}
+                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                 required
-                className="block w-full rounded-2xl border border-[#A56ABD]/30 bg-[#271337] text-xs py-2.5 px-3.5 text-[#F5EBFA] focus:outline-none focus:border-[#A56ABD]"
+                className="block w-full rounded-xl border border-white/10 bg-[#181922] text-xs py-2.5 px-3 text-white focus:outline-none focus:border-emerald-500/50"
               >
                 {departments.map((d) => (
                   <option key={d._id} value={d._id}>
@@ -525,121 +495,181 @@ const EmployeeListPage = () => {
                 ))}
               </select>
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
-              label="Designation / Title"
-              name="designation"
-              value={formData.designation}
-              onChange={handleFormChange}
+              label="First Name"
+              name="firstName"
+              value={formData.firstName}
+              onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
               required
-              placeholder="e.g. Principal UI Architect"
+              placeholder="Aarav"
+            />
+            <Input
+              label="Last Name"
+              name="lastName"
+              value={formData.lastName}
+              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              required
+              placeholder="Sharma"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
-              label="Monthly CTC (₹ INR)"
-              type="number"
-              name="salary"
-              value={formData.salary}
-              onChange={handleFormChange}
+              label="Work Email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
-              placeholder="95000"
+              placeholder="aarav.sharma@hrms.com"
+            />
+            <Input
+              label="Phone Number"
+              name="phone"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              placeholder="+91 98765 43210"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Input
+              label="Designation / Role"
+              name="designation"
+              value={formData.designation}
+              onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
+              required
+              placeholder="UX/UI Lead"
+            />
+            <Input
+              label="Monthly Base Salary ($)"
+              name="salary"
+              type="number"
+              value={formData.salary}
+              onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
+              required
+              placeholder="110000"
             />
             <Input
               label="Joining Date"
-              type="date"
               name="joiningDate"
+              type="date"
               value={formData.joiningDate}
-              onChange={handleFormChange}
+              onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
               required
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-bold text-[#E7DBEF] mb-1.5 uppercase tracking-wider">
-                Profile Photo (URL or File)
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+                Employment Type
               </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  name="profilePicture"
-                  value={formData.profilePicture}
-                  onChange={handleFormChange}
-                  placeholder="https://..."
-                  className="flex-1 rounded-2xl border border-[#A56ABD]/30 bg-[#271337] text-xs py-2.5 px-3.5 text-[#F5EBFA] focus:outline-none focus:border-[#A56ABD]"
-                />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="px-3 py-2.5 rounded-2xl bg-[#6E3482] hover:bg-[#7f3d96] text-[#F5EBFA] text-xs font-bold transition-colors"
-                >
-                  <Upload className="w-4 h-4" />
-                </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageFileChange}
-                  className="hidden"
-                />
-              </div>
+              <select
+                value={formData.employmentType}
+                onChange={(e) => setFormData({ ...formData, employmentType: e.target.value })}
+                className="block w-full rounded-xl border border-white/10 bg-[#181922] text-xs py-2.5 px-3 text-white focus:outline-none focus:border-emerald-500/50"
+              >
+                <option value="Full-Time">Full-Time</option>
+                <option value="Part-Time">Part-Time</option>
+                <option value="Contract">Contract</option>
+                <option value="Intern">Intern</option>
+              </select>
             </div>
-            <Input
-              label="Employee Custom ID"
-              name="empCustomId"
-              value={formData.empCustomId}
-              onChange={handleFormChange}
-              required
-              placeholder="EMP-1001"
-            />
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+                Status
+              </label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                className="block w-full rounded-xl border border-white/10 bg-[#181922] text-xs py-2.5 px-3 text-white focus:outline-none focus:border-emerald-500/50"
+              >
+                <option value="Active">Active</option>
+                <option value="On Leave">On Leave</option>
+                <option value="Terminated">Terminated</option>
+                <option value="Resigned">Resigned</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+                Gender
+              </label>
+              <select
+                value={formData.gender}
+                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                className="block w-full rounded-xl border border-white/10 bg-[#181922] text-xs py-2.5 px-3 text-white focus:outline-none focus:border-emerald-500/50"
+              >
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-white/10">
+            <h5 className="text-xs font-bold text-white mb-2 uppercase tracking-wider">
+              Banking & Address (India)
+            </h5>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Input
+                label="City / State"
+                name="city"
+                value={formData.city}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                placeholder="Gurugram, Haryana"
+              />
+              <Input
+                label="Bank Name"
+                name="bankName"
+                value={formData.bankName}
+                onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
+                placeholder="HDFC Bank"
+              />
+            </div>
           </div>
 
           {!editingEmployee && (
-            <div className="p-3.5 rounded-2xl bg-[#271337] border border-[#A56ABD]/30 space-y-2">
-              <label className="flex items-center gap-2 text-xs font-semibold text-[#F5EBFA] cursor-pointer">
+            <div className="p-3 bg-white/[0.02] rounded-xl border border-white/10">
+              <label className="flex items-center gap-2.5 cursor-pointer">
                 <input
                   type="checkbox"
-                  name="createUserAccount"
                   checked={formData.createUserAccount}
-                  onChange={handleFormChange}
-                  className="rounded text-[#6E3482] focus:ring-[#A56ABD]"
+                  onChange={(e) => setFormData({ ...formData, createUserAccount: e.target.checked })}
+                  className="rounded border-white/20 text-emerald-500 focus:ring-emerald-500"
                 />
-                <span>Automatically generate portal login credentials</span>
+                <span className="text-xs font-medium text-slate-300">
+                  Provision User Portal Login (Default password: {formData.password})
+                </span>
               </label>
-              {formData.createUserAccount && (
-                <Input
-                  label="Temporary Password"
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleFormChange}
-                  required={formData.createUserAccount}
-                  placeholder="Minimum 6 characters"
-                />
-              )}
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[#A56ABD]/20">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/10">
             <Button variant="secondary" size="sm" onClick={() => setModalOpen(false)}>
               Cancel
             </Button>
             <Button type="submit" variant="primary" size="sm" loading={formSubmitting}>
-              {editingEmployee ? 'Update Profile' : 'Add Employee'}
+              {editingEmployee ? 'Update Profile' : 'Save Employee'}
             </Button>
           </div>
         </form>
       </Modal>
 
-      {/* Delete Modal */}
+      {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
         loading={deleteLoading}
-        title="Remove Employee"
-        message={`Are you sure you want to remove ${employeeToDelete?.firstName} ${employeeToDelete?.lastName} from active records?`}
+        title="Delete Employee"
+        message={`Are you sure you want to delete ${employeeToDelete?.firstName} ${employeeToDelete?.lastName}? This action removes all linked records.`}
       />
     </div>
   );
