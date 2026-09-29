@@ -44,7 +44,7 @@ const Login = () => {
       email: 'aarav.sharma@hrms.com',
       pass: 'employee123',
       badge: 'Design',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
+      avatar: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=80',
     },
     {
       name: 'Priya Patel',
@@ -52,7 +52,7 @@ const Login = () => {
       email: 'priya.patel@hrms.com',
       pass: 'employee123',
       badge: 'Tech',
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80',
+      avatar: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=200&auto=format&fit=crop&q=80',
     },
     {
       name: 'Rohan Verma',
@@ -60,7 +60,7 @@ const Login = () => {
       email: 'rohan.verma@hrms.com',
       pass: 'employee123',
       badge: 'HR Ops',
-      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&auto=format&fit=crop&q=80',
+      avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&auto=format&fit=crop&q=80',
     },
   ]);
 

@@ -14,9 +14,9 @@ const Notification = require('../models/Notification');
 // High-definition professional authentic Indian portrait images
 const INDIAN_AVATARS = {
   admin: '/avatars/ayush_shukla.png', // Ayush Shukla / HR Lead & Founder
-  aarav: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80', // Aarav Sharma - UX/UI Lead & Architect
-  priya: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&auto=format&fit=crop&q=80', // Priya Patel - Principal Frontend Engineer
-  rohan: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80', // Rohan Verma - Cloud DevOps Architect
+  aarav: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=500&auto=format&fit=crop&q=80', // Aarav Sharma - UX/UI Lead & Architect
+  priya: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=500&auto=format&fit=crop&q=80', // Priya Patel - Principal Frontend Engineer
+  rohan: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80', // Rohan Verma - People Operations & Culture Lead
 };
 
 const seedData = async (forceReset = false) => {
