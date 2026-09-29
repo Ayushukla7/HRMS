@@ -35,16 +35,38 @@ const ProfilePage = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      showToast('Image size should be under 5MB', 'error');
-      return;
-    }
-
+    // Read and compress image to crisp 400x400 max via HTML5 Canvas
     const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = reader.result;
-      setImagePreview(base64String);
-      setAvatar(base64String);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_DIM = 400;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_DIM) {
+            height *= MAX_DIM / width;
+            width = MAX_DIM;
+          }
+        } else {
+          if (height > MAX_DIM) {
+            width *= MAX_DIM / height;
+            height = MAX_DIM;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        setImagePreview(compressedDataUrl);
+        setAvatar(compressedDataUrl);
+      };
+      img.src = event.target.result;
     };
     reader.readAsDataURL(file);
   };
@@ -60,10 +82,14 @@ const ProfilePage = () => {
 
       if (res.data.success) {
         updateProfileState(res.data.user);
-        showToast('Profile and avatar updated instantly across dashboard!', 'success');
+        showToast('Profile and avatar updated instantly across the system!', 'success');
       }
     } catch (err) {
-      showToast(err.response?.data?.message || 'Failed to update profile', 'error');
+      if (err.response?.status === 401) {
+        showToast('Session expired. Please log out and sign in again to refresh your session.', 'error');
+      } else {
+        showToast(err.response?.data?.message || 'Failed to update profile', 'error');
+      }
     } finally {
       setProfileLoading(false);
     }
