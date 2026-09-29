@@ -1,12 +1,12 @@
 services:
-  # 1. Backend Web Service on Render
   - type: web
     name: hrms-backend
     env: node
     region: oregon
     plan: free
+    rootDir: server
     buildCommand: npm install
-    startCommand: node server/server.js
+    startCommand: node server.js
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
