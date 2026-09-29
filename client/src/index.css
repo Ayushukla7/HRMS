@@ -2,93 +2,74 @@
 
 @layer base {
   :root {
-    --bg-main: #08090d;
-    --card-bg: #0d1017;
-    --card-surface: #141824;
-    --card-border: rgba(255, 255, 255, 0.09);
-    --text-primary: #ffffff;
-    --text-secondary: #cbd5e1;
+    --bg-main: #f8fafc;
+    --card-bg: #ffffff;
+    --card-surface: #f1f5f9;
+    --card-border: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
     --text-muted: #94a3b8;
   }
 
-  html {
-    font-size: 15px;
+  .dark {
+    --bg-main: #0b0f19;
+    --card-bg: #111827;
+    --card-surface: #1e293b;
+    --card-border: #1f2937;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
   }
 
   body {
-    background-color: #08090d;
-    color: #f1f5f9;
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    letter-spacing: -0.01em;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-    letter-spacing: -0.02em;
   }
 }
 
-/* Custom Keyframe Animations */
-@keyframes spinSlow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+/* Standard Clean Cards */
+.app-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
-@keyframes pulseSlow {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.90; transform: scale(0.985); }
+.dark .app-card {
+  background-color: #111827;
+  border: 1px solid #1f2937;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes scaleUp {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.animate-spin-slow {
-  animation: spinSlow 20s linear infinite;
-}
-
-.animate-pulse-slow {
-  animation: pulseSlow 4s ease-in-out infinite;
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-scale-up {
-  animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Custom Rich Obsidian Bento Cards with Radiant Accents */
 .bento-card {
-  background-color: #0d1017;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 1.6rem;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
-.bento-card:hover {
-  border-color: rgba(99, 102, 241, 0.35);
-  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.7), 0 0 20px -5px rgba(99, 102, 241, 0.15);
+.dark .bento-card {
+  background-color: #111827;
+  border: 1px solid #1f2937;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
 }
 
-/* Secondary Surface Elements */
-.bento-surface {
-  background-color: #141824;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 1.1rem;
+/* Subtle Card Surface */
+.app-card-subtle {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
 }
 
-/* Crisp Clean Dark Scrollbars */
+.dark .app-card-subtle {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+/* Crisp Clean Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -99,10 +80,24 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #232938;
-  border-radius: 6px;
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3b4356;
+  background: #94a3b8;
+}
+
+/* Custom Animation Utilities */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
 }

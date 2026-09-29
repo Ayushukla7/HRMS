@@ -61,7 +61,6 @@ const DashboardPage = () => {
 
   const [loading, setLoading] = useState(true);
   const [adminData, setAdminData] = useState(null);
-  const [employeeStats, setEmployeeStats] = useState(null);
 
   // Live Digital Clock (IST)
   const [currentTime, setCurrentTime] = useState(
@@ -112,13 +111,6 @@ const DashboardPage = () => {
       if (todayAttRes.data && todayAttRes.data.success) {
         setTodayAttendance(todayAttRes.data.data);
       }
-
-      if (!isAdmin) {
-        const empRes = await dashboardApi.getEmployeeStats().catch(() => ({ data: { success: false } }));
-        if (empRes.data && empRes.data.success) {
-          setEmployeeStats(empRes.data.data);
-        }
-      }
     } catch (err) {
       console.error('Failed to load dashboard metrics:', err);
     } finally {
@@ -164,7 +156,7 @@ const DashboardPage = () => {
     try {
       await leaveApi.updateStatus(leaveId, {
         status: decisionStatus,
-        adminRemarks: `Quick decision marked directly from Executive Dashboard (${decisionStatus})`,
+        adminRemarks: `Decision marked directly from dashboard (${decisionStatus})`,
       });
       showToast(`Leave request ${decisionStatus.toLowerCase()} successfully!`, 'success');
       fetchDashboardData();
@@ -208,7 +200,7 @@ const DashboardPage = () => {
   };
 
   if (loading) {
-    return <LoadingSpinner text="Compiling organizational HRMS dashboard..." />;
+    return <LoadingSpinner text="Loading organizational dashboard..." />;
   }
 
   // Stats Calculations
@@ -223,12 +215,12 @@ const DashboardPage = () => {
 
   // Interactive Chart Data: Monthly Attendance Trends
   const attendanceTrendData = [
-    { month: 'Apr', attendanceRate: 91, onTimeRate: 94 },
-    { month: 'May', attendanceRate: 93, onTimeRate: 95 },
-    { month: 'Jun', attendanceRate: 95, onTimeRate: 96 },
-    { month: 'Jul', attendanceRate: 94, onTimeRate: 95 },
-    { month: 'Aug', attendanceRate: 97, onTimeRate: 98 },
-    { month: 'Sep', attendanceRate: attendanceRate, onTimeRate: 97 },
+    { month: 'Apr', attendanceRate: 91 },
+    { month: 'May', attendanceRate: 93 },
+    { month: 'Jun', attendanceRate: 95 },
+    { month: 'Jul', attendanceRate: 94 },
+    { month: 'Aug', attendanceRate: 97 },
+    { month: 'Sep', attendanceRate: attendanceRate },
   ];
 
   // Interactive Chart Data: Department Breakdown
@@ -237,13 +229,13 @@ const DashboardPage = () => {
       ? adminData.departmentDistribution.map((d, i) => ({
           name: d.name,
           count: d.count || 2,
-          color: ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'][i % 6],
+          color: ['#4f46e5', '#0284c7', '#059669', '#d97706', '#db2777', '#7c3aed'][i % 6],
         }))
       : [
-          { name: 'Engineering', count: 5, color: '#6366f1' },
-          { name: 'Product & Design', count: 3, color: '#06b6d4' },
-          { name: 'Human Resources', count: 2, color: '#10b981' },
-          { name: 'Operations & QA', count: 2, color: '#f59e0b' },
+          { name: 'Engineering', count: 5, color: '#4f46e5' },
+          { name: 'Product & Design', count: 3, color: '#0284c7' },
+          { name: 'Human Resources', count: 2, color: '#059669' },
+          { name: 'Operations & QA', count: 2, color: '#d97706' },
         ];
 
   // Interactive Chart Data: Monthly Payroll Velocity (₹ in Lakhs)
@@ -253,124 +245,103 @@ const DashboardPage = () => {
     { month: 'Jun', amount: 9.8 },
     { month: 'Jul', amount: 10.4 },
     { month: 'Aug', amount: 11.2 },
-    { month: 'Sep', amount: Number(((totalPayroll) / 100000).toFixed(1)) || 12.5, current: true },
+    { month: 'Sep', amount: Number(((totalPayroll) / 100000).toFixed(1)) || 12.5 },
   ];
 
   const loggedInName = user?.name || 'Ayush Shukla';
-  const loggedInAvatar = user?.avatar || user?.employee?.profilePicture || 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=80';
-  const loggedInRole = user?.employee?.designation || (user?.role === 'admin' ? 'HR Lead & Administrator' : 'Software Engineer');
+  const loggedInAvatar = user?.avatar || user?.employee?.profilePicture || 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&auto=format&fit=crop&q=80';
+  const loggedInRole = user?.employee?.designation || (user?.role === 'admin' ? 'HR Administrator' : 'Staff Employee');
 
   return (
-    <div className="space-y-6 animate-fade-in pb-10">
+    <div className="space-y-6 animate-fade-in pb-8">
       {/* ========================================================================= */}
-      {/* 1. TOP HERO BANNER & QUICK ACTIONS BAR */}
+      {/* 1. TOP WELCOME CARD & QUICK ACTION BAR */}
       {/* ========================================================================= */}
-      <div className="bento-card p-6 sm:p-7 relative overflow-hidden bg-gradient-to-r from-[#0d1017] via-[#121622] to-[#0d1017]">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 sm:p-6 shadow-xs">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           {/* User Welcome Information */}
-          <div className="flex items-center gap-4 sm:gap-5">
-            <Link to="/profile" className="relative group block" title="Change your profile picture">
+          <div className="flex items-center gap-4">
+            <Link to="/profile" className="relative group block" title="Manage Profile Picture">
               <Avatar
                 src={loggedInAvatar}
                 name={loggedInName}
-                size="xl"
-                className="w-16 h-16 sm:w-20 sm:h-20 ring-4 ring-indigo-500/30 rounded-3xl group-hover:ring-cyan-400/60 transition-all shadow-xl"
+                size="lg"
+                className="ring-2 ring-slate-200 dark:ring-slate-700 rounded-xl"
               />
-              <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 ring-4 ring-[#0d1017] flex items-center justify-center">
-                <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-              </span>
+              <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
             </Link>
 
             <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight">
-                  Welcome back, {loggedInName}!
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                  Welcome, {loggedInName}
                 </h1>
                 <span
-                  className={`px-3 py-0.5 rounded-full text-xs font-bold border ${
+                  className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                     isAdmin
-                      ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40'
-                      : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                      ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-400'
+                      : 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-400'
                   }`}
                 >
-                  {isAdmin ? 'HR / Administrator' : 'Staff Employee'}
+                  {isAdmin ? 'HR Administrator' : 'Staff Employee'}
                 </span>
               </div>
 
-              <p className="text-xs sm:text-sm text-slate-400 flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
                 <span>{loggedInRole}</span>
                 <span>&bull;</span>
-                <span className="flex items-center gap-1 text-slate-300">
-                  <MapPin className="w-3.5 h-3.5 text-cyan-400" /> Bengaluru R&D Hub (Tower 3)
+                <span className="flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5 text-slate-400" /> Bengaluru R&D Hub
                 </span>
-              </p>
-
-              <div className="pt-1 flex items-center gap-3 text-xs text-slate-400 font-mono">
-                <span className="flex items-center gap-1.5 bg-[#141824] px-2.5 py-1 rounded-xl border border-white/5 text-slate-200">
-                  <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                <span>&bull;</span>
+                <span className="font-medium text-slate-700 dark:text-slate-300">
                   {currentTime} (IST)
                 </span>
-                <span className="hidden sm:inline-block text-slate-500">&bull;</span>
-                <span className="hidden sm:inline-block text-slate-400">{currentDateStr}</span>
               </div>
             </div>
           </div>
 
           {/* Action Hub Buttons */}
-          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-            {/* 1. Interactive Biometric Check In / Check Out */}
-            <button
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* 1. Biometric Clock In / Clock Out */}
+            <Button
+              variant={!todayAttendance?.checkIn ? 'success' : !todayAttendance?.checkOut ? 'accent' : 'secondary'}
+              size="sm"
+              icon={Timer}
               onClick={handlePunchToggle}
-              disabled={punchLoading || (todayAttendance && todayAttendance.checkIn && todayAttendance.checkOut)}
-              className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-lg flex items-center gap-2 cursor-pointer ${
-                !todayAttendance?.checkIn
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-emerald-600/30'
-                  : !todayAttendance?.checkOut
-                  ? 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white shadow-amber-600/30'
-                  : 'bg-[#141824] text-slate-400 border border-white/10 cursor-not-allowed'
-              }`}
+              loading={punchLoading}
+              disabled={todayAttendance?.checkIn && todayAttendance?.checkOut}
             >
-              <Timer className="w-4 h-4" />
-              <span>
-                {punchLoading
-                  ? 'Processing...'
-                  : !todayAttendance?.checkIn
-                  ? 'Biometric Punch In'
-                  : !todayAttendance?.checkOut
-                  ? 'Biometric Punch Out'
-                  : 'Shift Completed ✓'}
-              </span>
-            </button>
+              {!todayAttendance?.checkIn
+                ? 'Clock In'
+                : !todayAttendance?.checkOut
+                ? 'Clock Out'
+                : 'Shift Completed ✓'}
+            </Button>
 
             {/* 2. Quick Apply Leave */}
-            <button
+            <Button
+              variant="outline"
+              size="sm"
+              icon={Calendar}
               onClick={() => setApplyLeaveModalOpen(true)}
-              className="px-4 py-2.5 rounded-2xl bg-[#141824] hover:bg-white/10 border border-white/10 hover:border-indigo-500/40 text-xs font-bold text-slate-200 hover:text-white transition-all shadow-sm flex items-center gap-2 cursor-pointer"
             >
-              <Calendar className="w-4 h-4 text-indigo-400" />
-              <span>Apply Leave</span>
-            </button>
+              Apply Leave
+            </Button>
 
             {/* 3. Admin Tools */}
             {isAdmin && (
               <>
-                <Link
-                  to="/employees"
-                  className="px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white transition-all shadow-lg shadow-indigo-600/30 flex items-center gap-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add Employee</span>
+                <Link to="/employees">
+                  <Button variant="primary" size="sm" icon={Plus}>
+                    Add Employee
+                  </Button>
                 </Link>
 
-                <Link
-                  to="/payroll"
-                  className="px-4 py-2.5 rounded-2xl bg-[#141824] hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-200 hover:text-white transition-all flex items-center gap-2"
-                >
-                  <IndianRupee className="w-4 h-4 text-emerald-400" />
-                  <span>Payroll</span>
+                <Link to="/payroll">
+                  <Button variant="secondary" size="sm" icon={IndianRupee}>
+                    Payroll
+                  </Button>
                 </Link>
               </>
             )}
@@ -379,147 +350,145 @@ const DashboardPage = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. TOP 4 CORE EXECUTIVE METRIC CARDS */}
+      {/* 2. TOP 4 CORE STAT CARDS */}
       {/* ========================================================================= */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        {/* Card 1: Total Active Workforce */}
-        <Link to="/employees" className="bento-card p-5 relative overflow-hidden group hover:border-indigo-500/40">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Workforce</span>
-            <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 group-hover:scale-110 transition-transform">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Total Employees */}
+        <Link
+          to="/employees"
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs hover:border-indigo-400 transition-colors"
+        >
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Total Employees
+              </p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
+                {totalEmployees}
+              </h3>
+            </div>
+            <div className="p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
               <Users className="w-5 h-5" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white font-mono">{totalEmployees}</span>
-            <span className="text-xs text-emerald-400 font-bold flex items-center gap-0.5">
-              <TrendingUp className="w-3 h-3" /> +12% YoY
-            </span>
-          </div>
-          <p className="text-xs text-slate-400 mt-1 flex items-center justify-between">
-            <span>Across {adminData?.departmentDistribution?.length || 6} Departments</span>
-            <span className="text-indigo-400 text-[11px] font-bold group-hover:translate-x-0.5 transition-transform flex items-center">
-              View Directory &rarr;
-            </span>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <span>{adminData?.departmentDistribution?.length || 4} Departments</span>
+            <span className="text-indigo-600 dark:text-indigo-400 font-medium">View all &rarr;</span>
           </p>
         </Link>
 
-        {/* Card 2: Today's Attendance Rate */}
-        <Link to="/attendance" className="bento-card p-5 relative overflow-hidden group hover:border-emerald-500/40">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Today's Attendance</span>
-            <div className="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 group-hover:scale-110 transition-transform">
+        {/* Card 2: Today's Attendance */}
+        <Link
+          to="/attendance"
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs hover:border-emerald-400 transition-colors"
+        >
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Today's Attendance
+              </p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
+                {presentToday} / {totalEmployees}
+              </h3>
+            </div>
+            <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
               <UserCheck className="w-5 h-5" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white font-mono">
-              {presentToday} / {totalEmployees}
-            </span>
-            <span className="text-xs text-emerald-400 font-bold">({attendanceRate}%)</span>
-          </div>
-          <p className="text-xs text-slate-400 mt-1 flex items-center justify-between">
-            <span>
-              {onLeaveToday} On Leave &bull; {absentToday} Absent
-            </span>
-            <span className="text-emerald-400 text-[11px] font-bold group-hover:translate-x-0.5 transition-transform flex items-center">
-              Punch Logs &rarr;
-            </span>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <span>{attendanceRate}% Present today</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-medium">Logs &rarr;</span>
           </p>
         </Link>
 
-        {/* Card 3: Pending Leave Approvals */}
-        <Link to="/leaves" className="bento-card p-5 relative overflow-hidden group hover:border-amber-500/40">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Pending Leaves</span>
-            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 group-hover:scale-110 transition-transform">
+        {/* Card 3: Pending Leaves */}
+        <Link
+          to="/leaves"
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs hover:border-amber-400 transition-colors"
+        >
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Pending Leaves
+              </p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
+                {pendingLeavesCount}
+              </h3>
+            </div>
+            <div className="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400">
               <Calendar className="w-5 h-5" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white font-mono">{pendingLeavesCount}</span>
-            {pendingLeavesCount > 0 ? (
-              <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/30 animate-pulse">
-                Action Required
-              </span>
-            ) : (
-              <span className="text-xs text-emerald-400 font-medium">All Cleared ✓</span>
-            )}
-          </div>
-          <p className="text-xs text-slate-400 mt-1 flex items-center justify-between">
-            <span>Awaiting HR Decision</span>
-            <span className="text-amber-400 text-[11px] font-bold group-hover:translate-x-0.5 transition-transform flex items-center">
-              Review Queue &rarr;
-            </span>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <span>{pendingLeavesCount > 0 ? 'Requires action' : 'All cleared'}</span>
+            <span className="text-amber-600 dark:text-amber-400 font-medium">Review &rarr;</span>
           </p>
         </Link>
 
-        {/* Card 4: Monthly Payroll Expenditure */}
-        <Link to="/payroll" className="bento-card p-5 relative overflow-hidden group hover:border-cyan-500/40">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Monthly Compensation</span>
-            <div className="p-2.5 rounded-2xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 group-hover:scale-110 transition-transform">
+        {/* Card 4: Monthly Payroll */}
+        <Link
+          to="/payroll"
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs hover:border-cyan-400 transition-colors"
+        >
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Monthly Payroll
+              </p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
+                ₹{((totalPayroll) / 100000).toFixed(2)}L
+              </h3>
+            </div>
+            <div className="p-2.5 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400">
               <IndianRupee className="w-5 h-5" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white font-mono">
-              ₹{((totalPayroll) / 100000).toFixed(2)}L
-            </span>
-            <span className="text-xs text-cyan-400 font-bold">INR / Mo</span>
-          </div>
-          <p className="text-xs text-slate-400 mt-1 flex items-center justify-between">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <span>EPF & TDS Deducted</span>
-            <span className="text-cyan-400 text-[11px] font-bold group-hover:translate-x-0.5 transition-transform flex items-center">
-              Salary Slips &rarr;
-            </span>
+            <span className="text-cyan-600 dark:text-cyan-400 font-medium">Vouchers &rarr;</span>
           </p>
         </Link>
       </div>
 
       {/* ========================================================================= */}
-      {/* 3. WORKING INTERACTIVE GRAPHS (ANALYTICS INTELLIGENCE) */}
+      {/* 3. CHARTS SECTION */}
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Graph 1: Attendance Trends Curve (2 Cols) */}
-        <div className="lg:col-span-2 bento-card p-6 relative overflow-hidden flex flex-col justify-between">
+        {/* Attendance Trend Chart */}
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div className="flex items-center justify-between mb-4">
               <div>
-                <div className="flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-cyan-400" />
-                  <h3 className="text-base font-bold text-white">Workforce Attendance & Punctuality Trends</h3>
-                </div>
-                <p className="text-xs text-slate-400">Monthly aggregate on-time arrival rate across Indian tech hubs</p>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  Monthly Attendance Trends
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Workforce punctuality rate (%) over the last 6 months
+                </p>
               </div>
-              <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20 self-start sm:self-auto">
-                {attendanceRate}% Punctuality Rate
+              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-full">
+                {attendanceRate}% Current Rate
               </span>
             </div>
 
-            <div className="h-64 sm:h-72">
+            <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={attendanceTrendData}>
                   <defs>
-                    <linearGradient id="attendanceGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="#06b6d4" stopOpacity={0.0} />
+                    <linearGradient id="attColor" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#232635" opacity={0.5} />
-                  <XAxis dataKey="month" stroke="#64748b" tick={{ fontSize: 12, fill: '#94a3b8' }} />
-                  <YAxis
-                    stroke="#64748b"
-                    domain={[80, 100]}
-                    tick={{ fontSize: 12, fill: '#94a3b8' }}
-                    tickFormatter={(v) => `${v}%`}
-                  />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.6} />
+                  <XAxis dataKey="month" stroke="#94a3b8" tick={{ fontSize: 12 }} />
+                  <YAxis stroke="#94a3b8" domain={[80, 100]} tick={{ fontSize: 12 }} tickFormatter={(v) => `${v}%`} />
                   <Tooltip
-                    formatter={(val, name) => [`${val}%`, name === 'attendanceRate' ? 'Attendance' : 'On-Time']}
+                    formatter={(val) => [`${val}%`, 'Attendance Rate']}
                     contentStyle={{
-                      backgroundColor: '#121319',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '16px',
+                      backgroundColor: '#1e293b',
+                      border: 'none',
+                      borderRadius: '8px',
                       color: '#fff',
                       fontSize: '12px',
                     }}
@@ -527,37 +496,34 @@ const DashboardPage = () => {
                   <Area
                     type="monotone"
                     dataKey="attendanceRate"
-                    stroke="#06b6d4"
-                    strokeWidth={3}
+                    stroke="#4f46e5"
+                    strokeWidth={2.5}
                     fillOpacity={1}
-                    fill="url(#attendanceGradient)"
+                    fill="url(#attColor)"
                   />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" /> Direct Biometric Machine Sync
-            </span>
-            <Link to="/attendance" className="text-cyan-400 font-bold hover:underline">
-              View Detailed Logs &rarr;
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+            <span>Direct Biometric Machine Integration</span>
+            <Link to="/attendance" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+              View Attendance Logs &rarr;
             </Link>
           </div>
         </div>
 
-        {/* Graph 2: Department Headcount Distribution (1 Col) */}
-        <div className="bento-card p-6 relative overflow-hidden flex flex-col justify-between">
+        {/* Department Breakdown Chart */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <PieIcon className="w-4 h-4 text-indigo-400" />
-                  <h3 className="text-base font-bold text-white">Department Headcount</h3>
-                </div>
-                <p className="text-xs text-slate-400">Distribution across business units</p>
-              </div>
+            <div className="mb-4">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                Department Distribution
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Personnel headcount by department
+              </p>
             </div>
 
             <div className="h-56">
@@ -569,26 +535,26 @@ const DashboardPage = () => {
                     nameKey="name"
                     cx="50%"
                     cy="50%"
-                    innerRadius={55}
-                    outerRadius={80}
-                    paddingAngle={4}
+                    innerRadius={50}
+                    outerRadius={75}
+                    paddingAngle={3}
                   >
                     {deptBreakdown.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} stroke="#0d1017" strokeWidth={2} />
+                      <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(val) => [`${val} Members`, 'Personnel']}
+                    formatter={(val) => [`${val} Members`, 'Headcount']}
                     contentStyle={{
-                      backgroundColor: '#121319',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '12px',
+                      backgroundColor: '#1e293b',
+                      border: 'none',
+                      borderRadius: '8px',
                       color: '#fff',
                       fontSize: '12px',
                     }}
                   />
                   <Legend
-                    formatter={(val) => <span className="text-xs text-slate-300 ml-1">{val}</span>}
+                    formatter={(val) => <span className="text-xs text-slate-600 dark:text-slate-300 ml-1">{val}</span>}
                     layout="horizontal"
                     verticalAlign="bottom"
                     align="center"
@@ -598,48 +564,38 @@ const DashboardPage = () => {
             </div>
           </div>
 
-          <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
             <span>{adminData?.departmentDistribution?.length || 4} Total Units</span>
-            <Link to="/departments" className="text-indigo-400 font-bold hover:underline">
-              Manage Units &rarr;
+            <Link to="/departments" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+              Manage Departments &rarr;
             </Link>
           </div>
         </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* 4. PENDING LEAVE APPROVALS QUEUE (WITH 1-CLICK APPROVE/REJECT) */}
+      {/* 4. PENDING LEAVE APPROVALS QUEUE (DIRECT 1-CLICK ACTION) */}
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Left 2 Cols: Live Leave Approvals Queue */}
-        <div className="lg:col-span-2 bento-card p-6 relative overflow-hidden flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-white/5">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                  <CalendarDays className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-white">Leave Requests & HR Approval Queue</h3>
-                  <p className="text-xs text-slate-400">
-                    {isAdmin
-                      ? 'Review and make 1-click decisions directly from this dashboard'
-                      : 'Your recent leave applications and status'}
-                  </p>
-                </div>
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-4">
+              <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  Leave Requests & Approvals
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {isAdmin
+                    ? 'Review and take 1-click decisions directly from this dashboard'
+                    : 'Your recent leave applications'}
+                </p>
               </div>
-
-              <Link
-                to="/leaves"
-                className="text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1 self-start sm:self-auto"
-              >
-                <span>Full Leave Portal</span>
-                <ChevronRight className="w-4 h-4" />
+              <Link to="/leaves" className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                View All &rarr;
               </Link>
             </div>
 
-            {/* Leave Applications List */}
-            <div className="mt-4 space-y-3">
+            <div className="space-y-3">
               {adminData?.recentLeaves && adminData.recentLeaves.length > 0 ? (
                 adminData.recentLeaves.slice(0, 4).map((leave) => {
                   const emp = leave.employee || {};
@@ -649,41 +605,40 @@ const DashboardPage = () => {
                   return (
                     <div
                       key={leave._id}
-                      className="p-4 rounded-2xl bg-[#141824] border border-white/5 hover:border-white/10 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                      className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                     >
-                      <div className="flex items-center gap-3.5">
+                      <div className="flex items-center gap-3">
                         <Avatar
                           src={emp.profilePicture}
                           name={`${emp.firstName || ''} ${emp.lastName || ''}`}
                           size="md"
-                          className="ring-2 ring-white/10"
                         />
                         <div>
                           <div className="flex items-center gap-2">
-                            <h4 className="text-sm font-bold text-white">
+                            <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
                               {emp.firstName} {emp.lastName}
                             </h4>
-                            <span className="font-mono text-[10px] text-slate-400 bg-black/40 px-2 py-0.5 rounded-md border border-white/5">
-                              {emp.empCustomId || 'EMP-1001'}
+                            <span className="text-[10px] text-slate-500 font-mono">
+                              ({emp.empCustomId || 'EMP'})
                             </span>
                           </div>
-                          <p className="text-xs text-cyan-400 font-medium">{leave.leaveType}</p>
-                          <p className="text-[11px] text-slate-400 mt-0.5">
+                          <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
+                            {leave.leaveType} &bull; {leave.daysCount || 1} day(s)
+                          </p>
+                          <p className="text-[11px] text-slate-500 mt-0.5">
                             {new Date(leave.startDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })} -{' '}
-                            {new Date(leave.endDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })} (
-                            {leave.daysCount || 1} days) &bull; <span className="italic text-slate-300">"{leave.reason}"</span>
+                            {new Date(leave.endDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}: "{leave.reason}"
                           </p>
                         </div>
                       </div>
 
-                      {/* Status / 1-Click Action Buttons */}
                       <div className="flex items-center gap-2 self-end sm:self-center">
                         {isPending && isAdmin ? (
                           <>
                             <button
                               onClick={() => handleLeaveDecision(leave._id, 'Approved')}
                               disabled={isActionLoading}
-                              className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/30 flex items-center gap-1 cursor-pointer transition-all disabled:opacity-50"
+                              className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs flex items-center gap-1 cursor-pointer transition-colors"
                             >
                               <Check className="w-3.5 h-3.5" />
                               <span>Approve</span>
@@ -691,7 +646,7 @@ const DashboardPage = () => {
                             <button
                               onClick={() => handleLeaveDecision(leave._id, 'Rejected')}
                               disabled={isActionLoading}
-                              className="px-3 py-1.5 rounded-xl bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/30 text-xs font-bold flex items-center gap-1 cursor-pointer transition-all disabled:opacity-50"
+                              className="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-900 text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors"
                             >
                               <X className="w-3.5 h-3.5" />
                               <span>Reject</span>
@@ -715,38 +670,35 @@ const DashboardPage = () => {
                   );
                 })
               ) : (
-                <div className="p-8 text-center text-slate-400">
-                  <CheckCircle2 className="w-10 h-10 mx-auto text-emerald-400 mb-2" />
-                  <p className="text-sm font-bold text-slate-200">No pending leave requests!</p>
-                  <p className="text-xs text-slate-500 mt-0.5">All employee time-off applications are up to date.</p>
-                </div>
+                <p className="text-xs text-slate-400 py-6 text-center">No pending leave applications</p>
               )}
             </div>
           </div>
 
-          <div className="pt-4 border-t border-white/5 mt-4 flex items-center justify-between text-xs text-slate-400">
-            <span>Casual Quota: 12 Days &bull; Sick Quota: 10 Days &bull; Earned: 18 Days</span>
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 mt-3 flex items-center justify-between text-xs text-slate-500">
+            <span>Annual Leaves: Casual (12) &bull; Sick (10) &bull; Earned (18)</span>
             <button
               onClick={() => setApplyLeaveModalOpen(true)}
-              className="text-cyan-400 font-bold hover:underline cursor-pointer"
+              className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline cursor-pointer"
             >
-              + Submit New Leave
+              + Apply Leave
             </button>
           </div>
         </div>
 
-        {/* Right 1 Col: Monthly Payroll Payout Velocity Bar Chart */}
-        <div className="bento-card p-6 relative overflow-hidden flex flex-col justify-between">
+        {/* Monthly Payroll Bar Chart */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/5">
+            <div className="flex items-center justify-between mb-4">
               <div>
-                <div className="flex items-center gap-2">
-                  <IndianRupee className="w-4 h-4 text-emerald-400" />
-                  <h3 className="text-base font-bold text-white">Monthly Payroll Growth</h3>
-                </div>
-                <p className="text-xs text-slate-400">Direct salary disbursements in ₹ Lakhs</p>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  Monthly Payroll
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Disbursements in ₹ Lakhs
+                </p>
               </div>
-              <span className="px-2.5 py-1 rounded-xl bg-emerald-500/10 text-emerald-400 text-xs font-mono font-bold border border-emerald-500/20">
+              <span className="text-xs font-bold text-slate-900 dark:text-white font-mono">
                 ₹12.5L /mo
               </span>
             </div>
@@ -754,32 +706,28 @@ const DashboardPage = () => {
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={payrollTrendData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#232635" opacity={0.5} />
-                  <XAxis dataKey="month" stroke="#64748b" tick={{ fontSize: 11, fill: '#94a3b8' }} />
-                  <YAxis
-                    stroke="#64748b"
-                    tick={{ fontSize: 11, fill: '#94a3b8' }}
-                    tickFormatter={(v) => `₹${v}L`}
-                  />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.6} />
+                  <XAxis dataKey="month" stroke="#94a3b8" tick={{ fontSize: 11 }} />
+                  <YAxis stroke="#94a3b8" tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v}L`} />
                   <Tooltip
                     formatter={(val) => [`₹${val} Lakhs`, 'Disbursement']}
                     contentStyle={{
-                      backgroundColor: '#121319',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '12px',
+                      backgroundColor: '#1e293b',
+                      border: 'none',
+                      borderRadius: '8px',
                       color: '#fff',
                       fontSize: '12px',
                     }}
                   />
-                  <Bar dataKey="amount" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="amount" fill="#4f46e5" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
-            <span>Statutory EPF & TDS Compliant</span>
-            <Link to="/payroll" className="text-emerald-400 font-bold hover:underline">
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+            <span>EPF & TDS Compliant</span>
+            <Link to="/payroll" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
               Generate Payroll &rarr;
             </Link>
           </div>
@@ -787,124 +735,121 @@ const DashboardPage = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* 5. TEAM PERSONNEL & RECRUITMENT ATS PIPELINE */}
+      {/* 5. TEAM MEMBERS DIRECTORY & ATS PIPELINE */}
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Left 2 Cols: Active Indian Personnel Showcase */}
-        <div className="lg:col-span-2 bento-card p-6 relative overflow-hidden flex flex-col justify-between">
+        {/* Active Indian Personnel */}
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-4 border-b border-white/5 mb-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-4">
               <div>
-                <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-indigo-400" />
-                  <h3 className="text-base font-bold text-white">Active Indian Team Directory</h3>
-                </div>
-                <p className="text-xs text-slate-400">Key personnel across Bengaluru, Gurugram, and Mumbai hubs</p>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  Active Team Members
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Key personnel across Bengaluru, Gurugram, and Mumbai hubs
+                </p>
               </div>
-              <Link to="/employees" className="text-xs font-bold text-indigo-400 hover:text-indigo-300">
-                View All {totalEmployees} &rarr;
+              <Link to="/employees" className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                View All ({totalEmployees}) &rarr;
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {adminData?.recentEmployees && adminData.recentEmployees.length > 0 ? (
                 adminData.recentEmployees.slice(0, 6).map((emp) => (
                   <Link
                     key={emp._id}
                     to={`/employees/${emp._id}`}
-                    className="p-3.5 rounded-2xl bg-[#141824] border border-white/5 hover:border-indigo-500/30 transition-all flex items-center justify-between group"
+                    className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 hover:border-indigo-400 transition-colors flex items-center justify-between"
                   >
                     <div className="flex items-center gap-3">
                       <Avatar
                         src={emp.profilePicture}
                         name={`${emp.firstName} ${emp.lastName}`}
                         size="md"
-                        className="ring-2 ring-white/10 group-hover:ring-indigo-500/40"
                       />
                       <div>
-                        <h4 className="text-xs font-bold text-white group-hover:text-indigo-300 transition-colors">
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-white">
                           {emp.firstName} {emp.lastName}
                         </h4>
-                        <p className="text-[11px] text-cyan-400 font-medium">{emp.designation}</p>
-                        <p className="text-[10px] text-slate-400">{emp.department?.name || 'Technology'}</p>
+                        <p className="text-[11px] text-indigo-600 dark:text-indigo-400 font-medium">
+                          {emp.designation}
+                        </p>
+                        <p className="text-[10px] text-slate-500">{emp.department?.name || 'Technology'}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className="font-mono text-xs font-bold text-emerald-400 block">
+                      <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 block">
                         ₹{emp.salary ? (Number(emp.salary) / 1000).toFixed(0) : '85'}k
                       </span>
-                      <span className="text-[10px] text-slate-500">{emp.empCustomId}</span>
+                      <span className="text-[10px] text-slate-400">{emp.empCustomId}</span>
                     </div>
                   </Link>
                 ))
               ) : (
-                <p className="text-xs text-slate-500 col-span-2 py-4 text-center">Loading employee directory...</p>
+                <p className="text-xs text-slate-400 py-4 text-center col-span-2">Loading employees...</p>
               )}
             </div>
           </div>
 
-          <div className="pt-4 border-t border-white/5 mt-4 flex items-center justify-between text-xs text-slate-400">
-            <span>100% Verified Indian Personnel</span>
-            <Link to="/employees" className="text-indigo-400 font-bold hover:underline">
-              Add New Staff &rarr;
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 mt-3 flex items-center justify-between text-xs text-slate-500">
+            <span>Verified Indian Personnel</span>
+            <Link to="/employees" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+              + Add New Staff
             </Link>
           </div>
         </div>
 
-        {/* Right 1 Col: ATS Recruitment & Enterprise Hub Status */}
-        <div className="bento-card p-6 relative overflow-hidden flex flex-col justify-between">
+        {/* ATS Recruitment Summary */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-4">
               <div>
-                <div className="flex items-center gap-2">
-                  <Briefcase className="w-4 h-4 text-cyan-400" />
-                  <h3 className="text-base font-bold text-white">Recruitment ATS Pipeline</h3>
-                </div>
-                <p className="text-xs text-slate-400">Active hiring stages and vacancies</p>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  Recruitment Pipeline
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Open vacancies & applications
+                </p>
               </div>
-              <Link to="/recruitment" className="text-xs font-bold text-cyan-400 hover:underline">
+              <Link to="/recruitment" className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
                 ATS Board &rarr;
               </Link>
             </div>
 
-            <div className="space-y-3">
-              <div className="p-3.5 rounded-2xl bg-[#141824] border border-white/5 flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-200">Open Job Positions</span>
-                <span className="font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-xl border border-cyan-500/20">
+            <div className="space-y-2.5">
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
+                <span className="font-medium text-slate-700 dark:text-slate-300">Open Job Positions</span>
+                <span className="font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2.5 py-0.5 rounded-full">
                   {stats.activeJobs || 4} Active
                 </span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-[#141824] border border-white/5 flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-200">Candidate Applications</span>
-                <span className="font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-xl border border-indigo-500/20">
-                  {stats.totalApplicants || 18} In Pipeline
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
+                <span className="font-medium text-slate-700 dark:text-slate-300">Candidate Applications</span>
+                <span className="font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950 px-2.5 py-0.5 rounded-full">
+                  {stats.totalApplicants || 18} Total
                 </span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-[#141824] border border-white/5 flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-200">Interviews Scheduled (This Week)</span>
-                <span className="font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-xl border border-emerald-500/20">
-                  5 Final Rounds
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
+                <span className="font-medium text-slate-700 dark:text-slate-300">Interviews Scheduled</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-0.5 rounded-full">
+                  5 This Week
                 </span>
               </div>
             </div>
 
-            {/* Compliance Badge */}
-            <div className="mt-4 p-3.5 rounded-2xl bg-gradient-to-r from-indigo-950/40 to-slate-900/60 border border-indigo-500/20 space-y-1">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-300">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Statutory Compliance: Active</span>
-              </div>
-              <p className="text-[11px] text-slate-400">
-                EPFO, ESIC, Professional Tax (PT), and TDS deductions verified for Indian payroll.
-              </p>
+            <div className="mt-4 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+              <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+              <span>100% EPFO, ESIC & TDS Statutory Compliant</span>
             </div>
           </div>
 
-          <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
-            <span>Cloud: AWS ap-south-1 (Mumbai)</span>
-            <span className="text-emerald-400 font-semibold">Live & Synchronized</span>
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+            <span>Cloud: AWS Mumbai</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-medium">Online ✓</span>
           </div>
         </div>
       </div>
@@ -915,21 +860,21 @@ const DashboardPage = () => {
       <Modal
         isOpen={applyLeaveModalOpen}
         onClose={() => setApplyLeaveModalOpen(false)}
-        title="Submit Time-Off / Leave Application"
+        title="Apply for Leave"
         maxWidth="max-w-md"
       >
         <form onSubmit={handleApplyLeaveSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
-              Leave Category
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              Leave Type
             </label>
             <select
               value={leaveForm.leaveType}
               onChange={(e) => setLeaveForm({ ...leaveForm, leaveType: e.target.value })}
-              className="block w-full rounded-xl border border-white/10 bg-[#181922] text-xs py-2.5 px-3 text-slate-100 focus:outline-none focus:border-cyan-500"
+              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs py-2 px-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="Casual Leave">Casual Leave (12 Days Annual Quota)</option>
-              <option value="Sick Leave">Sick / Medical Leave (10 Days Quota)</option>
+              <option value="Sick Leave">Sick Leave (10 Days Quota)</option>
               <option value="Earned Leave">Earned Vacation Leave (18 Days Quota)</option>
               <option value="Maternity / Paternity">Maternity / Paternity Leave</option>
               <option value="Unpaid Leave">Unpaid Leave of Absence</option>
@@ -954,20 +899,20 @@ const DashboardPage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
-              Reason / Justification
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              Reason
             </label>
             <textarea
               rows={3}
               value={leaveForm.reason}
               onChange={(e) => setLeaveForm({ ...leaveForm, reason: e.target.value })}
               required
-              placeholder="e.g. Family function in Delhi / Medical recovery..."
-              className="block w-full rounded-xl border border-white/10 bg-[#181922] text-xs p-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+              placeholder="e.g. Medical appointment / Family event..."
+              className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs p-2.5 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-white/10">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
             <Button variant="secondary" size="sm" onClick={() => setApplyLeaveModalOpen(false)}>
               Cancel
             </Button>
