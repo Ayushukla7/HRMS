@@ -11,19 +11,19 @@ const Application = require('../models/Application');
 const Performance = require('../models/Performance');
 const Notification = require('../models/Notification');
 
-// High-definition professional Indian portrait images (curated Unsplash URLs)
+// High-definition professional authentic Indian portrait images (curated Unsplash URLs)
 const INDIAN_AVATARS = {
-  admin: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80', // Ayush Shukla / HR Lead
-  aarav: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=80', // Aarav Sharma - UX/UI Lead (matches image style)
-  priya: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&auto=format&fit=crop&q=80', // Priya Patel - Frontend Architect
-  rohan: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80', // Rohan Verma - Cloud DevOps
-  ananya: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&auto=format&fit=crop&q=80', // Ananya Iyer - Product Manager
-  vikram: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80', // Vikram Malhotra - Backend Lead
-  neha: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=300&auto=format&fit=crop&q=80', // Neha Gupta - Talent & Culture
-  rajesh: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&auto=format&fit=crop&q=80', // Rajesh Kumar - VP Engineering
-  kavya: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80', // Kavya Reddy - AI Engineer
-  aditya: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&auto=format&fit=crop&q=80', // Aditya Singh - Growth Lead
-  sneha: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&auto=format&fit=crop&q=80', // Sneha Joshi - UX Designer
+  admin: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=80', // Ayush Shukla / HR Lead & Founder
+  aarav: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80', // Aarav Sharma - UX/UI Lead & Architect
+  priya: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&auto=format&fit=crop&q=80', // Priya Patel - Principal Frontend Engineer
+  rohan: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80', // Rohan Verma - Cloud DevOps Architect
+  ananya: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=500&auto=format&fit=crop&q=80', // Ananya Iyer - Senior Product Manager
+  vikram: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=500&auto=format&fit=crop&q=80', // Vikram Malhotra - Backend Engineering Lead
+  neha: 'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=500&auto=format&fit=crop&q=80', // Neha Gupta - Head of Talent & Culture
+  rajesh: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80', // Rajesh Kumar - VP Engineering
+  kavya: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&auto=format&fit=crop&q=80', // Kavya Reddy - Staff AI / ML Engineer
+  aditya: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=80', // Aditya Singh - Growth & Brand Lead
+  sneha: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=500&auto=format&fit=crop&q=80', // Sneha Joshi - Senior Product Designer
 };
 
 const seedData = async (forceReset = false) => {

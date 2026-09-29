@@ -11,30 +11,28 @@ const Avatar = ({ src, name = 'User', size = 'md', className = '', indicator }) 
   };
 
   const getBgColor = (n) => {
-    const colors = [
-      'bg-slate-700 text-slate-100',
-      'bg-indigo-600 text-white',
-      'bg-blue-600 text-white',
-      'bg-emerald-600 text-white',
-      'bg-teal-600 text-white',
-      'bg-cyan-600 text-white',
-      'bg-amber-600 text-white',
-      'bg-violet-600 text-white',
+    const gradients = [
+      'bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white',
+      'bg-gradient-to-tr from-emerald-600 to-teal-400 text-white',
+      'bg-gradient-to-tr from-purple-600 to-pink-500 text-white',
+      'bg-gradient-to-tr from-blue-600 to-indigo-400 text-white',
+      'bg-gradient-to-tr from-amber-600 to-yellow-400 text-white',
+      'bg-gradient-to-tr from-cyan-600 to-blue-400 text-white',
     ];
     let hash = 0;
     for (let i = 0; i < n.length; i++) {
       hash = n.charCodeAt(i) + ((hash << 5) - hash);
     }
-    const index = Math.abs(hash) % colors.length;
-    return colors[index];
+    const index = Math.abs(hash) % gradients.length;
+    return gradients[index];
   };
 
   const sizeClasses = {
-    xs: 'w-6 h-6 text-[10px]',
-    sm: 'w-8 h-8 text-xs',
-    md: 'w-10 h-10 text-sm font-semibold',
-    lg: 'w-12 h-12 text-base font-bold',
-    xl: 'w-16 h-16 text-xl font-bold',
+    xs: 'w-7 h-7 text-xs',
+    sm: 'w-9 h-9 text-xs font-bold',
+    md: 'w-11 h-11 text-sm font-bold',
+    lg: 'w-14 h-14 text-base font-bold',
+    xl: 'w-18 h-18 text-2xl font-black',
     '2xl': 'w-24 h-24 text-3xl font-black',
   };
 
@@ -45,25 +43,25 @@ const Avatar = ({ src, name = 'User', size = 'md', className = '', indicator }) 
           src={src}
           alt={name}
           onError={() => setImageError(true)}
-          className={`${sizeClasses[size]} rounded-lg object-cover border border-slate-200 dark:border-slate-800 shadow-sm`}
+          className={`${sizeClasses[size]} rounded-2xl object-cover object-top border border-white/[0.12] shadow-md ring-1 ring-white/[0.05]`}
         />
       ) : (
         <div
-          className={`${sizeClasses[size]} rounded-lg flex items-center justify-center ${getBgColor(
+          className={`${sizeClasses[size]} rounded-2xl flex items-center justify-center ${getBgColor(
             name
-          )} border border-slate-200 dark:border-slate-800 shadow-sm select-none`}
+          )} border border-white/[0.12] shadow-md select-none`}
         >
           {getInitials(name)}
         </div>
       )}
       {indicator && (
         <span
-          className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-900 ${
+          className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-[#08090d] ${
             indicator === 'online'
-              ? 'bg-emerald-500'
+              ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]'
               : indicator === 'busy'
-              ? 'bg-rose-500'
-              : 'bg-amber-500'
+              ? 'bg-rose-500 shadow-[0_0_8px_#f43f5e]'
+              : 'bg-amber-400 shadow-[0_0_8px_#fbbf24]'
           }`}
         />
       )}
