@@ -13,14 +13,14 @@ const MainLayout = () => {
         closeMobileSidebar={() => setIsMobileOpen(false)}
       />
 
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-24">
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-64 transition-all duration-300">
         <Navbar toggleMobileSidebar={() => setIsMobileOpen(!isMobileOpen)} />
 
         <main className="flex-1 p-3 sm:p-6 lg:p-7 max-w-[1600px] w-full mx-auto">
           <Outlet />
         </main>
 
-        {/* Minimal Footer */}
+        {/* Minimal Clean Footer */}
         <footer className="py-4 px-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
           <p>&copy; {new Date().getFullYear()} HR Pulse &bull; Enterprise Human Resource Architecture</p>
           <div className="flex items-center gap-4 font-medium">
