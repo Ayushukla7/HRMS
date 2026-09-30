@@ -121,6 +121,13 @@ const DashboardPage = () => {
 
   // Biometric Check In / Check Out Handler (For Staff Employee)
   const handlePunchToggle = async () => {
+    const token = localStorage.getItem('hrms_token');
+    if (!token) {
+      showToast('Your session has expired. Please sign in again.', 'error');
+      navigate('/login');
+      return;
+    }
+
     setPunchLoading(true);
     try {
       if (!todayAttendance || !todayAttendance.checkIn) {

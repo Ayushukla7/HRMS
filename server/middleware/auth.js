@@ -4,15 +4,16 @@ const User = require('../models/User');
 // Verify JWT token from Authorization header
 const protect = async (req, res, next) => {
   let token;
+  const authHeader = req.headers.authorization || req.headers.Authorization;
 
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+  if (authHeader && authHeader.trim().toLowerCase().startsWith('bearer ')) {
     try {
-      token = req.headers.authorization.split(' ')[1];
+      token = authHeader.trim().substring(7).trim();
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'super_secret_jwt_key_hrms_2026_pro_secure_token');
       
       const user = await User.findById(decoded.id).populate('employeeId');
       if (!user) {
-        return res.status(401).json({ success: false, message: 'User no longer exists' });
+        return res.status(401).json({ success: false, message: 'User session expired or user no longer exists' });
       }
 
       if (!user.isActive) {
@@ -20,15 +21,15 @@ const protect = async (req, res, next) => {
       }
 
       req.user = user;
-      next();
+      return next();
     } catch (err) {
       console.error('Auth verification error:', err.message);
-      return res.status(401).json({ success: false, message: 'Not authorized, token failed' });
+      return res.status(401).json({ success: false, message: 'Not authorized, token failed or expired' });
     }
   }
 
   if (!token) {
-    return res.status(401).json({ success: false, message: 'Not authorized, no token provided' });
+    return res.status(401).json({ success: false, message: 'Not authorized, no token provided. Please log in.' });
   }
 };
 

@@ -6,27 +6,51 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('hrms_user');
-    return saved ? JSON.parse(saved) : null;
+    const savedToken = localStorage.getItem('hrms_token');
+    return saved && savedToken ? JSON.parse(saved) : null;
   });
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(() => localStorage.getItem('hrms_token'));
 
+  const logout = () => {
+    localStorage.removeItem('hrms_token');
+    localStorage.removeItem('hrms_user');
+    setToken(null);
+    setUser(null);
+  };
+
+  useEffect(() => {
+    const handleExpired = () => {
+      logout();
+    };
+    window.addEventListener('auth:expired', handleExpired);
+    return () => window.removeEventListener('auth:expired', handleExpired);
+  }, []);
+
   useEffect(() => {
     const checkAuth = async () => {
       const savedToken = localStorage.getItem('hrms_token');
-      if (savedToken) {
-        try {
-          const res = await authApi.getMe();
-          if (res.data.success && res.data.user) {
-            setUser(res.data.user);
-            localStorage.setItem('hrms_user', JSON.stringify(res.data.user));
-          }
-        } catch (err) {
-          console.error('Session expired or invalid token:', err);
+      if (!savedToken) {
+        setUser(null);
+        setToken(null);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await authApi.getMe();
+        if (res.data.success && res.data.user) {
+          setUser(res.data.user);
+          localStorage.setItem('hrms_user', JSON.stringify(res.data.user));
+        } else {
           logout();
         }
+      } catch (err) {
+        console.error('Session expired or invalid token:', err);
+        logout();
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     checkAuth();
@@ -54,13 +78,6 @@ export const AuthProvider = ({ children }) => {
       setUser(newUser);
       return newUser;
     }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('hrms_token');
-    localStorage.removeItem('hrms_user');
-    setToken(null);
-    setUser(null);
   };
 
   const updateProfileState = (updatedUser) => {

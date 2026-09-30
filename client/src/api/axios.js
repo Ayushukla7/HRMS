@@ -31,7 +31,7 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('hrms_token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token.trim()}`;
     }
     return config;
   },
@@ -43,10 +43,24 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Don't auto-redirect if checking auth status
-      if (!error.config.url.includes('/auth/me')) {
+      const url = error.config?.url || '';
+      const isPublicRoute =
+        url.includes('/auth/login') ||
+        url.includes('/auth/register') ||
+        url.includes('/auth/demo-personas');
+
+      if (!isPublicRoute) {
         localStorage.removeItem('hrms_token');
         localStorage.removeItem('hrms_user');
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('auth:expired'));
+          if (
+            window.location.pathname !== '/login' &&
+            window.location.pathname !== '/register'
+          ) {
+            window.location.href = '/login';
+          }
+        }
       }
     }
     return Promise.reject(error);

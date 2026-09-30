@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { attendanceApi, employeeApi } from '../../api';
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
@@ -23,6 +24,7 @@ import {
 const AttendancePage = () => {
   const { user, isAdmin } = useAuth();
   const { showToast, fetchNotifications } = useNotification();
+  const navigate = useNavigate();
 
   const [records, setRecords] = useState([]);
   const [employees, setEmployees] = useState([]);
@@ -97,6 +99,13 @@ const AttendancePage = () => {
   }, [dateFilter, statusFilter, selectedEmpFilter]);
 
   const handleClockIn = async () => {
+    const token = localStorage.getItem('hrms_token');
+    if (!token) {
+      showToast('Your session has expired. Please sign in again.', 'error');
+      navigate('/login');
+      return;
+    }
+
     setClockLoading(true);
     try {
       const res = await attendanceApi.checkIn({ location: locationPill });
@@ -113,6 +122,13 @@ const AttendancePage = () => {
   };
 
   const handleClockOut = async () => {
+    const token = localStorage.getItem('hrms_token');
+    if (!token) {
+      showToast('Your session has expired. Please sign in again.', 'error');
+      navigate('/login');
+      return;
+    }
+
     setClockLoading(true);
     try {
       const res = await attendanceApi.checkOut({});
