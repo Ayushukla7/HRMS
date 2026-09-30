@@ -39,7 +39,7 @@ exports.getAttendance = async (req, res, next) => {
     let attendanceRecords = await Attendance.find(query)
       .populate({
         path: 'employee',
-        select: 'empCustomId firstName lastName designation profilePicture department',
+        select: 'empCustomId firstName lastName email designation profilePicture department',
         populate: { path: 'department', select: 'name code' }
       })
       .sort({ date: -1, createdAt: -1 });

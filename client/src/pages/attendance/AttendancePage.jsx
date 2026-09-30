@@ -65,8 +65,8 @@ const AttendancePage = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (isInitial = false) => {
+    if (isInitial) setLoading(true);
     try {
       const params = {};
       if (dateFilter) params.date = dateFilter;
@@ -90,12 +90,16 @@ const AttendancePage = () => {
     } catch (err) {
       console.error('Failed to load attendance:', err);
     } finally {
-      setLoading(false);
+      if (isInitial) setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(true);
+    const interval = setInterval(() => {
+      fetchData(false);
+    }, 5000);
+    return () => clearInterval(interval);
   }, [dateFilter, statusFilter, selectedEmpFilter]);
 
   const handleClockIn = async () => {

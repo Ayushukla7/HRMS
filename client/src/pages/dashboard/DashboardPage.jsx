@@ -26,6 +26,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Activity,
+  RefreshCw,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -85,18 +86,18 @@ const DashboardPage = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const fetchDashboardData = async () => {
-    setLoading(true);
+  const fetchDashboardData = async (isInitial = false) => {
+    if (isInitial) setLoading(true);
     const today = new Date().toISOString().split('T')[0];
     try {
       const [adminRes, todayAttRes, allAttRes, empRes] = await Promise.all([
         dashboardApi.getAdminStats(),
         attendanceApi.getToday().catch(() => ({ data: { success: false } })),
-        attendanceApi.getAll({ date: today }).catch(() => ({ data: { success: false, data: [] } })),
+        attendanceApi.getAll({ limit: 100 }).catch(() => ({ data: { success: false, data: [] } })),
         employeeApi.getAll({ limit: 50 }).catch(() => ({ data: { success: false, data: [] } })),
       ]);
 
-      if (adminRes.data.success) {
+      if (adminRes.data?.success) {
         setAdminData(adminRes.data.data);
       }
       if (todayAttRes.data && todayAttRes.data.success) {
@@ -111,12 +112,17 @@ const DashboardPage = () => {
     } catch (err) {
       console.error('Failed to load dashboard metrics:', err);
     } finally {
-      setLoading(false);
+      if (isInitial) setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboardData(true);
+    // Real-time 4-second live poll for instantaneous punch state sync
+    const interval = setInterval(() => {
+      fetchDashboardData(false);
+    }, 4000);
+    return () => clearInterval(interval);
   }, [isAdmin]);
 
   // Biometric Check In / Check Out Handler (For Staff Employee)
@@ -367,20 +373,42 @@ const DashboardPage = () => {
                 Real-time tracking of employee check-ins, punch outs, and live work duration.
               </p>
             </div>
-            <Link
-              to="/attendance"
-              className="text-xs font-semibold text-black hover:underline inline-flex items-center gap-1"
-            >
-              <span>Full Attendance Records</span> &rarr;
-            </Link>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => fetchDashboardData(false)}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold text-neutral-600 hover:text-black hover:bg-neutral-100 border border-neutral-200 transition-colors"
+                title="Refresh Live Status"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Live Sync</span>
+              </button>
+              <Link
+                to="/attendance"
+                className="text-xs font-semibold text-black hover:underline inline-flex items-center gap-1"
+              >
+                <span>Full Attendance Records</span> &rarr;
+              </Link>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {allEmployeesList.length > 0 ? (
               allEmployeesList.map((emp) => {
-                const att = allTodayAttendance.find(
-                  (a) => (a.employee?._id || a.employee) === emp._id
-                );
+                const att = allTodayAttendance.find((a) => {
+                  const aEmpId = (a.employee?._id || a.employee || '').toString();
+                  const aCustomId = (a.employee?.empCustomId || '').toString();
+                  const aEmail = (a.employee?.email || '').toLowerCase().trim();
+
+                  const empId = (emp._id || emp.id || '').toString();
+                  const empCustomId = (emp.empCustomId || '').toString();
+                  const empEmail = (emp.email || '').toLowerCase().trim();
+
+                  return (
+                    (aEmpId && empId && aEmpId === empId) ||
+                    (aCustomId && empCustomId && aCustomId === empCustomId) ||
+                    (aEmail && empEmail && aEmail === empEmail)
+                  );
+                });
 
                 const isPunchedIn = !!att?.checkIn;
                 const isPunchedOut = !!att?.checkOut;
