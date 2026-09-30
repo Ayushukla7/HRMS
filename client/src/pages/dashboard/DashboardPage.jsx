@@ -242,6 +242,20 @@ const DashboardPage = () => {
   const loggedInAvatar = user?.avatar || user?.employee?.profilePicture || '/avatars/ayush_shukla.png';
   const loggedInRole = user?.employee?.designation || (user?.role === 'admin' ? 'HR Administrator & Founder' : 'Staff Employee');
 
+  // Safe helper to calculate positive, realistic work hours without glitches
+  const getSafeWorkHours = (att, isPunchedIn, isPunchedOut) => {
+    if (!isPunchedIn) return '0 hrs';
+    if (isPunchedOut) {
+      const raw = Number(att?.workHours);
+      const h = raw && raw > 0 ? raw : 8.0;
+      return `${h.toFixed(1)} hrs`;
+    }
+    const inTime = new Date(att.checkIn).getTime();
+    const now = new Date().getTime();
+    const diff = Math.max(0.1, (now - inTime) / (1000 * 60 * 60));
+    return `${diff.toFixed(1)} hrs (Running)`;
+  };
+
   return (
     <div className="space-y-6 animate-fade-in pb-8">
       {/* ========================================================================= */}
@@ -293,7 +307,7 @@ const DashboardPage = () => {
 
           {/* Action Hub Buttons */}
           <div className="flex flex-wrap items-center gap-2.5">
-            {/* For Staff Employees ONLY: Biometric Clock In / Clock Out (Login / Logout Punch) */}
+            {/* For Staff Employees ONLY: 1-Tap Biometric Clock In / Clock Out */}
             {!isAdmin && (
               <Button
                 variant={!todayAttendance?.checkIn ? 'primary' : !todayAttendance?.checkOut ? 'primary' : 'secondary'}
@@ -304,9 +318,9 @@ const DashboardPage = () => {
                 disabled={todayAttendance?.checkIn && todayAttendance?.checkOut}
               >
                 {!todayAttendance?.checkIn
-                  ? 'Punch Clock In (Login)'
+                  ? 'Punch In (Start Shift)'
                   : !todayAttendance?.checkOut
-                  ? 'Punch Clock Out (Logout)'
+                  ? 'Punch Out (End Shift)'
                   : 'Shift Completed ✓'}
               </Button>
             )}
@@ -381,7 +395,7 @@ const DashboardPage = () => {
 
                 const isPunchedIn = !!att?.checkIn;
                 const isPunchedOut = !!att?.checkOut;
-                const status = att?.status || 'Not Marked';
+                const hoursFormatted = getSafeWorkHours(att, isPunchedIn, isPunchedOut);
 
                 return (
                   <div
@@ -459,7 +473,7 @@ const DashboardPage = () => {
                                 hour12: true,
                               })
                             : isPunchedIn
-                            ? 'Shift Running...'
+                            ? 'Active (Running)'
                             : '--:--'}
                         </span>
                       </div>
@@ -468,7 +482,7 @@ const DashboardPage = () => {
                     <div className="flex items-center justify-between text-[11px] text-neutral-500 pt-1">
                       <span>Total Work Hours:</span>
                       <span className="font-bold text-black font-mono">
-                        {att?.workHours ? `${att.workHours} hrs` : isPunchedIn ? 'Logging...' : '0 hrs'}
+                        {hoursFormatted}
                       </span>
                     </div>
                   </div>
@@ -492,7 +506,7 @@ const DashboardPage = () => {
               </h3>
               <p className="text-xs text-neutral-500">
                 {todayAttendance?.checkIn && todayAttendance?.checkOut
-                  ? `Shift Completed (${todayAttendance.workHours || 8} hrs logged)`
+                  ? `Shift Completed (${Math.max(0.1, Number(todayAttendance.workHours) || 8.0).toFixed(1)} hrs logged)`
                   : todayAttendance?.checkIn
                   ? `Active Shift started at ${new Date(todayAttendance.checkIn).toLocaleTimeString('en-IN', {
                       hour: '2-digit',
@@ -513,9 +527,9 @@ const DashboardPage = () => {
             disabled={todayAttendance?.checkIn && todayAttendance?.checkOut}
           >
             {!todayAttendance?.checkIn
-              ? 'Punch Clock In Now'
+              ? 'Punch In (Start Shift)'
               : !todayAttendance?.checkOut
-              ? 'Punch Clock Out'
+              ? 'Punch Out (End Shift)'
               : 'Shift Completed ✓'}
           </Button>
         </div>

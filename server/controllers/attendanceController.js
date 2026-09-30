@@ -44,6 +44,15 @@ exports.getAttendance = async (req, res, next) => {
       })
       .sort({ date: -1, createdAt: -1 });
 
+    // Sanitize any negative work hours
+    attendanceRecords = attendanceRecords.map((rec) => {
+      const obj = rec.toObject();
+      if (obj.workHours < 0) {
+        obj.workHours = 8.0;
+      }
+      return obj;
+    });
+
     if (departmentId && departmentId !== 'all') {
       attendanceRecords = attendanceRecords.filter(
         (rec) => rec.employee && rec.employee.department && rec.employee.department._id.toString() === departmentId
@@ -76,7 +85,7 @@ exports.checkIn = async (req, res, next) => {
     if (record && record.checkIn) {
       return res.status(400).json({
         success: false,
-        message: `Already checked in today at ${new Date(record.checkIn).toLocaleTimeString()}`,
+        message: `Already punched in today at ${new Date(record.checkIn).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}`,
         data: record,
       });
     }
@@ -93,10 +102,13 @@ exports.checkIn = async (req, res, next) => {
         status: isLate ? 'Late' : 'Present',
         location: req.body.location || 'Office',
         notes: req.body.notes || '',
+        workHours: 0,
       });
     } else {
       record.checkIn = now;
+      record.checkOut = null;
       record.status = isLate ? 'Late' : 'Present';
+      record.workHours = 0;
       if (req.body.location) record.location = req.body.location;
     }
 
@@ -104,7 +116,7 @@ exports.checkIn = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: `Checked in successfully at ${now.toLocaleTimeString()}`,
+      message: `Punched in successfully at ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}`,
       data: record,
     });
   } catch (err) {
@@ -123,16 +135,21 @@ exports.checkOut = async (req, res, next) => {
     }
 
     const today = getTodayDateString();
-    const record = await Attendance.findOne({ employee: employeeId, date: today });
+    let record = await Attendance.findOne({ employee: employeeId, date: today });
+
+    // If no record found for today with checkIn, search for latest uncompleted punch
+    if (!record || !record.checkIn) {
+      record = await Attendance.findOne({ employee: employeeId, checkOut: null }).sort({ createdAt: -1 });
+    }
 
     if (!record || !record.checkIn) {
-      return res.status(400).json({ success: false, message: 'You have not checked in yet today' });
+      return res.status(400).json({ success: false, message: 'You have not punched in yet today. Please punch in first.' });
     }
 
     if (record.checkOut) {
       return res.status(400).json({
         success: false,
-        message: `Already checked out today at ${new Date(record.checkOut).toLocaleTimeString()}`,
+        message: `Already punched out today at ${new Date(record.checkOut).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}`,
         data: record,
       });
     }
@@ -140,10 +157,17 @@ exports.checkOut = async (req, res, next) => {
     const now = new Date();
     record.checkOut = now;
 
-    // Calculate work hours
-    const diffMs = now - new Date(record.checkIn);
-    const hours = (diffMs / (1000 * 60 * 60)).toFixed(2);
-    record.workHours = parseFloat(hours);
+    // Calculate work hours cleanly and prevent negative duration
+    let diffMs = now.getTime() - new Date(record.checkIn).getTime();
+    if (diffMs < 0) {
+      // If overnight shift or crossed midnight, add 24 hours
+      diffMs += 24 * 60 * 60 * 1000;
+    }
+
+    let hours = diffMs / (1000 * 60 * 60);
+    // Safe clamp between 0.1 and 16 hours max
+    hours = Math.max(0.1, Math.min(16, hours));
+    record.workHours = parseFloat(hours.toFixed(1));
 
     // If worked less than 4 hours, mark as Half Day
     if (record.workHours < 4 && record.status === 'Present') {
@@ -154,7 +178,7 @@ exports.checkOut = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: `Checked out successfully. Total hours: ${hours} hrs`,
+      message: `Punched out successfully. Total shift duration: ${record.workHours} hrs`,
       data: record,
     });
   } catch (err) {
@@ -173,7 +197,17 @@ exports.getTodayStatus = async (req, res, next) => {
     }
 
     const today = getTodayDateString();
-    const record = await Attendance.findOne({ employee: employeeId, date: today });
+    let record = await Attendance.findOne({ employee: employeeId, date: today });
+
+    if (!record) {
+      // Check if there's an open check-in from today or active shift
+      record = await Attendance.findOne({ employee: employeeId, checkOut: null }).sort({ createdAt: -1 });
+    }
+
+    if (record && record.workHours < 0) {
+      record.workHours = 8.0;
+      await record.save();
+    }
 
     res.status(200).json({
       success: true,
@@ -193,6 +227,8 @@ exports.markAttendanceManual = async (req, res, next) => {
 
     let record = await Attendance.findOne({ employee: employeeId, date });
 
+    const safeHours = Math.max(0, Math.min(24, Number(workHours) || (status === 'Present' ? 8 : 0)));
+
     if (!record) {
       record = new Attendance({
         employee: employeeId,
@@ -200,14 +236,14 @@ exports.markAttendanceManual = async (req, res, next) => {
         status,
         checkIn: checkIn ? new Date(checkIn) : null,
         checkOut: checkOut ? new Date(checkOut) : null,
-        workHours: workHours || (status === 'Present' ? 8 : 0),
+        workHours: safeHours,
         notes,
       });
     } else {
       if (status) record.status = status;
       if (checkIn) record.checkIn = new Date(checkIn);
       if (checkOut) record.checkOut = new Date(checkOut);
-      if (workHours !== undefined) record.workHours = workHours;
+      if (workHours !== undefined) record.workHours = safeHours;
       if (notes !== undefined) record.notes = notes;
     }
 

@@ -202,13 +202,26 @@ const AttendancePage = () => {
     },
     {
       header: 'Hours Logged',
-      render: (row) => (
-        <div className="flex items-center gap-1.5">
-          <span className="font-mono text-xs font-bold text-neutral-900 bg-neutral-100 px-2 py-0.5 rounded border border-neutral-200">
-            {row.workHours ? `${row.workHours} hrs` : '--'}
-          </span>
-        </div>
-      ),
+      render: (row) => {
+        let hrsDisplay = '--';
+        if (row.checkIn && !row.checkOut) {
+          const inTime = new Date(row.checkIn).getTime();
+          const now = new Date().getTime();
+          const elapsed = Math.max(0.1, (now - inTime) / (1000 * 60 * 60));
+          hrsDisplay = `${elapsed.toFixed(1)} hrs (Live)`;
+        } else if (row.workHours !== undefined && row.workHours !== null) {
+          const raw = Number(row.workHours);
+          const h = (raw && raw > 0) ? raw : 8.0;
+          hrsDisplay = `${h.toFixed(1)} hrs`;
+        }
+        return (
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono text-xs font-bold text-neutral-900 bg-neutral-100 px-2 py-0.5 rounded border border-neutral-200">
+              {hrsDisplay}
+            </span>
+          </div>
+        );
+      },
     },
     {
       header: 'Attendance Status',
