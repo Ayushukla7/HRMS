@@ -232,9 +232,9 @@ const HRChatbot = () => {
     }
 
     // 9. LEADERSHIP & FOUNDER
-    if (q.includes('founder') || q.includes('ayush') || q.includes('ceo') || q.includes('who is ayush') || q.includes('management')) {
+    if (q.includes('founder') || q.includes('avinash') || q.includes('dabas') || q.includes('ceo') || q.includes('management') || q.includes('who is avinash')) {
       return {
-        text: `👑 **Leadership & Administration**:\n\n• **Founder & HR Administrator:** **Avinash Dev DabasShukla**\n• **Designation:** HR Administrator & Founder\n• **Headquarters:** New Delhi HQ & Bengaluru R&D Hub\n• **Platform:** HR Pulse Enterprise Human Resource Management System.`,
+        text: `👑 **Leadership & Administration**:\n\n• **Founder & HR Administrator:** **Avinash Dev Dabas**\n• **Designation:** HR Administrator & Founder\n• **Headquarters:** New Delhi HQ & Bengaluru R&D Hub\n• **Platform:** HR Pulse Enterprise Human Resource Management System.`,
       };
     }
 

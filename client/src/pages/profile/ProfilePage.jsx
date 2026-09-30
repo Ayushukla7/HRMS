@@ -249,7 +249,7 @@ const ProfilePage = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              placeholder="e.g. Avinash Dev DabasShukla"
+              placeholder="e.g. Avinash Dev Dabas"
             />
 
             <div>

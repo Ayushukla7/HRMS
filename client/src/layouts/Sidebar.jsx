@@ -61,7 +61,7 @@ const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
   const loggedInAvatar =
     user?.avatar ||
     user?.employee?.profilePicture ||
-    '/avatars/ayush_shukla.png';
+    'https://i.pinimg.com/736x/a9/e5/a2/a9e5a2d5aaa1f28338356244a195a0b2.jpg';
 
   return (
     <>
@@ -172,7 +172,7 @@ const Sidebar = ({ isMobileOpen, closeMobileSidebar }) => {
               />
               <div className="text-left overflow-hidden">
                 <p className="text-xs font-semibold text-black truncate max-w-[120px]">
-                  {user?.name || 'Avinash Dev DabasShukla'}
+                  {user?.name || 'Avinash Dev Dabas'}
                 </p>
                 <p className="text-[10px] text-neutral-500 capitalize">
                   {user?.role === 'admin' ? 'HR Administrator' : 'Staff Employee'}

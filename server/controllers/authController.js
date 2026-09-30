@@ -205,12 +205,12 @@ exports.getDemoPersonas = async (req, res, next) => {
 
     if (admin) {
       personas.push({
-        name: admin.name || 'Avinash Dev DabasShukla',
+        name: admin.name || 'Avinash Dev Dabas',
         role: 'HR Admin & Founder',
         email: admin.email,
         pass: 'admin123',
         badge: 'Admin',
-        avatar: admin.avatar || '/avatars/ayush_shukla.png',
+        avatar: admin.avatar || 'https://i.pinimg.com/736x/a9/e5/a2/a9e5a2d5aaa1f28338356244a195a0b2.jpg',
       });
     }
 

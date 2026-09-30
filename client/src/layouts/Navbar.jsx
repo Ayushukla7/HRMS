@@ -52,7 +52,7 @@ const Navbar = ({ toggleMobileSidebar }) => {
   const loggedInAvatar =
     user?.avatar ||
     user?.employee?.profilePicture ||
-    '/avatars/ayush_shukla.png';
+    'https://i.pinimg.com/736x/a9/e5/a2/a9e5a2d5aaa1f28338356244a195a0b2.jpg';
 
   return (
     <header className="h-16 bg-white border-b border-neutral-200 px-4 sm:px-8 flex items-center justify-between gap-4 z-30 sticky top-0">
@@ -167,7 +167,7 @@ const Navbar = ({ toggleMobileSidebar }) => {
           >
             <Avatar src={loggedInAvatar} name={user?.name || 'User'} size="sm" />
             <span className="hidden md:block text-xs font-semibold text-black">
-              {user?.name?.split(' ')[0] || 'Ayush'}
+              {user?.name?.split(' ')[0] || 'Avinash'}
             </span>
           </button>
 
