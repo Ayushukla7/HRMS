@@ -31,12 +31,12 @@ const Login = () => {
   // Dynamic live demo personas state
   const [demoAccounts, setDemoAccounts] = useState([
     {
-      name: 'Ayush Shukla',
+      name: 'Avinash Dev Dabas',
       role: 'HR Admin & Founder',
       email: 'admin@hrms.com',
       pass: 'admin123',
       badge: 'Admin',
-      avatar: '/avatars/ayush_shukla.png',
+      avatar: 'https://i.pinimg.com/736x/a9/e5/a2/a9e5a2d5aaa1f28338356244a195a0b2.jpg',
     },
     {
       name: 'Aarav Sharma',
