@@ -315,7 +315,7 @@ const HRChatbot = () => {
 
   return (
     <>
-      {/* Floating Action Trigger Button (Bottom-Right) */}
+      {/* Floating Action Trigger Button (Bottom-Right, Icon Only) */}
       <div className="fixed bottom-6 right-6 z-50">
         {!isOpen && (
           <button
@@ -323,15 +323,14 @@ const HRChatbot = () => {
               setIsOpen(true);
               setHasUnread(false);
             }}
-            className="group flex items-center gap-2.5 px-4 py-3.5 rounded-full bg-black text-white shadow-xl hover:bg-neutral-800 transition-all transform hover:scale-105 active:scale-95 border border-neutral-700"
-            title="Open HR Pulse AI Assistant"
+            className="group flex items-center justify-center w-12 h-12 rounded-full bg-black text-white shadow-2xl hover:bg-neutral-800 transition-all transform hover:scale-110 active:scale-95 border border-neutral-700 focus:outline-none"
+            title="HR AI Assistant"
+            aria-label="Open HR Assistant"
           >
-            <div className="relative">
-              <Bot className="w-5 h-5 text-white" />
+            <div className="relative flex items-center justify-center">
+              <Bot className="w-6 h-6 text-white" />
               <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-black animate-pulse" />
             </div>
-            <span className="text-xs font-bold tracking-wide pr-1">HR Assistant</span>
-            <Sparkles className="w-3.5 h-3.5 text-neutral-400 group-hover:text-white transition-colors" />
           </button>
         )}
       </div>
