@@ -120,7 +120,7 @@ const PayrollPage = () => {
         employeeId: empId,
         basicSalary: basic,
         hra: Math.round(basic * 0.4),
-        conveyance: 5000,
+        conveyance: 4000,
         medical: 3000,
         providentFund: Math.round(basic * 0.05),
         tax: Math.round(basic * 0.1),
