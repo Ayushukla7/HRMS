@@ -205,7 +205,7 @@ exports.getDemoPersonas = async (req, res, next) => {
 
     if (admin) {
       personas.push({
-        name: admin.name || 'Ayush Shukla',
+        name: admin.name || 'Avinash Dev DabasShukla',
         role: 'HR Admin & Founder',
         email: admin.email,
         pass: 'admin123',
