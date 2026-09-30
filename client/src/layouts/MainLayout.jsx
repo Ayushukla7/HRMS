@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
+import HRChatbot from '../components/chat/HRChatbot';
 
 const MainLayout = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-neutral-50 text-neutral-900 flex flex-col font-sans relative">
       <Sidebar
         isMobileOpen={isMobileOpen}
         closeMobileSidebar={() => setIsMobileOpen(false)}
@@ -34,6 +35,9 @@ const MainLayout = () => {
           </div>
         </footer>
       </div>
+
+      {/* Floating AI HR Assistant Chatbot */}
+      <HRChatbot />
     </div>
   );
 };
