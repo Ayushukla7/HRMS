@@ -74,7 +74,12 @@ exports.getAttendance = async (req, res, next) => {
 // @access  Private
 exports.checkIn = async (req, res, next) => {
   try {
-    const employeeId = req.body.employeeId || req.user.employeeId;
+    let employeeId = req.body.employeeId || req.user.employeeId?._id || req.user.employeeId;
+    if (!employeeId) {
+      const emp = await Employee.findOne({ email: req.user.email });
+      if (emp) employeeId = emp._id;
+    }
+
     if (!employeeId) {
       return res.status(400).json({ success: false, message: 'No employee profile linked to this user' });
     }
@@ -82,10 +87,12 @@ exports.checkIn = async (req, res, next) => {
     const today = getTodayDateString();
     let record = await Attendance.findOne({ employee: employeeId, date: today });
 
-    if (record && record.checkIn) {
-      return res.status(400).json({
-        success: false,
-        message: `Already punched in today at ${new Date(record.checkIn).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}`,
+    // If already punched in and not checked out, return success with current record
+    if (record && record.checkIn && !record.checkOut) {
+      return res.status(200).json({
+        success: true,
+        alreadyPunched: true,
+        message: `Active shift running since ${new Date(record.checkIn).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}`,
         data: record,
       });
     }
@@ -99,6 +106,7 @@ exports.checkIn = async (req, res, next) => {
         employee: employeeId,
         date: today,
         checkIn: now,
+        checkOut: null,
         status: isLate ? 'Late' : 'Present',
         location: req.body.location || 'Office',
         notes: req.body.notes || '',
@@ -129,9 +137,14 @@ exports.checkIn = async (req, res, next) => {
 // @access  Private
 exports.checkOut = async (req, res, next) => {
   try {
-    const employeeId = req.body.employeeId || req.user.employeeId;
+    let employeeId = req.body.employeeId || req.user.employeeId?._id || req.user.employeeId;
     if (!employeeId) {
-      return res.status(400).json({ success: false, message: 'No employee profile linked' });
+      const emp = await Employee.findOne({ email: req.user.email });
+      if (emp) employeeId = emp._id;
+    }
+
+    if (!employeeId) {
+      return res.status(400).json({ success: false, message: 'No employee profile linked to this user' });
     }
 
     const today = getTodayDateString();
@@ -147,9 +160,10 @@ exports.checkOut = async (req, res, next) => {
     }
 
     if (record.checkOut) {
-      return res.status(400).json({
-        success: false,
-        message: `Already punched out today at ${new Date(record.checkOut).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}`,
+      return res.status(200).json({
+        success: true,
+        alreadyPunched: true,
+        message: `Already punched out at ${new Date(record.checkOut).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}`,
         data: record,
       });
     }
@@ -160,16 +174,13 @@ exports.checkOut = async (req, res, next) => {
     // Calculate work hours cleanly and prevent negative duration
     let diffMs = now.getTime() - new Date(record.checkIn).getTime();
     if (diffMs < 0) {
-      // If overnight shift or crossed midnight, add 24 hours
       diffMs += 24 * 60 * 60 * 1000;
     }
 
     let hours = diffMs / (1000 * 60 * 60);
-    // Safe clamp between 0.1 and 16 hours max
     hours = Math.max(0.1, Math.min(16, hours));
     record.workHours = parseFloat(hours.toFixed(1));
 
-    // If worked less than 4 hours, mark as Half Day
     if (record.workHours < 4 && record.status === 'Present') {
       record.status = 'Half Day';
     }
@@ -191,7 +202,12 @@ exports.checkOut = async (req, res, next) => {
 // @access  Private
 exports.getTodayStatus = async (req, res, next) => {
   try {
-    const employeeId = req.user.employeeId?._id || req.user.employeeId;
+    let employeeId = req.user.employeeId?._id || req.user.employeeId;
+    if (!employeeId) {
+      const emp = await Employee.findOne({ email: req.user.email });
+      if (emp) employeeId = emp._id;
+    }
+
     if (!employeeId) {
       return res.status(200).json({ success: true, data: null });
     }
@@ -200,7 +216,6 @@ exports.getTodayStatus = async (req, res, next) => {
     let record = await Attendance.findOne({ employee: employeeId, date: today });
 
     if (!record) {
-      // Check if there's an open check-in from today or active shift
       record = await Attendance.findOne({ employee: employeeId, checkOut: null }).sort({ createdAt: -1 });
     }
 

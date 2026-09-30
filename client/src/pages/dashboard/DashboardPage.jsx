@@ -307,24 +307,6 @@ const DashboardPage = () => {
 
           {/* Action Hub Buttons */}
           <div className="flex flex-wrap items-center gap-2.5">
-            {/* For Staff Employees ONLY: 1-Tap Biometric Clock In / Clock Out */}
-            {!isAdmin && (
-              <Button
-                variant={!todayAttendance?.checkIn ? 'primary' : !todayAttendance?.checkOut ? 'primary' : 'secondary'}
-                size="sm"
-                icon={Timer}
-                onClick={handlePunchToggle}
-                loading={punchLoading}
-                disabled={todayAttendance?.checkIn && todayAttendance?.checkOut}
-              >
-                {!todayAttendance?.checkIn
-                  ? 'Punch In (Start Shift)'
-                  : !todayAttendance?.checkOut
-                  ? 'Punch Out (End Shift)'
-                  : 'Shift Completed ✓'}
-              </Button>
-            )}
-
             {/* Quick Apply Leave */}
             <Button
               variant="outline"
@@ -494,44 +476,78 @@ const DashboardPage = () => {
           </div>
         </div>
       ) : (
-        /* Staff Employee Personal Shift Terminal */
-        <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-neutral-100 border border-neutral-300 flex items-center justify-center text-neutral-900">
-              <Clock className="w-5 h-5" />
+        /* Staff Employee Personal Shift Terminal (1-Tap Intuitive Biometric Punch Card) */
+        <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${
+              todayAttendance?.checkIn && todayAttendance?.checkOut
+                ? 'bg-neutral-100 border border-neutral-300 text-neutral-900'
+                : todayAttendance?.checkIn
+                ? 'bg-neutral-900 text-white shadow-xs'
+                : 'bg-neutral-100 border border-neutral-200 text-neutral-700'
+            }`}>
+              {todayAttendance?.checkIn && todayAttendance?.checkOut ? (
+                <CheckCircle2 className="w-5 h-5 text-black" />
+              ) : todayAttendance?.checkIn ? (
+                <Clock className="w-5 h-5 text-white animate-pulse" />
+              ) : (
+                <Timer className="w-5 h-5 text-neutral-800" />
+              )}
             </div>
             <div>
-              <h3 className="text-sm font-bold text-neutral-900">
-                Your Shift Punch Status (Today)
-              </h3>
-              <p className="text-xs text-neutral-500">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-neutral-900">
+                  {todayAttendance?.checkIn && todayAttendance?.checkOut
+                    ? "Today's Shift: Completed"
+                    : todayAttendance?.checkIn
+                    ? "Today's Shift: In Progress"
+                    : "Today's Shift: Ready to Punch In"}
+                </h3>
+                {todayAttendance?.checkIn && !todayAttendance?.checkOut && (
+                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-neutral-100 text-black border border-neutral-300">
+                    <span className="w-1.5 h-1.5 rounded-full bg-black animate-ping" />
+                    LIVE
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-neutral-500 mt-0.5">
                 {todayAttendance?.checkIn && todayAttendance?.checkOut
-                  ? `Shift Completed (${Math.max(0.1, Number(todayAttendance.workHours) || 8.0).toFixed(1)} hrs logged)`
+                  ? `Shift Logged • In: ${new Date(todayAttendance.checkIn).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })} | Out: ${new Date(todayAttendance.checkOut).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })} • Total: ${Math.max(0.1, Number(todayAttendance.workHours) || 8.0).toFixed(1)} hrs`
                   : todayAttendance?.checkIn
-                  ? `Active Shift started at ${new Date(todayAttendance.checkIn).toLocaleTimeString('en-IN', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      hour12: true,
-                    })}`
-                  : 'You have not punched in for today yet.'}
+                  ? `Punched In at ${new Date(todayAttendance.checkIn).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })} • Shift tracking in progress`
+                  : 'You have not punched in for today yet. Click the button to start your shift.'}
               </p>
             </div>
           </div>
 
-          <Button
-            variant={!todayAttendance?.checkIn ? 'primary' : !todayAttendance?.checkOut ? 'primary' : 'secondary'}
-            size="sm"
-            icon={Timer}
-            onClick={handlePunchToggle}
-            loading={punchLoading}
-            disabled={todayAttendance?.checkIn && todayAttendance?.checkOut}
-          >
-            {!todayAttendance?.checkIn
-              ? 'Punch In (Start Shift)'
-              : !todayAttendance?.checkOut
-              ? 'Punch Out (End Shift)'
-              : 'Shift Completed ✓'}
-          </Button>
+          <div>
+            {todayAttendance?.checkIn && todayAttendance?.checkOut ? (
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-100 border border-neutral-300 text-neutral-900 font-bold text-xs shadow-xs">
+                <CheckCircle2 className="w-4 h-4 text-black" />
+                <span>Shift Completed ✓</span>
+              </div>
+            ) : todayAttendance?.checkIn ? (
+              <Button
+                variant="primary"
+                size="md"
+                icon={Timer}
+                onClick={handlePunchToggle}
+                loading={punchLoading}
+              >
+                Punch Out (End Shift)
+              </Button>
+            ) : (
+              <Button
+                variant="primary"
+                size="md"
+                icon={Clock}
+                onClick={handlePunchToggle}
+                loading={punchLoading}
+              >
+                Punch In (Start Shift)
+              </Button>
+            )}
+          </div>
         </div>
       )}
 

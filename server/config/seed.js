@@ -155,11 +155,11 @@ const seedData = async (forceReset = false) => {
     {
       employee: aarav._id,
       date: todayDate,
-      checkIn: new Date(new Date().setHours(9, 15, 0, 0)),
+      checkIn: null,
       checkOut: null,
-      status: 'Present',
-      workHours: 7.5,
-      location: 'Hybrid / Gurugram Office',
+      status: 'Absent',
+      workHours: 0,
+      location: 'Gurugram HQ',
     },
     {
       employee: priya._id,
@@ -173,11 +173,11 @@ const seedData = async (forceReset = false) => {
     {
       employee: rohan._id,
       date: todayDate,
-      checkIn: new Date(new Date().setHours(9, 45, 0, 0)),
+      checkIn: new Date(new Date().setHours(9, 30, 0, 0)),
       checkOut: null,
-      status: 'Late',
-      workHours: 6.5,
-      location: 'Remote / Mumbai',
+      status: 'Present',
+      workHours: 0,
+      location: 'Mumbai Financial Center',
     },
   ]);
 
