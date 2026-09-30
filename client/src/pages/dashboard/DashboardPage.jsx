@@ -277,49 +277,44 @@ const DashboardPage = () => {
       <div className="bg-white border border-neutral-200 rounded-2xl p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           {/* User Welcome Information */}
-          <div className="flex items-center gap-4">
-            <Link to="/profile" className="relative group block" title="Manage Profile Picture">
-              <Avatar
-                src={loggedInAvatar}
-                name={loggedInName}
-                size="lg"
-                className="ring-2 ring-neutral-200 rounded-2xl"
-              />
-              <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-black ring-2 ring-white" />
-            </Link>
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="text-xl sm:text-2xl font-bold text-black tracking-tight">
+                Welcome, {loggedInName}
+              </h1>
+              <span
+                className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                  isAdmin
+                    ? 'bg-black text-white'
+                    : 'bg-neutral-100 text-neutral-900 border border-neutral-300'
+                }`}
+              >
+                {isAdmin ? 'HR Administrator' : 'Staff Employee'}
+              </span>
+            </div>
 
-            <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-bold text-black">
-                  Welcome, {loggedInName}
-                </h1>
-                <span
-                  className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                    isAdmin
-                      ? 'bg-black text-white'
-                      : 'bg-neutral-100 text-neutral-900 border border-neutral-300'
-                  }`}
-                >
-                  {isAdmin ? 'HR Administrator' : 'Staff Employee'}
-                </span>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 text-xs text-neutral-500">
-                <span>{loggedInRole}</span>
-                <span>&bull;</span>
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-neutral-400" /> New Delhi HQ &bull; Bengaluru R&D
-                </span>
-                <span>&bull;</span>
-                <span className="font-semibold text-neutral-900">
-                  {currentTime} (IST)
-                </span>
-              </div>
+            <div className="flex flex-wrap items-center gap-2.5 text-xs text-neutral-500">
+              <span className="font-semibold text-neutral-800">{loggedInRole}</span>
+              <span>&bull;</span>
+              <span className="flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-neutral-400" /> New Delhi HQ &bull; Bengaluru R&D
+              </span>
             </div>
           </div>
 
-          {/* Action Hub Buttons */}
-          <div className="flex flex-wrap items-center gap-2.5">
+          {/* Action Hub & Live Clock */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Prominent Live Digital Clock Display */}
+            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-neutral-100 border border-neutral-200 text-neutral-900 shadow-2xs">
+              <Clock className="w-4 h-4 text-black animate-pulse" />
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-mono font-bold text-xs tracking-wider">
+                  {currentTime}
+                </span>
+                <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">IST</span>
+              </div>
+            </div>
+
             {/* Quick Apply Leave */}
             <Button
               variant="outline"
