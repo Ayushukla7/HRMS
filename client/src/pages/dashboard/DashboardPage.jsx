@@ -225,7 +225,7 @@ const DashboardPage = () => {
   const attendanceRate = stats.attendanceRate || (totalEmployees > 0 ? Math.round((presentToday / totalEmployees) * 100) : 100);
 
   // Pure Monochrome Colors for Charts
-  const pieColors = ['#09090b', '#27272a', '#52525b', '#71717a', '#a1a1aa', '#d4d4d8'];
+  const pieColors = ['#18181b', '#3f3f46', '#71717a', '#a1a1aa', '#d4d4d8', '#52525b'];
 
   // Interactive Chart Data: Department Breakdown
   const deptBreakdown =
@@ -709,21 +709,23 @@ const DashboardPage = () => {
                     paddingAngle={3}
                   >
                     {deptBreakdown.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell key={`cell-${index}`} fill={entry.color} stroke="#ffffff" strokeWidth={2} />
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(val) => [`${val} Members`, 'Headcount']}
+                    formatter={(val, name) => [`${val} Members`, name || 'Headcount']}
                     contentStyle={{
                       backgroundColor: '#000000',
-                      border: 'none',
+                      border: '1px solid #3f3f46',
                       borderRadius: '8px',
                       color: '#ffffff',
                       fontSize: '12px',
                     }}
+                    itemStyle={{ color: '#ffffff' }}
+                    labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
                   />
                   <Legend
-                    formatter={(val) => <span className="text-xs text-neutral-700 ml-1">{val}</span>}
+                    formatter={(val) => <span className="text-xs text-neutral-800 font-medium ml-1">{val}</span>}
                     layout="horizontal"
                     verticalAlign="bottom"
                     align="center"
@@ -768,11 +770,13 @@ const DashboardPage = () => {
                     formatter={(val) => [`₹${val} Lakhs`, 'Disbursement']}
                     contentStyle={{
                       backgroundColor: '#000000',
-                      border: 'none',
+                      border: '1px solid #3f3f46',
                       borderRadius: '8px',
                       color: '#ffffff',
                       fontSize: '12px',
                     }}
+                    itemStyle={{ color: '#ffffff' }}
+                    labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
                   />
                   <Bar dataKey="amount" fill="#000000" radius={[4, 4, 0, 0]} />
                 </BarChart>
