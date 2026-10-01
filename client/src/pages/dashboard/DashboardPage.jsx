@@ -251,7 +251,7 @@ const DashboardPage = () => {
     { month: 'Sep', amount: Number(((totalPayroll) / 100000).toFixed(1)) || 3.5 },
   ];
 
-  const loggedInName = user?.name || 'Avinash Dev Dabas';
+  const loggedInName = user?.name || ' Dev Dabas';
   const loggedInAvatar = user?.avatar || user?.employee?.profilePicture || 'https://i.pinimg.com/736x/a9/e5/a2/a9e5a2d5aaa1f28338356244a195a0b2.jpg';
   const loggedInRole = user?.employee?.designation || (user?.role === 'admin' ? 'HR Administrator & Founder' : 'Staff Employee');
 
