@@ -30,12 +30,12 @@ const CYCLING_PHRASES = [
   'Real-time Workforce Analytics',
 ];
 
-const Login = () => {
+const  = () => {
   const [email, setEmail] = useState('admin@hrms.com');
   const [password, setPassword] = useState('admin123');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const {  } = useAuth();
   const { showToast } = useNotification();
   const navigate = useNavigate();
 
@@ -127,7 +127,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(email, password);
+      await (email, password);
       showToast('Welcome back! Successfully signed in.', 'success');
       navigate('/dashboard');
     } catch (err) {
@@ -137,7 +137,7 @@ const Login = () => {
     }
   };
 
-  const handleQuickLogin = (demoEmail, demoPass) => {
+  const handleQuick = (demoEmail, demoPass) => {
     setEmail(demoEmail);
     setPassword(demoPass);
   };
@@ -198,7 +198,7 @@ const Login = () => {
                 {demoAccounts.slice(0, 4).map((acc) => (
                   <div
                     key={acc.email}
-                    onClick={() => handleQuickLogin(acc.email, acc.pass)}
+                    onClick={() => handleQuick(acc.email, acc.pass)}
                     className="flex items-center justify-between p-2.5 rounded-xl bg-neutral-800/80 hover:bg-neutral-800 border border-neutral-700/60 transition-all cursor-pointer group"
                   >
                     <div className="flex items-center gap-3">
@@ -323,7 +323,7 @@ const Login = () => {
                   <button
                     key={acc.email}
                     type="button"
-                    onClick={() => handleQuickLogin(acc.email, acc.pass)}
+                    onClick={() => handleQuick(acc.email, acc.pass)}
                     className={`flex items-center gap-2 p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
                       email === acc.email
                         ? 'bg-black text-white border-black shadow-xs'
@@ -372,4 +372,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ;
