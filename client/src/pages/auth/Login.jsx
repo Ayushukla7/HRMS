@@ -17,7 +17,18 @@ import {
   Users,
   Clock,
   ArrowRight,
+  Sparkles,
+  Zap,
 } from 'lucide-react';
+
+const CYCLING_PHRASES = [
+  'Payroll & Tax Compliance',
+  'Biometric Shift Attendance',
+  'Talent Hiring & Onboarding',
+  'Performance OKRs & Appraisals',
+  '1-Click Payslip Generation',
+  'Real-time Workforce Analytics',
+];
 
 const Login = () => {
   const [email, setEmail] = useState('admin@hrms.com');
@@ -27,6 +38,39 @@ const Login = () => {
   const { login } = useAuth();
   const { showToast } = useNotification();
   const navigate = useNavigate();
+
+  // Dynamic Typewriter cycling text effect
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [displayedText, setDisplayedText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentPhrase = CYCLING_PHRASES[phraseIndex % CYCLING_PHRASES.length];
+    let timer;
+
+    if (!isDeleting) {
+      if (displayedText.length < currentPhrase.length) {
+        timer = setTimeout(() => {
+          setDisplayedText(currentPhrase.substring(0, displayedText.length + 1));
+        }, 65);
+      } else {
+        timer = setTimeout(() => {
+          setIsDeleting(true);
+        }, 1800);
+      }
+    } else {
+      if (displayedText.length > 0) {
+        timer = setTimeout(() => {
+          setDisplayedText(currentPhrase.substring(0, displayedText.length - 1));
+        }, 30);
+      } else {
+        setIsDeleting(false);
+        setPhraseIndex((prev) => (prev + 1) % CYCLING_PHRASES.length);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [displayedText, isDeleting, phraseIndex]);
 
   // Dynamic live demo personas state
   const [demoAccounts, setDemoAccounts] = useState([
@@ -117,14 +161,29 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="space-y-2 pt-4">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300 text-xs font-semibold">
-                <Users className="w-3.5 h-3.5" />
+            <div className="space-y-3 pt-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-800/90 border border-neutral-700/80 text-neutral-300 text-xs font-semibold shadow-inner">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <Users className="w-3.5 h-3.5 text-neutral-400" />
                 <span>Modern People & Workforce OS</span>
-              </span>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
-                Designed for Teams. Built for Impact.
-              </h1>
+              </div>
+
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-200 leading-snug">
+                  The Simplest HR Platform to Automate
+                </h1>
+                <div className="mt-2 min-h-[44px] flex items-center">
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white text-neutral-950 border border-neutral-200 font-mono text-sm sm:text-base font-extrabold tracking-tight shadow-md transition-all">
+                    <Sparkles className="w-4 h-4 text-neutral-800 shrink-0 animate-pulse" />
+                    <span>{displayedText}</span>
+                    <span className="inline-block w-0.5 h-4 bg-neutral-950 animate-pulse" />
+                  </span>
+                </div>
+              </div>
+
               <p className="text-xs sm:text-sm text-neutral-400 font-normal leading-relaxed">
                 Streamline employee shift attendance, biometric logs, statutory payroll disbursement, and performance reviews with high-contrast precision.
               </p>
